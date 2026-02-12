@@ -34,8 +34,13 @@
     *   **Role:** AJAX-driven DOM updates via HTML fragments returned from the server.
     *   **Constraint:** No heavy SPA frameworks (React/Angular). Maintain logic in Java/Qute.
 *   **Assets:** Managed via Quarkus Web Bundler or simple static files in `META-INF/resources`.
+*   **Components:** use **Qute Tags** for reusable UI elements (Cards, Buttons, Modals).
 
-## 4. Containerization & Deployment
+## 4. API Strategy
+*   **Primary:** HTMX-driven HTML fragments.
+*   **Secondary:** Parallel JSON API for external integrations (Slash Commands, Mobile).
+
+## 5. Containerization & Deployment
 *   **Image Builder:** Google Jib (`quarkus-container-image-jib`)
     *   **Workflow:** Builds optimized, layered Docker images directly from the build tool without a Dockerfile.
 *   **Runtime:** JVM (HotSpot) for most use cases; GraalVM Native Image for ultra-low memory footprints.
@@ -56,4 +61,19 @@ Stick with **Caffeine**. It’s already built into Quarkus, requires zero extra 
 * **Providers:** * **Primary:** GitHub and Google for professional engineering context.
     * **Future:** Integration with Slack/Microsoft Teams for seamless ceremony participation.
 * **Constraint:** Avoid local password storage to minimize security surface area and focus on core ceremony logic.
-* **Local Development:** See **[Local Development & Auth](LOCAL_DEVELOPMENT.md)** for our "Offline Mode" strategy using mocked authentication.
+*   **Local Development:** See **[Local Development & Auth](LOCAL_DEVELOPMENT.md)** for our "Offline Mode" strategy using mocked authentication.
+
+## 7. Testing & Quality
+*   **Unit/Integration:** JUnit 5 + Mockito + QuarkusTest.
+*   **E2E Testing:** **Playwright** (Dockerized).
+    *   **Scope:** Critical User Journeys.
+*   **Load Testing:** JMeter or K6 (TBD) for checking Virtual Thread/SQLite limits.
+
+## 8. CI/CD & Observability
+*   **CI/CD:** GitHub Actions.
+    *   **Strategy:** Semantic Versioning via Git Tags (Release-on-Tag).
+    *   **Secrets:** Environment Variables (12-Factor).
+*   **Observability:**
+    *   **Metrics:** Prometheus (`/q/metrics`).
+    *   **Logs:** Structured JSON.
+    *   **Errors:** Custom Error Pages + Toast Notifications.
