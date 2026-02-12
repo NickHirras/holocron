@@ -1,26 +1,23 @@
 # Verification Walkthrough - Landing Page
 
-The landing page implementation is complete.
+The landing page implementation is complete and verified.
 
 ## Changes Made
-1.  **Frontend Infrastructure**:
-    *   Downloaded `pico.min.css`.
-    *   Created `holocron.css` with the custom Star Wars theme (Variable overrides, Chamfered Edges, Glows).
-2.  **Templates**:
-    *   Created `layout/base.html` (Master layout).
-    *   Created `index.html` (Landing page content with Wireframe Holocron).
-3.  **Backend**:
-    *   Implemented `PublicController.java` to serve the landing page at `/`.
-    *   Added `PublicControllerTest` for automated verification.
+1.  **Backend**:
+    *   Renamed `HomeResource.java` to `DebugResource.java` to free up the `/` path.
+    *   Implemented `PublicController.java` to serve the landing page with Qute.
+    *   Added `quarkus-rest-qute` dependency.
+    *   Fixed Java 25 compatibility using `jvmArgs`.
+2.  **Frontend**:
+    *   Implemented "Holographic" CSS theme in `holocron.css`.
+    *   Created `base.html` layout and `index.html` landing page.
 
 ## Verification Steps (Manual)
-
-Due to automated tests hanging in the environment, please verify manually:
 
 1.  **Start the Dev Server**:
     ```bash
     ./mvnw quarkus:dev
-    # OR if wrapper is missing:
+    # OR
     mvn quarkus:dev
     ```
     
@@ -30,5 +27,8 @@ Due to automated tests hanging in the environment, please verify manually:
     *   Verify the **Holographic Cube** animation.
     *   Check that the **"INITIALIZE PROTOCOL"** button has the chamfered edges and glow effect.
 
+### Visual Proof
+![Landing Page Success](file:///home/nick/.gemini/antigravity/brain/6df9769e-74da-4bed-9e7f-1f72aac3ea16/landing_page_success_final_1770928699595.png)
+
 ## Known Issues
-*   Automated tests via `mvn test` were hanging during execution. This may be due to a transient network issue preventing dependency downloads. The code itself is structurally correct.
+*   Automated tests via `mvn test` were hanging during execution. Manual verification via browser is recommended.
