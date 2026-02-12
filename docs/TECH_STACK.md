@@ -41,6 +41,15 @@
 *   **Runtime:** JVM (HotSpot) for most use cases; GraalVM Native Image for ultra-low memory footprints.
 *   **Storage Requirement:** SQLite databases must be stored on a persistent volume (e.g., `/data`) to ensure data persistence across container restarts.
 
+## 5. Caching Layer
+
+Stick with **Caffeine**. It’s already built into Quarkus, requires zero extra infrastructure (no extra Docker containers), and provides the lowest possible latency for your RRule calculations.
+
+* **Primary Cache: Caffeine** (Quarkus-integrated).
+* **Strategy:** > * Use `@CacheResult` on RRule expansion methods.
+   * Use `@CacheInvalidate` when a Ceremony's schedule is updated.
+* **Template Caching:** Qute template definitions are automatically cached by the engine for high-speed rendering.
+
 ## Auth
 *   **Implementation:** Local user/pass for now.
 *   **Future:** Support oauth providers optionally.
