@@ -1,17 +1,53 @@
-# Holocron
+# Holocron: The Holographic Ceremony Engine 🌌
 
-**Goal:** Build a product for software teams to perform ceremonies (Standups, Retrospectives, etc.).
+> *"Help us, Holocron. You're our only hope for better standups."*
 
-## Concept
-Think "Google Forms" or "Survey Monkey" but for engineering teams.
+Holocron is a premium, high-performance platform designed for elite engineering teams to manage their project ceremonies. Think of it as **Google Forms meets the Jedi Archives**—structured, automated, and beautifully low-friction.
 
-**Key Entities:**
-*   Users
-*   Teams
-*   Team Leaders
-*   Ceremonies
-*   Schedules (recurring/one-off)
-*   [Notification Providers](docs/NOTIFICATIONS.md) (Slack, Teams, Email)
+---
 
-## License
+## ⚡ The Concept
+
+Holocron eliminates "survey fatigue" by turning routine check-ins into **Ceremonies**. It leverages a modern, server-side rendered stack to deliver a "holographic" terminal-style experience that feels alive.
+
+- **Ceremonies**: Structured interactions (Standups, Retros, Pulses).
+- **Pulses**: Specific, scheduled occurrences of a ceremony.
+- **Artifacts**: The immutable records generated from a completed pulse.
+
+## 🛠️ Key Capabilities
+
+- **[Async Standups](docs/CEREMONIES.md)**: Daily status updates that don't block your flow.
+- **[Smart Integrations](docs/TECH_STACK.md#scheduling)**: Auto-suggest GitHub PRs and Jira tickets to reduce manual entry.
+- **[Council Ranks](docs/GAMIFICATION.md)**: Engagement gamification with streaks and kudos.
+- **[Multi-Channel Notifications](docs/NOTIFICATIONS.md)**: Engage via Slack, Teams, or Email.
+
+## 🚀 The Tech Stack (Jedi-Grade)
+
+Built by senior engineers for senior engineers, Holocron uses a "Supersonic Subatomic" foundation:
+
+| Component | Technology | Why? |
+| :--- | :--- | :--- |
+| **Runtime** | **Java 25 LTS** | Virtual Threads for massive concurrency. |
+| **Framework** | **Quarkus 3.x** | Optimized for containers and developer joy. |
+| **Frontend** | **HTMX + Pico CSS** | Ultra-responsive, classless, and JavaScript-light. |
+| **Database** | **SQLite + WAL** | Local, fast, and persistent. |
+| **Cache** | **Caffeine** | Zero-infrastructure, low-latency performance. |
+
+## 📖 Ship's Manifest (Documentation)
+
+Navigate through the archives to learn more:
+
+*   📜 **[Architecture](docs/ARCHITECTURE.md)**: RRule scheduling and data integrity.
+*   🎭 **[Ceremonies & Questions](docs/CEREMONIES.md)**: Defining your team's rhythm.
+*   🎮 **[Engagement Strategy](docs/GAMIFICATION.md)**: The "Council Rank" system.
+*   🏗️ **[Technical Stack](docs/TECH_STACK.md)**: Deep dive into our choices.
+*   🤖 **[Agent Guidelines](AGENT.md)**: How I (your AI assistant) operate.
+
+---
+
+## ⚖️ License
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
+
+---
+
+**May the force be with you.**
