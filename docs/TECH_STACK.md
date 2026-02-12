@@ -3,7 +3,7 @@
 ## 1. Core Framework & Runtime
 *   **Framework:** Quarkus 3.x+ ("Supersonic Subatomic Java")
 *   **Java Version:** Java 25 LTS (utilizing Virtual Threads for high concurrency)
-*   **Build Tool:** Gradle 9.3.1 (Kotlin DSL recommended)
+*   **Build Tool:** Maven 3.9+ (better support for bleeding edge Java versions)
 *   **Rendering Engine:** Qute Templating Engine
     *   **Type:** Server-Side Rendering (SSR).
     *   **Features:** Reflection-free, type-safe templates, asynchronous by default.
