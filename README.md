@@ -1,5 +1,8 @@
 # Holocron: The Holographic Ceremony Engine 🌌
 
+[![Powered by Google Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Built with Google Antigravity](https://img.shields.io/badge/Built%20with-Google%20Antigravity-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/)
+
 > *"Help us, Holocron. You're our only hope for better standups."*
 
 Holocron is a premium, high-performance platform designed for elite engineering teams to manage their project ceremonies. Think of it as **Google Forms meets the Jedi Archives**—structured, automated, and beautifully low-friction.
