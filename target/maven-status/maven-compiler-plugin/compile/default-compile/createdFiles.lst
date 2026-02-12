@@ -4,3 +4,4 @@ io/holocron/team/Team.class
 io/holocron/dev/DevDataSeeder.class
 io/holocron/dev/DevAuthResource.class
 io/holocron/dev/DevAuthenticationMechanism.class
+com/holocron/ui/PublicController.class
