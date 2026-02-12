@@ -26,6 +26,11 @@ Must use **WAL (Write-Ahead Logging) mode** and `synchronous = NORMAL` for optim
 ### Auditability
 All mutation operations (Create/Update/Delete) on core entities (Teams, Questionnaires) must be logged to an `AuditEntry` table.
 
+## Notifications
+
+*   **Providers:** Support for Slack, Microsoft Teams, and Email.
+*   **Strategy:** See [NOTIFICATIONS.md](NOTIFICATIONS.md) for detailed use cases and urgency levels.
+
 ## Domain Terminology
 
 *   **Ceremony:** The high-level event (e.g., "Daily Standup").

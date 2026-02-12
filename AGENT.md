@@ -14,6 +14,7 @@ Please refer to the following files for detailed information:
 -   **[README.md](README.md)**: Project overview, goals, and key entities.
 -   **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Architectural patterns (Scheduling, Time Zones), Data Integrity, and Terminology.
 -   **[docs/TECH_STACK.md](docs/TECH_STACK.md)**: Technical choices (Quarkus, SQLite, Pico CSS, etc.) and constraints.
+-   **[docs/NOTIFICATIONS.md](docs/NOTIFICATIONS.md)**: Supported notification providers and use cases.
 -   **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)**: Coding standards, development guidelines, and formatting rules.
 
 ## 🚀 Quick Start
