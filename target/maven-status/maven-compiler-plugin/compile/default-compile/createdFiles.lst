@@ -1,0 +1,6 @@
+io/holocron/user/User.class
+io/holocron/HomeResource.class
+io/holocron/team/Team.class
+io/holocron/dev/DevDataSeeder.class
+io/holocron/dev/DevAuthResource.class
+io/holocron/dev/DevAuthenticationMechanism.class
