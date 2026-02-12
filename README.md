@@ -9,5 +9,5 @@ Think "Google Forms" or "Survey Monkey" but for engineering teams.
 *   Users
 *   Teams
 *   Team Leaders
-*   Questionnaires (terminology TBD)
+*   Ceremonies
 *   Schedules (recurring/one-off)
