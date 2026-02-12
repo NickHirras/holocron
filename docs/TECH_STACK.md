@@ -56,3 +56,4 @@ Stick with **Caffeine**. It’s already built into Quarkus, requires zero extra 
 * **Providers:** * **Primary:** GitHub and Google for professional engineering context.
     * **Future:** Integration with Slack/Microsoft Teams for seamless ceremony participation.
 * **Constraint:** Avoid local password storage to minimize security surface area and focus on core ceremony logic.
+* **Local Development:** See **[Local Development & Auth](LOCAL_DEVELOPMENT.md)** for our "Offline Mode" strategy using mocked authentication.
