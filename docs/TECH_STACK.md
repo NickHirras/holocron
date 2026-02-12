@@ -50,6 +50,9 @@ Stick with **Caffeine**. It’s already built into Quarkus, requires zero extra 
    * Use `@CacheInvalidate` when a Ceremony's schedule is updated.
 * **Template Caching:** Qute template definitions are automatically cached by the engine for high-speed rendering.
 
-## Auth
-*   **Implementation:** Local user/pass for now.
-*   **Future:** Support oauth providers optionally.
+## 6. Auth & Identity
+* **Strategy:** OIDC-First (OpenID Connect).
+* **Implementation:** Leverage `quarkus-oidc` for external identity providers.
+* **Providers:** * **Primary:** GitHub and Google for professional engineering context.
+    * **Future:** Integration with Slack/Microsoft Teams for seamless ceremony participation.
+* **Constraint:** Avoid local password storage to minimize security surface area and focus on core ceremony logic.
