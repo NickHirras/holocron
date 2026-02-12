@@ -31,6 +31,22 @@ All mutation operations (Create/Update/Delete) on core entities (Teams, Question
 *   **Providers:** Support for Slack, Microsoft Teams, and Email.
 *   **Strategy:** See [NOTIFICATIONS.md](NOTIFICATIONS.md) for detailed use cases and urgency levels.
 
+## Deployment & Operations
+
+### Release Strategy
+*   **Versioning:** Semantic Versioning (vX.Y.Z).
+*   **Trigger:** GitHub Releases (Tags) trigger the build/publish pipeline.
+*   **Artifacts:** Docker Images published to GHCR.
+
+### Configuration & Secrets
+*   **Pattern:** 12-Factor App.
+*   **Mechanism:** Environment Variables.
+*   **Secrets:**
+    *   `OIDC_CLIENT_ID`
+    *   `OIDC_CLIENT_SECRET`
+    *   `COOKIE_ENCRYPTION_KEY`
+
+
 ## Domain Terminology
 
 *   **Ceremony:** The high-level event (e.g., "Daily Standup").
