@@ -11,3 +11,6 @@ Think "Google Forms" or "Survey Monkey" but for engineering teams.
 *   Team Leaders
 *   Ceremonies
 *   Schedules (recurring/one-off)
+
+## License
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
