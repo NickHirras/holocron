@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Data Model**: Implemented `Ceremony` and `CeremonyQuestion` entities with repositories.
 - **Landing Page**: Finalized implementation for production deployment.
 - **Documentation**: Added "Google Gemini" and "Google Antigravity" badges to `README.md`.
 - **DevOps**: Configured GitHub `CODEOWNERS` file, setting `NickHirras` as the code owner.
