@@ -58,7 +58,7 @@ public class DashboardController {
                 team = teams.stream()
                         .filter(t -> t.id.equals(teamId))
                         .findFirst()
-                        .orElse(teams.get(0));
+                        .orElse(null);
             } else {
                 team = teams.get(0);
             }
