@@ -8,6 +8,7 @@
     </div>
 
     <div>
+        {#if identity.isAnonymous()}
         <h1 class="glitch-text" data-text="TRANSMISSION RECEIVED">TRANSMISSION RECEIVED</h1>
         <p>
             The <strong>Holocron</strong> is a secure repository for elite engineering ceremonies.
@@ -20,7 +21,21 @@
             <small>IDENTITY VERIFICATION REQUIRED FOR ACCESS.</small>
         </p>
 
-        <button class="contrast">Initialize Protocol</button>
+        <a href="/dev/auth/login" role="button" class="contrast">Initialize Protocol</a>
+        {#else}
+        <h1 class="glitch-text" data-text="WELCOME BACK">WELCOME BACK</h1>
+        <p>
+            Identity confirmed: <strong style="color: var(--holocron-cyan);">{identity.principal.name}</strong>.
+            Access granted to the Jedi Archives.
+        </p>
+
+        <hr />
+
+        <div class="grid">
+            <a href="/dashboard" role="button" class="primary">Enter Dashboard</a>
+            <a href="/dev/auth/logout" role="button" class="contrast outline">Terminate Session</a>
+        </div>
+        {/if}
     </div>
 </article>
 {/body}

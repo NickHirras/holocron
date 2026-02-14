@@ -36,6 +36,25 @@ Built by senior engineers for senior engineers, Holocron uses a "Supersonic Suba
 | **Database** | **SQLite + WAL** | Local, fast, and persistent. |
 | **Cache** | **Caffeine** | Zero-infrastructure, low-latency performance. |
 
+## 💻 Development
+
+### Running in Dev Mode
+To run the application in development mode with live reload:
+```bash
+./mvnw quarkus:dev
+```
+Access the application at [http://localhost:8080](http://localhost:8080).
+
+### Quarkus Dev Tools
+When running in dev mode, you have access to powerful tools:
+*   **Dev UI**: [http://localhost:8080/q/dev](http://localhost:8080/q/dev) - Manage extensions, view configuration, and more.
+*   **Swagger UI**: [http://localhost:8080/q/swagger-ui](http://localhost:8080/q/swagger-ui) - Explore the API (if enabled).
+
+### Building and Testing
+*   **Compile**: `./mvnw clean package`
+*   **Run Tests**: `./mvnw test`
+*   **Integration Tests**: `./mvnw verify`
+
 ## 📖 Ship's Manifest (Documentation)
 
 Navigate through the archives to learn more:
