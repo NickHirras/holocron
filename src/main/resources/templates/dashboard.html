@@ -1,0 +1,117 @@
+{#include layout/base.html}
+{#title}Command Deck{/title}
+
+{#body}
+<div class="grid">
+    <!-- Main Status Panel -->
+    <div class="user-panel">
+        <hgroup>
+            <h1 class="glitch-text" data-text="COMMAND DECK">COMMAND DECK</h1>
+            <h2>Welcome back, Commander <span style="color: var(--holocron-cyan);">{user.name}</span></h2>
+        </hgroup>
+
+        <!-- Status Card -->
+        <article
+            class="holocron-card {hasActivePulse ? (hasSubmitted ? 'status-green' : 'status-red') : 'status-blue'}">
+            <header>
+                {#if hasActivePulse}
+                {#if hasSubmitted}
+                <strong>// TRANSMISSION SENT</strong>
+                {#else}
+                <strong class="blink">// INCOMING TRANSMISSION</strong>
+                {/if}
+                {#else}
+                <strong>// AWAITING ORDERS</strong>
+                {/if}
+            </header>
+
+            <div class="card-body">
+                {#if hasActivePulse}
+                {#if hasSubmitted}
+                <p>You have successfully transmitted your report for the <strong>{activeCeremony.title}</strong>.</p>
+                <p>Team status: <span style="color: var(--holocron-green);">CALCULATING...</span></p>
+                <footer>
+                    <a href="/pulse/{team.id}?results=true" role="button" class="secondary outline">Access Team Data</a>
+                </footer>
+                {#else}
+                <p>Action requested: <strong>{activeCeremony.title}</strong> is currently active for sector
+                    <strong>{team.name}</strong>.
+                </p>
+                <p>Compliance is mandatory for optimal velocity.</p>
+                <footer>
+                    <a href="/pulse/{team.id}" role="button" class="primary">Initialize Pulse</a>
+                </footer>
+                {/if}
+                {#else}
+                <p>No active ceremonies for <strong>{team.name}</strong> at this time.</p>
+                <p>maintaining_interceptor_pattern...</p>
+                <p>monitoring_vectors...</p>
+                {/if}
+            </div>
+        </article>
+    </div>
+
+    <!-- Right Panel: Links & Info -->
+    <div>
+        <article>
+            <header><strong>// SECTOR INFO</strong></header>
+            <dl>
+                <dt>Current Assignment</dt>
+                <dd>{team.name}</dd>
+                <dt>Clearance Level</dt>
+                <dd>{user.role}</dd>
+                <dt>System Time</dt>
+                <dd>{systemTime}</dd>
+            </dl>
+        </article>
+
+        <article>
+            <header><strong>// QUICK ACTIONS</strong></header>
+            <div class="grid">
+                <a href="#" role="button" class="contrast outline disabled" data-tooltip="Feature Offline">Profile</a>
+                <a href="/dev/auth/logout" role="button" class="contrast outline">Terminate Session</a>
+            </div>
+        </article>
+    </div>
+</div>
+
+<style>
+    .holocron-card {
+        border-left: 5px solid var(--pico-primary-border);
+        transition: all 0.3s ease;
+    }
+
+    .status-red {
+        border-color: var(--pico-del-color);
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    }
+
+    .status-green {
+        border-color: var(--pico-ins-color);
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    }
+
+    .status-blue {
+        border-color: var(--pico-primary-color);
+    }
+
+    .blink {
+        animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+</style>
+{/body}
+{/include}
