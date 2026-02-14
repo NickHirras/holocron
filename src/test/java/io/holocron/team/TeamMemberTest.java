@@ -5,8 +5,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import jakarta.persistence.PersistenceException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @QuarkusTest
 public class TeamMemberTest {
@@ -50,5 +51,30 @@ public class TeamMemberTest {
         List<TeamMember> team1Members = TeamMember.findByTeam(team1);
         assertEquals(1, team1Members.size());
         assertEquals("test@example.com", team1Members.get(0).user.email);
+    }
+
+    @Test
+    @Transactional
+    public void testUniqueConstraint() {
+        User user = new User();
+        user.email = "duplicate@example.com";
+        user.persist();
+
+        Team team = new Team();
+        team.name = "Duplicate Team";
+        team.persist();
+
+        TeamMember m1 = new TeamMember();
+        m1.user = user;
+        m1.team = team;
+        m1.persist();
+
+        TeamMember m2 = new TeamMember();
+        m2.user = user;
+        m2.team = team;
+        assertThrows(PersistenceException.class, () -> {
+            m2.persist();
+            m2.flush(); // Force flush to trigger constraint violation
+        });
     }
 }
