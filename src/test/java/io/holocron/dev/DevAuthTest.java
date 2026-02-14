@@ -34,7 +34,7 @@ public class DevAuthTest {
 
         given()
                 .cookie(cookie)
-                .when().get("/secure")
+                .when().get("/debug/secure")
                 .then()
                 .statusCode(200)
                 .body(containsString("alice@holocron.io"));
