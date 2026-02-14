@@ -29,7 +29,8 @@ public class TeamMember extends PanacheEntityBase {
     public String role; // e.g., "Lead", "Member", "Observer"
 
     public static List<TeamMember> findByUser(User user) {
-        return find("SELECT tm FROM TeamMember tm JOIN FETCH tm.team WHERE tm.user = ?1", user).list();
+        return find("SELECT tm FROM TeamMember tm JOIN FETCH tm.team WHERE tm.user = ?1 ORDER BY tm.team.name ASC",
+                user).list();
     }
 
     public static List<TeamMember> findByTeam(Team team) {
