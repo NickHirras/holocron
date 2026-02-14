@@ -23,7 +23,15 @@
                 <li><strong>HOLOCRON</strong></li>
             </ul>
             <ul>
-                <li><a href="#" role="button" class="outline">Initialize</a></li>
+                {#if identity.isAnonymous()}
+                <li><a href="/dev/auth/login" role="button" class="outline">Initialize</a></li>
+                {#else}
+                <li>
+                    <span style="margin-right: 1rem; color: var(--holocron-cyan);">Running as:
+                        {identity.principal.name}</span>
+                    <a href="/dev/auth/logout" role="button" class="outline contrast">Terminate</a>
+                </li>
+                {/if}
             </ul>
         </nav>
     </header>

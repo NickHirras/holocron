@@ -1,0 +1,39 @@
+{#include layout/base.html}
+{#title}Identity Verification{/title}
+
+{#body}
+<article class="grid">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 class="glitch-text" data-text="IDENTITY PROTOCOL">IDENTITY PROTOCOL</h1>
+        <p>Select an identity to bypass security protocols. (Dev Mode Only)</p>
+    </div>
+
+    <div class="grid">
+        {#for user in users}
+        <a href="/dev/auth/login/{user.email}" role="button" class="contrast outline"
+            style="text-align: left; padding: 2rem; display: block; height: 100%; text-decoration: none;">
+            <header style="margin-bottom: 1rem; border-bottom: 1px solid var(--holocron-cyan);">
+                <h3 style="margin: 0; font-size: 1.2rem;">{user.name}</h3>
+                <small style="color: var(--pico-muted-color);">{user.role}</small>
+            </header>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div>
+                    <strong style="color: var(--holocron-cyan);">EMAIL:</strong><br>
+                    <span style="font-family: monospace;">{user.email}</span>
+                </div>
+                <div>
+                    <strong style="color: var(--holocron-cyan);">ID:</strong><br>
+                    <span style="font-family: monospace;">TX-{user.id}-AA</span>
+                </div>
+                <div style="margin-top: 1rem; text-align: right;">
+                    <span
+                        style="font-size: 0.8rem; border: 1px solid var(--holocron-cyan); padding: 0.2rem 0.5rem;">ACCESS
+                        GRANTED</span>
+                </div>
+            </div>
+        </a>
+        {/for}
+    </div>
+</article>
+{/body}
+{/include}
