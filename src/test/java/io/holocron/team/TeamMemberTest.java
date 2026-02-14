@@ -2,7 +2,7 @@ package io.holocron.team;
 
 import io.holocron.user.User;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import jakarta.persistence.PersistenceException;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TeamMemberTest {
 
     @Test
-    @Transactional
+    @TestTransaction
     public void testTeamMembership() {
         // Create User
         User user = new User();
@@ -54,7 +54,7 @@ public class TeamMemberTest {
     }
 
     @Test
-    @Transactional
+    @TestTransaction
     public void testUniqueConstraint() {
         User user = new User();
         user.email = "duplicate@example.com";
