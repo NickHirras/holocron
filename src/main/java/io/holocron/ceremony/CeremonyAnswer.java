@@ -1,33 +1,28 @@
 package io.holocron.ceremony;
 
-import io.holocron.team.Team;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ceremonies")
-public class Ceremony extends PanacheEntityBase {
+@Table(name = "ceremony_answers")
+public class CeremonyAnswer extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String title;
-
-    public String description;
+    @ManyToOne
+    public CeremonyResponse response;
 
     @ManyToOne
-    public Team team;
+    public CeremonyQuestion question;
 
-    // stored as string for now, e.g., "DAILY", "WEEKLY"
-    public String scheduleType;
-
-    public CeremonyType type;
-
-    public boolean isActive;
+    @Lob
+    public String answerValue;
 }

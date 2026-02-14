@@ -1,0 +1,62 @@
+{#include layout/base.html}
+{#title}Team Pulse{/title}
+
+{#body}
+<div class="grid">
+    <div>
+        <h1>{team.name} Pulse</h1>
+        <p>Periodic team health check-in.</p>
+    </div>
+</div>
+
+{#if noActivePulse}
+<article>
+    <header>No Active Pulse</header>
+    <p>There is no active Pulse ceremony for this team right now.</p>
+</article>
+{#else if hasSubmitted}
+<article>
+    <header>✅ Response Recorded</header>
+    <p>Thank you for checking in! Your response has been saved.</p>
+    <footer>
+        <a href="/" role="button" class="secondary">Back to Dashboard</a>
+    </footer>
+</article>
+{#else}
+<form action="/pulse/{team.id}" method="POST">
+    {#for question in questions}
+    <article>
+        <label for="question_{question.id}">
+            <strong>{question.sequence}. {question.text}</strong>
+            {#if question.isRequired} <small>*</small>{/if}
+        </label>
+
+        {#if question.type == 'SCALE'}
+        <div class="grid">
+            {#for i in scaleValues}
+            <label>
+                <input type="radio" name="question_{question.id}" value="{i}" {#if question.isRequired}required{/if}>
+                {i}
+            </label>
+            {/for}
+        </div>
+        {#else if question.type == 'TEXT'}
+        <textarea name="question_{question.id}" id="question_{question.id}" rows="3"
+            placeholder="Type your answer here..." {#if question.isRequired}required{/if}></textarea>
+        {#else}
+        <input type="text" name="question_{question.id}" id="question_{question.id}">
+        {/if}
+    </article>
+    {/for}
+
+    <article>
+        <label for="comments"><strong>Anything else on your mind?</strong> (Optional)</label>
+        <textarea name="comments" id="comments" rows="3"
+            placeholder="General comments, shout-outs, or rants..."></textarea>
+    </article>
+
+    <button type="submit">Submit Pulse</button>
+</form>
+{/if}
+{/body}
+{/include}
