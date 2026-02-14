@@ -27,8 +27,9 @@
                 <li><a href="/dev/auth/login" role="button" class="outline">Initialize</a></li>
                 {#else}
                 <li>
-                    <span style="margin-right: 1rem; color: var(--holocron-cyan);">Running as:
-                        {identity.principal.name}</span>
+                    <a href="/profile"
+                        style="margin-right: 1rem; color: var(--holocron-cyan); text-decoration: none;">Running as:
+                        {identity.principal.name}</a>
                     <a href="/dev/auth/logout" role="button" class="outline contrast">Terminate</a>
                 </li>
                 {/if}

@@ -1,0 +1,68 @@
+{#include layout/base.html}
+{#title}Operative Profile{/title}
+
+{#body}
+<div class="grid">
+    <div class="user-panel">
+        <hgroup>
+            <h1 class="glitch-text" data-text="OPERATIVE PROFILE">OPERATIVE PROFILE</h1>
+            <h2>Identification: <span style="color: var(--holocron-cyan);">{user.name}</span></h2>
+        </hgroup>
+
+        <!-- Profile Details Card -->
+        <article class="holocron-card">
+            <header>
+                <strong>// BIOMETRIC DATA</strong>
+            </header>
+            <div class="card-body">
+                <dl>
+                    <dt>Designation</dt>
+                    <dd>{user.name}</dd>
+                    <dt>Communication Frequency</dt>
+                    <dd>{user.email}</dd>
+                    <dt>Clearance Level</dt>
+                    <dd>{user.role}</dd>
+                    <dt>Status</dt>
+                    <dd><span style="color: var(--holocron-green);">ACTIVE</span></dd>
+                </dl>
+            </div>
+        </article>
+    </div>
+
+    <!-- Right Panel: Sector Alignments -->
+    <div>
+        <article>
+            <header><strong>// SECTOR ALIGNMENTS</strong></header>
+            <p>Current sector assignments and operational groups.</p>
+
+            {#for team in teams}
+            <details>
+                <summary>{team.name}</summary>
+                <p><strong>Timezone:</strong> {team.timezoneId}</p>
+                <footer>
+                    <a href="/pulse/{team.id}" role="button" class="outline secondary">View Pulse Data</a>
+                </footer>
+            </details>
+            {/for}
+
+            {#if teams.size == 0}
+            <p>No sector assignments found. Please report to Command.</p>
+            {/if}
+        </article>
+
+        <article>
+            <header><strong>// REASSIGNMENT</strong></header>
+            <p>Request transfer to a new sector or update personnel file.</p>
+            <button class="contrast outline disabled" data-tooltip="Submit Form 1138 to HR">Request Transfer</button>
+        </article>
+    </div>
+</div>
+
+<style>
+    .holocron-card {
+        border-left: 5px solid var(--holocron-cyan);
+        transition: all 0.3s ease;
+    }
+</style>
+{/body}
+{/include}
