@@ -68,7 +68,7 @@ public class DevDataSeeder {
             bobEng.role = "Member";
             bobEng.persist();
 
-            Log.info("✅ Seeding complete: Created 1 team and 2 users.");
+            Log.info("✅ Seeding complete: Created 2 teams and 2 users.");
         } else {
             Log.info("✨ Database already populated.");
         }
