@@ -34,6 +34,6 @@ public class TeamMember extends PanacheEntityBase {
     }
 
     public static List<TeamMember> findByTeam(Team team) {
-        return find("team", team).list();
+        return find("SELECT tm FROM TeamMember tm JOIN FETCH tm.user WHERE tm.team = ?1", team).list();
     }
 }
