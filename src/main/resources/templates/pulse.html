@@ -33,7 +33,7 @@
 
         {#if question.type == 'SCALE'}
         <div class="grid">
-            {#for i in 1..5}
+            {#for i in scaleValues}
             <label>
                 <input type="radio" name="question_{question.id}" value="{i}" {#if question.isRequired}required{/if}>
                 {i}

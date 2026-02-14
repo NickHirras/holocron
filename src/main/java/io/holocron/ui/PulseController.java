@@ -70,10 +70,12 @@ public class PulseController {
         }
 
         List<CeremonyQuestion> questions = CeremonyQuestion.find("ceremony = ?1 order by sequence", ceremony).list();
+        List<Integer> scaleValues = List.of(1, 2, 3, 4, 5);
 
         return Response.ok(pulse.data("team", team)
                 .data("ceremony", ceremony)
                 .data("questions", questions)
+                .data("scaleValues", scaleValues)
                 .data("user", user)
                 .data("noActivePulse", false)
                 .data("hasSubmitted", false)).build();
