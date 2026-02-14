@@ -20,7 +20,7 @@ public class TeamMember extends PanacheEntity {
     public String role; // e.g., "Lead", "Member", "Observer"
 
     public static List<TeamMember> findByUser(User user) {
-        return find("user", user).list();
+        return find("SELECT tm FROM TeamMember tm JOIN FETCH tm.team WHERE tm.user = ?1", user).list();
     }
 
     public static List<TeamMember> findByTeam(Team team) {
