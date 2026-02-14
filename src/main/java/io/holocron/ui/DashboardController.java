@@ -47,6 +47,9 @@ public class DashboardController {
             user.name = email.contains("@") ? email.substring(0, email.indexOf("@")) : email;
             user.role = "Operative";
         }
+        // Note: The fallback user above is not persisted, so findByUser(user) below
+        // will return an empty list.
+        // This correctly results in a "No Team" / Drifter state for unassigned users.
 
         // 2. Fetch Teams & Determine Active Sector
         List<TeamMember> memberships = TeamMember.findByUser(user);
