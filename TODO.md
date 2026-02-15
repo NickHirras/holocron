@@ -1,3 +1,11 @@
 - [x] Add "Profile" page.
 - [x] Implement TeamMember to support real team switching.
 - [x] The Dashboard will initially default to the "Engineering" team or the user's first available team. Future State: Once TeamMember is implemented, this will evolve into a "sector selector" (dropdown or modal) allowing users to switch communication frequencies (teams).
+- [ ] Enhance "Profile" page:
+    - [x] Display actual user memberships separate from available teams.
+    - [x] Add "Join Sector" functionality.
+    - [x] Add "Edit Profile" functionality.
+- [ ] Implement Team Management (CRUD) for creating and editing teams.
+- [ ] Implement Reports & Stats:
+    - [ ] Leader Stats Widget.
+    - [ ] Team Daily Rollup.
