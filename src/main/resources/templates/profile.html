@@ -29,31 +29,58 @@
         </article>
     </div>
 
-    <!-- Right Panel: Sector Alignments -->
+    <!-- Right Panel: Sector Alignments & Actions -->
     <div>
         <article>
-            <header><strong>// SECTOR ALIGNMENTS</strong></header>
-            <p>Current sector assignments and operational groups.</p>
+            <header><strong>// CURRENT ASSIGNMENTS</strong></header>
+            <p>Active sector assignments and operational groups.</p>
 
-            {#for team in teams}
+            {#for membership in memberships}
             <details>
-                <summary>{team.name}</summary>
-                <p><strong>Timezone:</strong> {team.timezoneId}</p>
+                <summary>{membership.team.name}</summary>
+                <p><strong>Role:</strong> {membership.role}</p>
+                <p><strong>Timezone:</strong> {membership.team.timezoneId}</p>
                 <footer>
-                    <a href="/pulse/{team.id}" role="button" class="outline secondary">View Pulse Data</a>
+                    <a href="/pulse/{membership.team.id}" role="button" class="outline secondary">View Pulse Data</a>
                 </footer>
             </details>
             {/for}
 
-            {#if teams.size == 0}
-            <p>No sector assignments found. Please report to Command.</p>
+            {#if memberships.size == 0}
+            <p>No active sector assignments. Please join a sector below.</p>
             {/if}
         </article>
 
         <article>
-            <header><strong>// REASSIGNMENT</strong></header>
-            <p>Request transfer to a new sector or update personnel file.</p>
-            <button class="contrast outline disabled" data-tooltip="Submit Form 1138 to HR">Request Transfer</button>
+            <header><strong>// AVAILABLE SECTORS</strong></header>
+            <p>Sectors available for immediate deployment.</p>
+
+            {#for team in availableTeams}
+            <div class="grid">
+                <div>
+                    <strong>{team.name}</strong><br>
+                    <small>{team.timezoneId}</small>
+                </div>
+                <form action="/profile/join" method="POST" style="margin-bottom: 0;">
+                    <input type="hidden" name="teamId" value="{team.id}">
+                    <button type="submit" class="outline contrast">Join</button>
+                </form>
+            </div>
+            <hr>
+            {/for}
+
+            {#if availableTeams.size == 0}
+            <p>No additional sectors available for deployment.</p>
+            {/if}
+        </article>
+
+        <article>
+            <header><strong>// UPDATE BIOMETRICS</strong></header>
+            <form action="/profile/update" method="POST">
+                <label for="name">Designation (Display Name)</label>
+                <input type="text" id="name" name="name" value="{user.name}" required>
+                <button type="submit" class="contrast">Update Profile</button>
+            </form>
         </article>
     </div>
 </div>
