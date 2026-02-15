@@ -1,3 +1,3 @@
 - [x] Add "Profile" page.
-- [ ] Implement TeamMember to support real team switching.
-- [ ] The Dashboard will initially default to the "Engineering" team or the user's first available team. Future State: Once TeamMember is implemented, this will evolve into a "sector selector" (dropdown or modal) allowing users to switch communication frequencies (teams).
+- [x] Implement TeamMember to support real team switching.
+- [x] The Dashboard will initially default to the "Engineering" team or the user's first available team. Future State: Once TeamMember is implemented, this will evolve into a "sector selector" (dropdown or modal) allowing users to switch communication frequencies (teams).

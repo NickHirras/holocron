@@ -12,8 +12,9 @@
 
         <!-- Status Card -->
         <article
-            class="holocron-card {hasActivePulse ? (hasSubmitted ? 'status-green' : 'status-red') : 'status-blue'}">
+            class="holocron-card {team ? (hasActivePulse ? (hasSubmitted ? 'status-green' : 'status-red') : 'status-blue') : 'status-blue'}">
             <header>
+                {#if team}
                 {#if hasActivePulse}
                 {#if hasSubmitted}
                 <strong>// TRANSMISSION SENT</strong>
@@ -23,9 +24,13 @@
                 {#else}
                 <strong>// AWAITING ORDERS</strong>
                 {/if}
+                {#else}
+                <strong>// SYSTEM STATUS</strong>
+                {/if}
             </header>
 
             <div class="card-body">
+                {#if team}
                 {#if hasActivePulse}
                 {#if hasSubmitted}
                 <p>You have successfully transmitted your report for the <strong>{activeCeremony.title}</strong>.</p>
@@ -47,6 +52,13 @@
                 <p>maintaining_interceptor_pattern...</p>
                 <p>monitoring_vectors...</p>
                 {/if}
+                {#else}
+                <p>You are not currently assigned to any active sectors.</p>
+                <p>standby_mode_engaged...</p>
+                <footer>
+                    <a href="/profile" role="button" class="contrast outline">Update Profile</a>
+                </footer>
+                {/if}
             </div>
         </article>
     </div>
@@ -57,7 +69,22 @@
             <header><strong>// SECTOR INFO</strong></header>
             <dl>
                 <dt>Current Assignment</dt>
-                <dd>{team.name}</dd>
+                <dd>
+                    {#if teams.size > 1}
+                    <form action="/dashboard" method="get" style="margin-bottom: 0;">
+                        <select name="teamId" onchange="this.form.submit()"
+                            style="margin-bottom: 0; padding: 0.25rem 2rem 0.25rem 1rem; height: auto;">
+                            {#for t in teams}
+                            <option value="{t.id}" {#if team}{#if team.id eq t.id}selected{/if}{/if}>{t.name}</option>
+                            {/for}
+                        </select>
+                    </form>
+                    {#else if team}
+                    {team.name}
+                    {#else}
+                    <span style="color: var(--pico-muted-color);">Unassigned</span>
+                    {/if}
+                </dd>
                 <dt>Clearance Level</dt>
                 <dd>{user.role}</dd>
                 <dt>System Time</dt>

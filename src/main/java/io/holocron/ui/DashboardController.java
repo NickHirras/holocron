@@ -13,8 +13,11 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.QueryParam;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import io.holocron.team.TeamMember;
 
 @Path("/dashboard")
 @Authenticated
@@ -31,7 +34,7 @@ public class DashboardController {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance index() {
+    public TemplateInstance index(@QueryParam("teamId") Long teamId) {
         // 1. Identify User
         String email = identity.getPrincipal().getName();
         User user = User.findByEmail(email);
@@ -44,17 +47,29 @@ public class DashboardController {
             user.name = email.contains("@") ? email.substring(0, email.indexOf("@")) : email;
             user.role = "Operative";
         }
+        // Note: The fallback user above is not persisted, so findByUser(user) below
+        // will return an empty list.
+        // This correctly results in a "No Team" / Drifter state for unassigned users.
 
-        // 2. Fetch Team (Defaulting to "Engineering" or first found for now)
-        Team team = Team.find("name", "Engineering").firstResult();
-        if (team == null) {
-            team = Team.findAll().firstResult();
+        // 2. Fetch Teams & Determine Active Sector
+        List<TeamMember> memberships = TeamMember.findByUser(user);
+        List<Team> teams = memberships.stream().map(m -> m.team).toList();
+
+        Team team = null;
+        if (!teams.isEmpty()) {
+            if (teamId != null) {
+                team = teams.stream()
+                        .filter(t -> t.id.equals(teamId))
+                        .findFirst()
+                        .orElse(null);
+            } else {
+                team = teams.get(0);
+            }
         }
 
+        // Handle "No Team" / Drifter state
         if (team == null) {
-            team = new Team();
-            team.name = "Unknown Sector";
-            team.id = 0L;
+            // We can handle this in the template, checking if team is null
         }
 
         // 3. Check for Active Pulse
@@ -76,6 +91,7 @@ public class DashboardController {
         return dashboard
                 .data("user", user)
                 .data("team", team)
+                .data("teams", teams)
                 .data("hasActivePulse", hasActivePulse)
                 .data("activeCeremony", activeCeremony)
                 .data("hasSubmitted", hasSubmitted)

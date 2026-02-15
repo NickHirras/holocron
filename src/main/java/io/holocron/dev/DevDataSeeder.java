@@ -33,11 +33,28 @@ public class DevDataSeeder {
             engineering.timezoneId = "America/New_York";
             engineering.persist();
 
+            Team product = new Team();
+            product.name = "Product";
+            product.timezoneId = "America/Los_Angeles";
+            product.persist();
+
             io.holocron.user.User alice = new io.holocron.user.User();
             alice.email = "alice@holocron.io";
             alice.name = "Alice Engineer";
             alice.role = "admin";
             alice.persist();
+
+            io.holocron.team.TeamMember aliceEng = new io.holocron.team.TeamMember();
+            aliceEng.user = alice;
+            aliceEng.team = engineering;
+            aliceEng.role = "Lead";
+            aliceEng.persist();
+
+            io.holocron.team.TeamMember aliceProd = new io.holocron.team.TeamMember();
+            aliceProd.user = alice;
+            aliceProd.team = product;
+            aliceProd.role = "Observer";
+            aliceProd.persist();
 
             io.holocron.user.User bob = new io.holocron.user.User();
             bob.email = "bob@holocron.io";
@@ -45,7 +62,13 @@ public class DevDataSeeder {
             bob.role = "user";
             bob.persist();
 
-            Log.info("✅ Seeding complete: Created 1 team and 2 users.");
+            io.holocron.team.TeamMember bobEng = new io.holocron.team.TeamMember();
+            bobEng.user = bob;
+            bobEng.team = engineering;
+            bobEng.role = "Member";
+            bobEng.persist();
+
+            Log.info("✅ Seeding complete: Created 2 teams and 2 users.");
         } else {
             Log.info("✨ Database already populated.");
         }
