@@ -1,0 +1,2 @@
+ALTER TABLE ceremonies ADD COLUMN rrule VARCHAR(512);
+ALTER TABLE ceremonies ADD COLUMN timezone VARCHAR(64);

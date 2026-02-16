@@ -1,5 +1,7 @@
 # Feature: Protocol Droids (Dynamic Ceremony Scheduling)
 
+> **Status**: Completed
+
 ## Strategic Value
 Currently, ceremonies are static entities. This feature implements the core promise of the Holocron architecture: dynamic, timezone-aware scheduling. It ensures that "Pulse" events are generated automatically based on RRules, removing manual intervention and supporting global teams.
 
@@ -18,7 +20,7 @@ So that we can maintain our rhythm without manual triggers.
 4.  **Handling Missed Pulses**: If the server was down, the startup observer should detect if a pulse was missed and trigger it immediately (or skip, based on policy).
 
 ## Acceptance Criteria
-- [ ] Application schedules jobs for all active ceremonies on startup.
-- [ ] "Pulse" records are created automatically at the correct time.
-- [ ] RRules respect the Team's `timezoneId`.
-- [ ] Server restart preserves or recalculates the schedule without duplicate pulses.
+- [x] Application schedules jobs for all active ceremonies on startup.
+- [x] "Pulse" records are created automatically at the correct time.
+- [x] RRules respect the Team's `timezoneId`.
+- [x] Server restart preserves or recalculates the schedule without duplicate pulses.

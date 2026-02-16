@@ -30,4 +30,10 @@ public class Ceremony extends PanacheEntityBase {
     public CeremonyType type;
 
     public boolean isActive;
+
+    @jakarta.persistence.Column(length = 512)
+    public String rrule; // e.g., "FREQ=DAILY;BYHOUR=9;BYMINUTE=0"
+
+    @jakarta.persistence.Column(length = 64)
+    public String timezone; // e.g., "America/New_York"
 }
