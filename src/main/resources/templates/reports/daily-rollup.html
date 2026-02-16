@@ -1,0 +1,80 @@
+{#include layout/base.html}
+{#title}Daily Rollup - {rollup.team.name}{/title}
+
+{#body}
+<div class="container">
+    <hgroup>
+        <h1 class="glitch-text" data-text="DAILY ROLLUP">DAILY ROLLUP</h1>
+        <h2>Operation Status: {rollup.team.name} // {rollup.date}</h2>
+    </hgroup>
+
+    <div class="grid">
+        <article class="holocron-card">
+            <header>
+                <strong>// SUBMISSIONS ({rollup.responses.size})</strong>
+            </header>
+            <div class="card-body">
+                {#if rollup.responses.isEmpty}
+                <p>No transmissions received for this sector today.</p>
+                {#else}
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th scope="col">Operative</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#for response in rollup.responses}
+                        <tr>
+                            <td>{response.user.name}</td>
+                            <td>{response.submittedAt.toLocalTime}</td>
+                            <td><span class="status-ok">RECEIVED</span></td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+                {/if}
+            </div>
+        </article>
+
+        <article class="holocron-card warning">
+            <header>
+                <strong>// AWOL ({rollup.missingMembers.size})</strong>
+            </header>
+            <div class="card-body">
+                {#if rollup.missingMembers.isEmpty}
+                <p class="status-ok">All operatives accounted for.</p>
+                {#else}
+                <ul>
+                    {#for user in rollup.missingMembers}
+                    <li>{user.name}</li>
+                    {/for}
+                </ul>
+                {/if}
+            </div>
+        </article>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <a href="/" role="button" class="secondary outline">Return to Command</a>
+    </div>
+</div>
+
+<style>
+    .holocron-card {
+        border-top: 5px solid var(--holocron-cyan);
+    }
+
+    .holocron-card.warning {
+        border-top-color: var(--holocron-orange);
+    }
+
+    .status-ok {
+        color: var(--holocron-green);
+        font-weight: bold;
+    }
+</style>
+{/body}
+{/include}

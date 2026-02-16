@@ -1,0 +1,41 @@
+{#include layout/base.html}
+{#title}Sector Configuration{/title}
+
+{#body}
+<div class="container">
+    <hgroup>
+        <h1 class="glitch-text" data-text="SECTOR CONFIG">SECTOR CONFIG</h1>
+        <h2>{#if team.id}Reconfigure Sector parameters.{#else}Initialize new Sector parameters.{/if}</h2>
+    </hgroup>
+
+    <article class="holocron-card">
+        <header>
+            <strong>// PARAMETER INPUT</strong>
+        </header>
+        <div class="card-body">
+            <form action="{action}" method="POST">
+                <label for="name">Sector Designation</label>
+                <input type="text" id="name" name="name" value="{team.name}" required placeholder="e.g. Red Squadron">
+
+                <label for="timezoneId">Time Dilation (Timezone)</label>
+                <input type="text" id="timezoneId" name="timezoneId" value="{team.timezoneId}" required
+                    placeholder="e.g. UTC, America/Chicago">
+                <small>Standard IANA Timezone ID required for synchronization.</small>
+
+                <div class="grid">
+                    <button type="submit" class="contrast">{#if team.id}Update Configuration{#else}Initialize
+                        Sector{/if}</button>
+                    <a href="/teams" role="button" class="secondary outline">Abort</a>
+                </div>
+            </form>
+        </div>
+    </article>
+</div>
+
+<style>
+    .holocron-card {
+        border-left: 5px solid var(--holocron-cyan);
+    }
+</style>
+{/body}
+{/include}

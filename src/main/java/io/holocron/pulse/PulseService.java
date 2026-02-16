@@ -26,6 +26,11 @@ public class PulseService {
         return CeremonyResponse.count("ceremony = ?1 and user = ?2 and date = ?3", ceremony, user, date) > 0;
     }
 
+    public java.util.List<CeremonyResponse> findResponses(Ceremony ceremony, LocalDate date) {
+        return CeremonyResponse.list("ceremony = ?1 and date = ?2", io.quarkus.panache.common.Sort.by("submittedAt"),
+                ceremony, date);
+    }
+
     @Transactional
     public void submitResponse(Ceremony ceremony, User user, Map<Long, String> answers, String comments) {
         LocalDate today = LocalDate.now();
