@@ -42,6 +42,7 @@ public class TeamController {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
+    @io.holocron.audit.Audited(action = "CREATE_TEAM")
     public Response create(@FormParam("name") String name, @FormParam("timezoneId") String timezoneId) {
         Team team = new Team();
         team.name = name;
@@ -65,6 +66,7 @@ public class TeamController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
+    @io.holocron.audit.Audited(action = "UPDATE_TEAM")
     public Response update(@PathParam("id") Long id, @FormParam("name") String name,
             @FormParam("timezoneId") String timezoneId) {
         Team team = Team.findById(id);
@@ -79,6 +81,7 @@ public class TeamController {
     @POST
     @Path("/{id}/delete")
     @Transactional
+    @io.holocron.audit.Audited(action = "DELETE_TEAM")
     public Response delete(@PathParam("id") Long id) {
         Team team = Team.findById(id);
         if (team != null) {

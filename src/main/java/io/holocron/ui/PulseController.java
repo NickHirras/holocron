@@ -26,7 +26,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @Path("/pulse")
+@io.quarkus.security.Authenticated
 public class PulseController {
+
+    @Inject
+    io.quarkus.security.identity.SecurityIdentity identity;
 
     @Inject
     PulseService pulseService;
@@ -54,14 +58,22 @@ public class PulseController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        // Use logged-in user
+        String email = identity.getPrincipal().getName();
+        User user = User.findByEmail(email);
+        if (user == null) {
+            // If user not found in local DB, returning 401 or creating ephemeral?
+            // For rigorous security, 401.
+            return Response.status(Response.Status.UNAUTHORIZED).entity("User not found in roster").build();
+        }
+
         Optional<Ceremony> activePulse = pulseService.findActivePulse(team);
         if (activePulse.isEmpty()) {
-            return Response.ok(pulse.data("team", team).data("noActivePulse", true)).build();
+            // Pass user to template so we can say "Hello Alice"
+            return Response.ok(pulse.data("team", team).data("user", user).data("noActivePulse", true)).build();
         }
 
         Ceremony ceremony = activePulse.get();
-        // Mock user for now - assume Alice
-        User user = User.findByEmail("alice@holocron.io");
 
         if (pulseService.hasSubmitted(ceremony, user, java.time.LocalDate.now())) {
             return Response.ok(pulse.data("team", team)
@@ -85,18 +97,23 @@ public class PulseController {
     @Path("/{teamId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
+    @io.holocron.audit.Audited(action = "SUBMIT_PULSE")
     public Response submit(@PathParam("teamId") Long teamId, MultivaluedMap<String, String> formParams) {
         Team team = Team.findById(teamId);
         if (team == null)
             return Response.status(Response.Status.NOT_FOUND).build();
+
+        String email = identity.getPrincipal().getName();
+        User user = User.findByEmail(email);
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
 
         Optional<Ceremony> activePulse = pulseService.findActivePulse(team);
         if (activePulse.isEmpty())
             return Response.status(Response.Status.BAD_REQUEST).build();
 
         Ceremony ceremony = activePulse.get();
-        // Mock user - assume Alice
-        User user = User.findByEmail("alice@holocron.io");
 
         String comments = formParams.getFirst("comments");
         Map<Long, String> answers = new HashMap<>();
