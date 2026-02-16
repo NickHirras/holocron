@@ -1,0 +1,31 @@
+<article>
+    <header><strong>// LEADER STATS</strong></header>
+    {#if leaderStats.isEmpty}
+    <small>No data available.</small>
+    {#else}
+    <table role="grid" style="margin-bottom: 0;">
+        <tbody>
+            {#for stat in leaderStats}
+            <tr>
+                <td>
+                    <strong>{stat.teamName}</strong>
+                    <br>
+                    <a href="/reports/daily/{stat.teamId}" style="font-size: 0.7rem;">View Report</a>
+                </td>
+                <td style="text-align: right;">
+                    {#if stat.hasActivePulse}
+                    {#if stat.hasSubmitted}
+                    <span style="color: var(--holocron-green);">[OK]</span>
+                    {#else}
+                    <span style="color: var(--holocron-orange);">[PEND]</span>
+                    {/if}
+                    {#else}
+                    <span style="color: var(--pico-muted-color);">[-]</span>
+                    {/if}
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {/if}
+</article>

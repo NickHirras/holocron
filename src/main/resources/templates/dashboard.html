@@ -10,57 +10,8 @@
             <h2>Welcome back, Commander <span style="color: var(--holocron-cyan);">{user.name}</span></h2>
         </hgroup>
 
-        <!-- Status Card -->
-        <article
-            class="holocron-card {team ? (hasActivePulse ? (hasSubmitted ? 'status-green' : 'status-red') : 'status-blue') : 'status-blue'}">
-            <header>
-                {#if team}
-                {#if hasActivePulse}
-                {#if hasSubmitted}
-                <strong>// TRANSMISSION SENT</strong>
-                {#else}
-                <strong class="blink">// INCOMING TRANSMISSION</strong>
-                {/if}
-                {#else}
-                <strong>// AWAITING ORDERS</strong>
-                {/if}
-                {#else}
-                <strong>// SYSTEM STATUS</strong>
-                {/if}
-            </header>
-
-            <div class="card-body">
-                {#if team}
-                {#if hasActivePulse}
-                {#if hasSubmitted}
-                <p>You have successfully transmitted your report for the <strong>{activeCeremony.title}</strong>.</p>
-                <p>Team status: <span style="color: var(--holocron-green);">CALCULATING...</span></p>
-                <footer>
-                    <a href="/pulse/{team.id}?results=true" role="button" class="secondary outline">Access Team Data</a>
-                </footer>
-                {#else}
-                <p>Action requested: <strong>{activeCeremony.title}</strong> is currently active for sector
-                    <strong>{team.name}</strong>.
-                </p>
-                <p>Compliance is mandatory for optimal velocity.</p>
-                <footer>
-                    <a href="/pulse/{team.id}" role="button" class="primary">Initialize Pulse</a>
-                </footer>
-                {/if}
-                {#else}
-                <p>No active ceremonies for <strong>{team.name}</strong> at this time.</p>
-                <p>maintaining_interceptor_pattern...</p>
-                <p>monitoring_vectors...</p>
-                {/if}
-                {#else}
-                <p>You are not currently assigned to any active sectors.</p>
-                <p>standby_mode_engaged...</p>
-                <footer>
-                    <a href="/profile" role="button" class="contrast outline">Update Profile</a>
-                </footer>
-                {/if}
-            </div>
-        </article>
+        <!-- Status Card Component -->
+        {#include components/status_card.html /}
     </div>
 
     <!-- Right Panel: Links & Info -->
@@ -92,37 +43,8 @@
             </dl>
         </article>
 
-        <article>
-            <header><strong>// LEADER STATS</strong></header>
-            {#if leaderStats.isEmpty}
-            <small>No data available.</small>
-            {#else}
-            <table role="grid" style="margin-bottom: 0;">
-                <tbody>
-                    {#for stat in leaderStats}
-                    <tr>
-                        <td>
-                            <strong>{stat.teamName}</strong>
-                            <br>
-                            <a href="/reports/daily/{stat.teamId}" style="font-size: 0.7rem;">View Report</a>
-                        </td>
-                        <td style="text-align: right;">
-                            {#if stat.hasActivePulse}
-                            {#if stat.hasSubmitted}
-                            <span style="color: var(--holocron-green);">[OK]</span>
-                            {#else}
-                            <span style="color: var(--holocron-orange);">[PEND]</span>
-                            {/if}
-                            {#else}
-                            <span style="color: var(--pico-muted-color);">[-]</span>
-                            {/if}
-                        </td>
-                    </tr>
-                    {/for}
-                </tbody>
-            </table>
-            {/if}
-        </article>
+        <!-- Leader Stats Component -->
+        {#include components/leader_stats.html /}
 
         <article>
             <header><strong>// QUICK ACTIONS</strong></header>
@@ -133,44 +55,5 @@
         </article>
     </div>
 </div>
-
-<style>
-    .holocron-card {
-        border-left: 5px solid var(--pico-primary-border);
-        transition: all 0.3s ease;
-    }
-
-    .status-red {
-        border-color: var(--pico-del-color);
-        box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
-    }
-
-    .status-green {
-        border-color: var(--pico-ins-color);
-        box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-    }
-
-    .status-blue {
-        border-color: var(--pico-primary-color);
-    }
-
-    .blink {
-        animation: blink 2s infinite;
-    }
-
-    @keyframes blink {
-        0% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0.5;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-</style>
 {/body}
 {/include}
