@@ -2,38 +2,137 @@
 {#title}Identity Verification{/title}
 
 {#body}
-<article class="grid">
+<article>
     <div style="text-align: center; margin-bottom: 2rem;">
         <h1 class="glitch-text" data-text="IDENTITY PROTOCOL">IDENTITY PROTOCOL</h1>
         <p>Select an identity to bypass security protocols. (Dev Mode Only)</p>
     </div>
 
-    <div class="grid">
+    <div class="identity-grid">
         {#for user in users}
-        <a href="/dev/auth/login/{user.email}" role="button" class="contrast outline"
-            style="text-align: left; padding: 2rem; display: block; height: 100%; text-decoration: none;">
-            <header style="margin-bottom: 1rem; border-bottom: 1px solid var(--holocron-cyan);">
-                <h3 style="margin: 0; font-size: 1.2rem;">{user.name}</h3>
-                <small style="color: var(--pico-muted-color);">{user.role}</small>
+        <a href="/dev/auth/login/{user.email}" role="button" class="contrast outline identity-card">
+            <header class="identity-header">
+                <h3>{user.name}</h3>
+                <span class="role-badge" data-role="{user.role}">{user.role}</span>
             </header>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <div>
-                    <strong style="color: var(--holocron-cyan);">EMAIL:</strong><br>
-                    <span style="font-family: monospace;">{user.email}</span>
+            <div class="identity-details">
+                <div class="detail-row">
+                    <strong>TITLE:</strong>
+                    <span>{user.jobTitle.or('Unknown')}</span>
                 </div>
-                <div>
-                    <strong style="color: var(--holocron-cyan);">ID:</strong><br>
-                    <span style="font-family: monospace;">TX-{user.id}-AA</span>
+                <div class="detail-row">
+                    <strong>EMAIL:</strong>
+                    <span class="monospace">{user.email}</span>
                 </div>
-                <div style="margin-top: 1rem; text-align: right;">
-                    <span
-                        style="font-size: 0.8rem; border: 1px solid var(--holocron-cyan); padding: 0.2rem 0.5rem;">ACCESS
-                        GRANTED</span>
+                <div class="detail-row">
+                    <strong>ID:</strong>
+                    <span class="monospace">TX-{user.id}-AA</span>
                 </div>
+            </div>
+            <div class="access-granted">
+                <span>ACCESS GRANTED</span>
             </div>
         </a>
         {/for}
     </div>
 </article>
+
+<style>
+    .identity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .identity-card {
+        text-align: left;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        text-decoration: none;
+        border: 1px solid var(--pico-muted-border-color);
+        transition: all 0.2s ease-in-out;
+        overflow: hidden;
+    }
+
+    .identity-card:hover {
+        border-color: var(--holocron-cyan);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .identity-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--pico-muted-border-color);
+        background: rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .identity-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--pico-primary-inverse);
+    }
+
+    .role-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        background: var(--pico-card-background-color);
+        color: var(--pico-muted-color);
+        border: 1px solid var(--pico-muted-border-color);
+        text-transform: uppercase;
+    }
+
+    .role-badge[data-role="admin"] {
+        border-color: var(--holocron-gold);
+        color: var(--holocron-gold);
+    }
+
+    .identity-details {
+        padding: 1rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .detail-row {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-row strong {
+        font-size: 0.7rem;
+        color: var(--holocron-cyan);
+        margin-bottom: 0.1rem;
+    }
+
+    .detail-row span {
+        font-size: 0.9rem;
+    }
+
+    .monospace {
+        font-family: monospace;
+        font-size: 0.85rem !important;
+        opacity: 0.8;
+    }
+
+    .access-granted {
+        padding: 0.5rem 1rem;
+        text-align: right;
+        background: rgba(0, 255, 255, 0.05);
+        border-top: 1px solid var(--pico-muted-border-color);
+    }
+
+    .access-granted span {
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        color: var(--holocron-cyan);
+    }
+</style>
 {/body}
 {/include}

@@ -24,6 +24,8 @@ public class User extends PanacheEntityBase {
 
     public String role;
 
+    public String jobTitle;
+
     public static User findByEmail(String email) {
         return find("email", email).firstResult();
     }
