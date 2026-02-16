@@ -25,7 +25,7 @@
   --pico-background-color: var(--void-black);
   --pico-color: var(--starlight);
   --pico-muted-color: var(--faded-transmission);
-  
+
   /* Primary Actions (Cyan Glow) */
   --pico-primary: var(--holocron-cyan);
   --pico-primary-background: var(--holocron-cyan);
@@ -40,20 +40,22 @@
   --pico-form-element-border-color: var(--faded-transmission);
   --pico-form-element-color: var(--holocron-cyan);
   --pico-form-element-focus-color: var(--holocron-cyan);
-  
+
   /* Borders & Radius */
-  --pico-border-radius: 0; /* Chamfered edges logic applied via clip-path elsewhere */
-  --pico-box-shadow: 0 0 10px rgba(0, 229, 255, 0.1); 
+  --pico-border-radius: 0;
+  /* Chamfered edges logic applied via clip-path elsewhere */
+  --pico-box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
 }
 
 /* 2. Global Resets & Effects */
 
 body {
   background-color: var(--void-black);
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px; /* The Grid */
+  background-size: 40px 40px;
+  /* The Grid */
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -73,8 +75,13 @@ body::before {
 
 /* Scanline Effect - Animated */
 @keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 body::after {
@@ -85,13 +92,11 @@ body::after {
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0) 50%,
-    rgba(0, 0, 0, 0.2) 50%,
-    rgba(0, 0, 0, 0.2)
-  );
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.2));
   background-size: 100% 4px;
   z-index: 9999;
   pointer-events: none;
@@ -99,22 +104,27 @@ body::after {
 }
 
 .scanline-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 50%, rgba(0, 229, 255, 0.02) 51%);
-    background-size: 100% 4px;
-    pointer-events: none;
-    z-index: 9998;
-    animation: scanline 10s linear infinite;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 229, 255, 0.02) 51%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 9998;
+  animation: scanline 10s linear infinite;
 }
 
 
 /* 3. Typography Overrides */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Orbitron", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -130,11 +140,9 @@ input[type="submit"],
 input[type="button"],
 [role="button"] {
   --pico-border-radius: 0;
-  clip-path: polygon(
-    10px 0, 100% 0, 
-    100% calc(100% - 10px), calc(100% - 10px) 100%, 
-    0 100%, 0 10px
-  );
+  clip-path: polygon(10px 0, 100% 0,
+      100% calc(100% - 10px), calc(100% - 10px) 100%,
+      0 100%, 0 10px);
   border: 1px solid var(--holocron-cyan);
   background-color: rgba(0, 229, 255, 0.1);
   color: var(--holocron-cyan);
@@ -156,10 +164,11 @@ input[type="submit"]:hover,
 /* Cards / Articles: The Datapad Panel */
 article {
   --pico-border-radius: 0;
-  background-color: rgba(13, 27, 42, 0.85); /* Durasteel transparent */
+  background-color: rgba(13, 27, 42, 0.85);
+  /* Durasteel transparent */
   border: 1px solid var(--faded-transmission);
   backdrop-filter: blur(5px);
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   position: relative;
   margin-bottom: var(--pico-block-spacing-vertical);
   padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
@@ -169,8 +178,10 @@ article {
 article::before {
   content: "";
   position: absolute;
-  top: -1px; left: -1px;
-  width: 20px; height: 20px;
+  top: -1px;
+  left: -1px;
+  width: 20px;
+  height: 20px;
   border-top: 2px solid var(--holocron-cyan);
   border-left: 2px solid var(--holocron-cyan);
   opacity: 0.5;
@@ -180,8 +191,10 @@ article::before {
 article::after {
   content: "";
   position: absolute;
-  bottom: -1px; right: -1px;
-  width: 20px; height: 20px;
+  bottom: -1px;
+  right: -1px;
+  width: 20px;
+  height: 20px;
   border-bottom: 2px solid var(--holocron-cyan);
   border-right: 2px solid var(--holocron-cyan);
   opacity: 0.5;
@@ -211,9 +224,17 @@ textarea:focus {
 /* 5. Utility Animations */
 
 @keyframes float {
-  0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-  50% { transform: translateY(-20px) rotateX(5deg) rotateY(5deg); }
-  100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+  0% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotateX(5deg) rotateY(5deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
 }
 
 .cube-container {
@@ -234,13 +255,14 @@ textarea:focus {
 }
 
 .holocron-cube::before {
-    content: "WARNING";
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.8rem;
-    color: var(--holocron-cyan);
-    opacity: 0.8;
+  content: "WARNING";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  color: var(--holocron-cyan);
+  opacity: 0.8;
 }
 
 .glitch-text {
@@ -273,62 +295,206 @@ textarea:focus {
 }
 
 @keyframes glitch-anim {
-  0% { clip: rect(38px, 9999px, 81px, 0); }
-  20% { clip: rect(6px, 9999px, 24px, 0); }
-  40% { clip: rect(89px, 9999px, 58px, 0); }
-  60% { clip: rect(10px, 9999px, 92px, 0); }
-  80% { clip: rect(2px, 9999px, 52px, 0); }
-  100% { clip: rect(67px, 9999px, 8px, 0); }
+  0% {
+    clip: rect(38px, 9999px, 81px, 0);
+  }
+
+  20% {
+    clip: rect(6px, 9999px, 24px, 0);
+  }
+
+  40% {
+    clip: rect(89px, 9999px, 58px, 0);
+  }
+
+  60% {
+    clip: rect(10px, 9999px, 92px, 0);
+  }
+
+  80% {
+    clip: rect(2px, 9999px, 52px, 0);
+  }
+
+  100% {
+    clip: rect(67px, 9999px, 8px, 0);
+  }
 }
 
 @keyframes glitch-anim2 {
-  0% { clip: rect(2px, 9999px, 3px, 0); }
-  20% { clip: rect(98px, 9999px, 12px, 0); }
-  40% { clip: rect(43px, 9999px, 54px, 0); }
-  60% { clip: rect(81px, 9999px, 3px, 0); }
-  80% { clip: rect(10px, 9999px, 91px, 0); }
-  100% { clip: rect(34px, 9999px, 4px, 0); }
+  0% {
+    clip: rect(2px, 9999px, 3px, 0);
+  }
+
+  20% {
+    clip: rect(98px, 9999px, 12px, 0);
+  }
+
+  40% {
+    clip: rect(43px, 9999px, 54px, 0);
+  }
+
+  60% {
+    clip: rect(81px, 9999px, 3px, 0);
+  }
+
+  80% {
+    clip: rect(10px, 9999px, 91px, 0);
+  }
+
+  100% {
+    clip: rect(34px, 9999px, 4px, 0);
+  }
 }
 
 /* 6. HTMX Indicators */
 .htmx-indicator {
-    opacity: 0;
-    transition: opacity 200ms ease-in;
-    pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+  pointer-events: none;
 }
+
 .htmx-request .htmx-indicator,
 .htmx-request.htmx-indicator {
-    opacity: 1;
-    pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 #global-indicator {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    background-color: var(--durasteel);
-    border: 1px solid var(--holocron-cyan);
-    color: var(--holocron-cyan);
-    padding: 0.5rem 1rem;
-    font-family: inherit;
-    text-transform: uppercase;
-    z-index: 10000;
-    box-shadow: 0 0 15px var(--holocron-cyan);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--durasteel);
+  border: 1px solid var(--holocron-cyan);
+  color: var(--holocron-cyan);
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  text-transform: uppercase;
+  z-index: 10000;
+  box-shadow: 0 0 15px var(--holocron-cyan);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 #global-indicator::after {
-    content: ""; /* Animated cursor or loader */
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background-color: var(--holocron-cyan);
-    animation: blink 1s infinite;
+  content: "";
+  /* Animated cursor or loader */
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: var(--holocron-cyan);
+  animation: blink 1s infinite;
 }
 
 @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* 7. Overseer Deck */
+.operative-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.operative-card {
+  position: relative;
+  padding: 1.5rem;
+  background: rgba(13, 27, 42, 0.9);
+  border: 1px solid var(--faded-transmission);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Chamfered edges for cards tailored for grid */
+.operative-card {
+  clip-path: polygon(20px 0, 100% 0,
+      100% calc(100% - 20px), calc(100% - 20px) 100%,
+      0 100%, 0 20px);
+}
+
+.operative-card:hover {
+  border-color: var(--holocron-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
+}
+
+/* Status Indicators */
+.operative-card.status-SUBMITTED {
+  border-left: 4px solid var(--forest-moon);
+}
+
+.operative-card.status-MISSING {
+  border-left: 4px solid var(--faded-transmission);
+  opacity: 0.8;
+}
+
+.operative-card.status-BLOCKED {
+  border-left: 4px solid var(--sith-red);
+  box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2);
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2), 0 0 0 0 rgba(255, 0, 60, 0.4);
+  }
+
+  50% {
+    box-shadow: inset 0 0 30px rgba(255, 0, 60, 0.4), 0 0 0 10px rgba(255, 0, 60, 0);
+  }
+
+  100% {
+    box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2), 0 0 0 0 rgba(255, 0, 60, 0);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.operative-name {
+  font-weight: bold;
+  color: var(--starlight);
+  font-size: 1.1em;
+}
+
+.operative-role {
+  font-size: 0.8em;
+  color: var(--holocron-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.transmission-preview {
+  font-style: italic;
+  color: var(--forest-moon);
+  font-size: 0.9em;
+}
+
+.transmission-missing {
+  color: var(--faded-transmission);
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.transmission-blocked {
+  color: var(--sith-red);
+  font-weight: bold;
 }
