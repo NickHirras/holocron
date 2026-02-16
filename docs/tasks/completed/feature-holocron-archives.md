@@ -32,7 +32,7 @@ So that I can review the team's progress and blockers over time without altering
 
 ---
 
-## Phase 2: Search & Discovery (Planned)
+## Phase 2: Search & Discovery (Completed)
 
 ### User Story
 As a **Developer**,
@@ -41,16 +41,16 @@ So that I don't repeat past mistakes.
 
 ### Technical Blueprint
 1.  **Database**:
-    - Enable SQLite FTS5 (Full Text Search) extension (if supported by driver) or use `LIKE` queries for MVP.
-    - Create a virtual table `responses_search` if using FTS5.
+    - Enabled SQLite FTS5 (Full Text Search) extension.
+    - Created virtual table `artifacts_fts` using FTS5.
 2.  **UI/UX**:
-    - Add a Global Search input in the Top HUD.
-    - Filter Archive results as the user types (`hx-trigger="keyup changed delay:500ms"`).
+    - Added Global Search input in the Top HUD.
+    - Filters Archive results as the user types (`hx-trigger="keyup changed delay:500ms"`).
 3.  **Privacy**:
-    - Search results must respect Team visibility rules.
+    - Search results respect Team visibility rules.
 
 ### Acceptance Criteria (Phase 2)
-- [ ] Search bar is accessible from the global HUD.
-- [ ] Results update in real-time (HTMX) or via form submit.
-- [ ] Clicking a result navigates to the specific historical Pulse.
-- [ ] Users cannot see results from teams they do not have access to.
+- [x] Search bar is accessible from the global HUD.
+- [x] Results update in real-time (HTMX) or via form submit.
+- [x] Clicking a result navigates to the specific historical Pulse.
+- [x] Users cannot see results from teams they do not have access to.
