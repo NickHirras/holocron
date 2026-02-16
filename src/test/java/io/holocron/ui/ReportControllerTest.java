@@ -21,7 +21,9 @@ public class ReportControllerTest {
     @BeforeEach
     @Transactional
     void setup() {
+        io.holocron.ceremony.CeremonyAnswer.deleteAll();
         io.holocron.ceremony.CeremonyResponse.deleteAll();
+        io.holocron.ceremony.CeremonyQuestion.deleteAll();
         io.holocron.ceremony.Ceremony.deleteAll();
         io.holocron.team.TeamMember.deleteAll();
         io.holocron.team.Team.deleteAll();

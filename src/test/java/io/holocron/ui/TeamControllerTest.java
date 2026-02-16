@@ -14,85 +14,89 @@ import static org.hamcrest.CoreMatchers.not;
 @QuarkusTest
 public class TeamControllerTest {
 
-    @BeforeEach
-    @Transactional
-    void setup() {
-        io.holocron.team.TeamMember.deleteAll();
-        Team.deleteAll();
-    }
+        @BeforeEach
+        @Transactional
+        void setup() {
+                io.holocron.ceremony.CeremonyAnswer.deleteAll();
+                io.holocron.ceremony.CeremonyResponse.deleteAll();
+                io.holocron.ceremony.CeremonyQuestion.deleteAll();
+                io.holocron.ceremony.Ceremony.deleteAll();
+                io.holocron.team.TeamMember.deleteAll();
+                Team.deleteAll();
+        }
 
-    @Test
-    @TestSecurity(user = "admin@example.com", roles = "Operative")
-    public void testCreateTeam() {
-        given()
-                .formParam("name", "Black Squadron")
-                .formParam("timezoneId", "UTC")
-                .when().post("/teams")
-                .then()
-                .statusCode(200); // Redirect followed
+        @Test
+        @TestSecurity(user = "admin@example.com", roles = "Operative")
+        public void testCreateTeam() {
+                given()
+                                .formParam("name", "Black Squadron")
+                                .formParam("timezoneId", "UTC")
+                                .when().post("/teams")
+                                .then()
+                                .statusCode(200); // Redirect followed
 
-        given()
-                .when().get("/teams")
-                .then()
-                .statusCode(200)
-                .body(containsString("Black Squadron"));
-    }
+                given()
+                                .when().get("/teams")
+                                .then()
+                                .statusCode(200)
+                                .body(containsString("Black Squadron"));
+        }
 
-    @Test
-    @TestSecurity(user = "admin@example.com", roles = "Operative")
-    public void testEditTeam() {
-        Team team = new Team();
-        team.name = "Gold Squadron";
-        team.timezoneId = "UTC";
-        createTeam(team);
+        @Test
+        @TestSecurity(user = "admin@example.com", roles = "Operative")
+        public void testEditTeam() {
+                Team team = new Team();
+                team.name = "Gold Squadron";
+                team.timezoneId = "UTC";
+                createTeam(team);
 
-        given()
-                .when().get("/teams/" + team.id + "/edit")
-                .then()
-                .statusCode(200)
-                .body(containsString("Gold Squadron"));
+                given()
+                                .when().get("/teams/" + team.id + "/edit")
+                                .then()
+                                .statusCode(200)
+                                .body(containsString("Gold Squadron"));
 
-        given()
-                .formParam("name", "Gold Leader")
-                .formParam("timezoneId", "EST")
-                .when().post("/teams/" + team.id)
-                .then()
-                .statusCode(200);
+                given()
+                                .formParam("name", "Gold Leader")
+                                .formParam("timezoneId", "EST")
+                                .when().post("/teams/" + team.id)
+                                .then()
+                                .statusCode(200);
 
-        given()
-                .when().get("/teams")
-                .then()
-                .statusCode(200)
-                .body(containsString("Gold Leader"))
-                .body(not(containsString("Gold Squadron")));
-    }
+                given()
+                                .when().get("/teams")
+                                .then()
+                                .statusCode(200)
+                                .body(containsString("Gold Leader"))
+                                .body(not(containsString("Gold Squadron")));
+        }
 
-    @Test
-    @TestSecurity(user = "admin@example.com", roles = "Operative")
-    public void testDeleteTeam() {
-        Team team = new Team();
-        team.name = "Rogue Squadron";
-        team.timezoneId = "UTC";
-        createTeam(team);
+        @Test
+        @TestSecurity(user = "admin@example.com", roles = "Operative")
+        public void testDeleteTeam() {
+                Team team = new Team();
+                team.name = "Rogue Squadron";
+                team.timezoneId = "UTC";
+                createTeam(team);
 
-        given()
-                .when().get("/teams")
-                .then()
-                .body(containsString("Rogue Squadron"));
+                given()
+                                .when().get("/teams")
+                                .then()
+                                .body(containsString("Rogue Squadron"));
 
-        given()
-                .when().post("/teams/" + team.id + "/delete")
-                .then()
-                .statusCode(200);
+                given()
+                                .when().post("/teams/" + team.id + "/delete")
+                                .then()
+                                .statusCode(200);
 
-        given()
-                .when().get("/teams")
-                .then()
-                .body(not(containsString("Rogue Squadron")));
-    }
+                given()
+                                .when().get("/teams")
+                                .then()
+                                .body(not(containsString("Rogue Squadron")));
+        }
 
-    @Transactional
-    void createTeam(Team team) {
-        team.persist();
-    }
+        @Transactional
+        void createTeam(Team team) {
+                team.persist();
+        }
 }
