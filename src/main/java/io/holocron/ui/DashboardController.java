@@ -117,7 +117,10 @@ public class DashboardController {
                 if (stats != null) {
                     user.stats = stats;
                 } else {
-                    user.stats = new io.holocron.user.UserStats();
+                    stats = new io.holocron.user.UserStats();
+                    stats.user = user;
+                    stats.persist();
+                    user.stats = stats;
                 }
             } else {
                 user.stats = new io.holocron.user.UserStats();
