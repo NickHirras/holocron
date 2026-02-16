@@ -21,7 +21,14 @@ So that I can test role-based access control (RBAC).
 4.  **Interceptors**: Implement an `@Audited` annotation and interceptor to automatically log changes to `Ceremony` or `Team` entities.
 
 ## Acceptance Criteria
-- [ ] All `POST`/`PUT` requests to core controllers are logged to the `audit_entries` table.
-- [ ] `PulseController` throws 401/403 if no valid user is logged in.
-- [ ] Hardcoded "Alice" references are removed.
-- [ ] `TeamMember` constraints are enforced (users can only see their own team's active pulses).
+- [x] All `POST`/`PUT` requests to core controllers are logged to the `audit_entries` table.
+- [x] `PulseController` throws 401/403 if no valid user is logged in.
+- [x] Hardcoded "Alice" references are removed.
+- [x] `TeamMember` constraints are enforced (users can only see their own team's active pulses).
+
+## Completion Notes
+Feature implemented and verified as of 2026-02-16.
+- `AuditEntry` uses IDENTITY generation for SQLite compatibility.
+- `AuditInterceptor` implemented as JAX-RS `ContainerResponseFilter` for reliable execution.
+- `@Audited` applied to `PulseController`, `TeamController`, and `ProfileController`.
+- Tests (including transaction management) passing.

@@ -1,0 +1,7 @@
+CREATE TABLE audit_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    who VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    targetInfo VARCHAR(1024),
+    timestamp TIMESTAMP NOT NULL
+);

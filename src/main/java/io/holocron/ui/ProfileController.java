@@ -55,6 +55,7 @@ public class ProfileController {
     @POST
     @Path("/join")
     @Transactional
+    @io.holocron.audit.Audited(action = "JOIN_TEAM")
     public Response joinTeam(@FormParam("teamId") Long teamId) {
         String email = identity.getPrincipal().getName();
         User user = getOrCreateUser(email);
@@ -76,6 +77,7 @@ public class ProfileController {
     @POST
     @Path("/update")
     @Transactional
+    @io.holocron.audit.Audited(action = "UPDATE_PROFILE")
     public Response updateProfile(@FormParam("name") String name) {
         String email = identity.getPrincipal().getName();
         User user = getOrCreateUser(email);
