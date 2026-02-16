@@ -730,6 +730,25 @@ textarea:focus {
   padding: 6rem 1.5rem 2rem 1.5rem;
   /* Top padding clears HUD */
   box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+  /* Flex layout for bottom alignment support and scrolling */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--holocron-cyan) transparent;
+}
+
+#side-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+#side-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#side-panel::-webkit-scrollbar-thumb {
+  background-color: var(--holocron-cyan);
+  border-radius: 3px;
 }
 
 #side-panel.open {

@@ -1,0 +1,78 @@
+{#include layout/base.html}
+{#title}Ceremony Protocol{/title}
+
+{#body}
+<article>
+    <header class="card-header">
+        <h2>Initiate Ritual</h2>
+        <div class="kyber-hex status-neutral"></div>
+    </header>
+
+    <form id="ceremony-form" hx-post="/api/ceremonies" hx-swap="none" hx-on::after-request="if(event.detail.successful) { 
+              const response = JSON.parse(event.detail.xhr.responseText);
+              window.location.href = '/sect/ceremonies/' + response.id + '/questions';
+          } else {
+              alert('Transmission Failed: ' + event.detail.xhr.responseText);
+          }">
+
+        <div class="grid">
+            <label>
+                Designation (Title)
+                <input type="text" name="title" value="{ceremony.title}" required placeholder="e.g. Daily Standup">
+            </label>
+
+            <label>
+                Type
+                <select name="type" required>
+                    <option value="" disabled selected>Select Protocol Type</option>
+                    <option value="STANDUP" selected="{ceremony.type == 'STANDUP' ? 'selected' : ''}">Daily Standup
+                    </option>
+                    <option value="RETROSPECTIVE" selected="{ceremony.type == 'RETROSPECTIVE' ? 'selected' : ''}">
+                        Retrospective</option>
+                    <option value="PULSE" selected="{ceremony.type == 'PULSE' ? 'selected' : ''}">Pulse Check</option>
+                    <option value="PLANNING_PREP" selected="{ceremony.type == 'PLANNING_PREP' ? 'selected' : ''}">
+                        Planning Prep</option>
+                </select>
+            </label>
+        </div>
+
+        <label>
+            Briefing (Description)
+            <textarea name="description" rows="3"
+                placeholder="Describe the purpose of this ritual...">{ceremony.description}</textarea>
+        </label>
+
+        <div class="grid">
+            <label>
+                Frequency (RRule)
+                <input type="text" name="rrule" value="{ceremony.rrule}" placeholder="FREQ=DAILY;BYHOUR=9;BYMINUTE=0"
+                    required>
+                <small>Format: RFC 5545 (e.g. FREQ=WEEKLY;BYDAY=MO)</small>
+            </label>
+
+            <label>
+                Timezone
+                <input type="text" name="timezone" value="{ceremony.timezone ?: 'UTC'}" required>
+            </label>
+        </div>
+
+        <!-- Hidden Team ID context: In production, inject from current user's team or selection -->
+        <!-- For MVP, assume the user is a Team Lead and the backend defaults to their team, 
+             but CeremonyResource.create expects a team object. 
+             We'll need to pass team.id. Let's assume a default team ID of 1 for now or inject it purely via backend principal lookup if possible.
+             BUT `CeremonyResource` expects `ceremony.team.id`. 
+             We can add a hidden input if we know the team ID.
+             Let's check if the controller provides `teamId`. Default to 1 for MVP if not.
+        -->
+        <input type="hidden" name="team.id" value="1">
+        <input type="hidden" name="isActive" value="true">
+
+        <footer>
+            <button type="submit" class="console-btn">
+                Initialize <span class="htmx-indicator">...</span>
+            </button>
+        </footer>
+    </form>
+</article>
+{/body}
+{/include}

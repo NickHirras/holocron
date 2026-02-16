@@ -1,0 +1,37 @@
+{#include layout/base.html}
+{#title}Questionnaire Calibration{/title}
+
+{#body}
+<article>
+    <header class="card-header">
+        <h2>{ceremony.title} // Questions</h2>
+        <a href="/sect/ceremonies/{ceremony.id}/edit" class="console-btn">Edit Details</a>
+    </header>
+
+    <div id="questions-list" class="operative-grid">
+        {#for question in questions}
+        <div class="operative-card">
+            <div class="card-header">
+                <span class="operative-role">SEQ-{question.sequence}</span>
+                <span class="operative-name">{question.type}</span>
+            </div>
+            <p>{question.text}</p>
+            <!-- 
+                TODO: Add HTMX controls for Edit/Delete/Reorder 
+                For MVP, just displaying them.
+            -->
+        </div>
+        {/for}
+
+        <!-- Add New Question Placeholder -->
+        <div class="operative-card status-MISSING"
+            style="display: flex; align-items: center; justify-content: center; min-height: 150px;">
+            <button class="console-btn special-command" hx-get="/sect/ceremonies/{ceremony.id}/questions/new"
+                hx-target="#questions-list" hx-swap="beforeend">
+                + Add Parameter
+            </button>
+        </div>
+    </div>
+</article>
+{/body}
+{/include}

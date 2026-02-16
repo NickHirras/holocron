@@ -7,10 +7,12 @@ import io.holocron.ceremony.CeremonyResponse;
 import io.holocron.ceremony.CeremonyType;
 import io.holocron.team.Team;
 import io.holocron.user.User;
+import io.holocron.team.TeamMember;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,19 +37,52 @@ public class PulseService {
     }
 
     @Transactional
-    public void submitResponse(Ceremony ceremony, User user, Map<Long, String> answers, String comments) {
-        LocalDate today = LocalDate.now();
-        if (hasSubmitted(ceremony, user, today)) {
-            throw new IllegalStateException("User has already submitted for today.");
+    public void createPulse(Ceremony ceremony) {
+        if (!ceremony.isActive) {
+            return;
         }
 
-        CeremonyResponse response = new CeremonyResponse();
-        response.ceremony = ceremony;
-        response.user = user;
-        response.date = today;
+        List<TeamMember> members = TeamMember.find("team", ceremony.team).list();
+        for (TeamMember member : members) {
+            createPlaceholder(ceremony, member.user);
+        }
+    }
+
+    private void createPlaceholder(Ceremony ceremony, User user) {
+        LocalDate today = LocalDate.now();
+        if (!hasSubmitted(ceremony, user, today)) {
+            CeremonyResponse response = new CeremonyResponse();
+            response.ceremony = ceremony;
+            response.user = user;
+            response.date = today;
+            // submittedAt remains null for placeholder
+            response.persist();
+        }
+    }
+
+    @Transactional
+    public void submitResponse(Ceremony ceremony, User user, Map<Long, String> answers, String comments) {
+        LocalDate today = LocalDate.now();
+
+        Optional<CeremonyResponse> existing = CeremonyResponse
+                .find("ceremony = ?1 and user = ?2 and date = ?3", ceremony, user, today).firstResultOptional();
+        CeremonyResponse response;
+
+        if (existing.isPresent()) {
+            response = existing.get();
+            if (response.submittedAt != null) {
+                throw new IllegalStateException("User has already submitted for today.");
+            }
+        } else {
+            response = new CeremonyResponse();
+            response.ceremony = ceremony;
+            response.user = user;
+            response.date = today;
+            response.persist();
+        }
+
         response.submittedAt = LocalDateTime.now();
         response.comments = comments;
-        response.persist();
 
         for (Map.Entry<Long, String> entry : answers.entrySet()) {
             CeremonyQuestion question = CeremonyQuestion.findById(entry.getKey());

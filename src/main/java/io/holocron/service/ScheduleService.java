@@ -51,8 +51,8 @@ public class ScheduleService {
 
     public void scheduleCeremony(Ceremony ceremony) {
         try {
-            // 1. Parse RRule
-            RecurrenceRule rule = new RecurrenceRule(ceremony.rrule);
+            // 1. Parse RRule (Cached)
+            RecurrenceRule rule = getRecurrenceRule(ceremony.rrule);
 
             // 2. Calculate next occurrence
             // Logic: Get next instance from NOW
@@ -97,15 +97,19 @@ public class ScheduleService {
     @Transactional
     public void triggerPulse(Long ceremonyId) {
         LOG.info("Protocol Droid triggering pulse for ceremony {}", ceremonyId);
-        // Reschedule next
         Ceremony c = Ceremony.findById(ceremonyId);
         if (c != null && c.isActive) {
-            // TODO: Call PulseService to create the actual pulse record
-            // pulseService.createPulse(c);
+            // Create the pulse (placeholders)
+            pulseService.createPulse(c);
 
             // Re-schedule the next one
             scheduleCeremony(c);
         }
+    }
+
+    @io.quarkus.cache.CacheResult(cacheName = "rrule-cache")
+    public RecurrenceRule getRecurrenceRule(String rrule) throws org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException {
+        return new RecurrenceRule(rrule);
     }
 
     // Example scheduled method for testing general scheduler presence
