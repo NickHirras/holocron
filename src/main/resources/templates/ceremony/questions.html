@@ -1,4 +1,5 @@
 {#include layout/base.html}
+{#-- Force Reload --#}
 {#title}Questionnaire Calibration{/title}
 
 {#body}
@@ -8,30 +9,55 @@
         <a href="/sect/ceremonies/{ceremony.id}/edit" class="console-btn">Edit Details</a>
     </header>
 
-    <div id="questions-list" class="operative-grid">
-        {#for question in questions}
-        <div class="operative-card">
-            <div class="card-header">
-                <span class="operative-role">SEQ-{question.sequence}</span>
-                <span class="operative-name">{question.type}</span>
-            </div>
-            <p>{question.text}</p>
-            <!-- 
-                TODO: Add HTMX controls for Edit/Delete/Reorder 
-                For MVP, just displaying them.
-            -->
+    <form id="questions-form" hx-post="/api/ceremonies/{ceremony.id}/questions/reorder" hx-trigger="end" hx-swap="none">
+        <div id="questions-list" class="operative-grid">
+            {#for question in questions}
+            {#include ceremony/question_item.html /}
+            {/for}
         </div>
-        {/for}
+    </form>
 
-        <!-- Add New Question Placeholder -->
+    <!-- Add New Question Placeholder -->
+    <div class="operative-grid" style="margin-top: 1.5rem;">
         <div class="operative-card status-MISSING"
-            style="display: flex; align-items: center; justify-content: center; min-height: 150px;">
-            <button class="console-btn special-command" hx-get="/sect/ceremonies/{ceremony.id}/questions/new"
+            style="display: flex; align-items: center; justify-content: center; min-height: 150px; cursor: default;">
+            <button class="console-btn special-command" hx-post="/sect/ceremonies/{ceremony.id}/questions"
                 hx-target="#questions-list" hx-swap="beforeend">
                 + Add Parameter
             </button>
         </div>
     </div>
 </article>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+    htmx.onLoad(function (content) {
+        var sortables = content.querySelectorAll("#questions-list");
+        for (var i = 0; i < sortables.length; i++) {
+            var sortable = sortables[i];
+            new Sortable(sortable, {
+                animation: 150,
+                ghostClass: 'blue-background-class',
+                handle: '.handle',
+                onEnd: function (evt) {
+                    var itemEl = evt.item;
+                    // Trigger HTMX request to reorder
+                    // We construct a form data with all IDs in order
+                    var itemIds = [];
+                    document.querySelectorAll('#questions-list .question-item').forEach(function (el) {
+                        itemIds.push(el.getAttribute('data-id'));
+                    });
+
+                    // Manually trigger the reorder call since the form-based hx-trigger='end' might be tricky with Sortable's events + HTMX 
+                    // Actually, let's use the explicit ajax call for cleaner control
+                    htmx.ajax('POST', '/api/ceremonies/{ceremony.id}/questions/reorder', {
+                        values: { item: itemIds },
+                        swap: 'none'
+                    });
+                }
+            });
+        }
+    });
+</script>
 {/body}
 {/include}

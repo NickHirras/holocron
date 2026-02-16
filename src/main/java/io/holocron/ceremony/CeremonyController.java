@@ -50,4 +50,36 @@ public class CeremonyController {
         return questionsTemplate.data("ceremony", ceremony)
                 .data("questions", CeremonyQuestion.list("ceremony", ceremony));
     }
+
+    @Inject
+    @Location("ceremony/question_item.html")
+    Template questionItemTemplate;
+
+    @jakarta.ws.rs.POST
+    @Path("/{id}/questions")
+    @Produces(MediaType.TEXT_HTML)
+    @jakarta.transaction.Transactional
+    public TemplateInstance addQuestion(@PathParam("id") Long id) {
+        Ceremony ceremony = Ceremony.findById(id);
+        if (ceremony == null) {
+            throw new jakarta.ws.rs.NotFoundException();
+        }
+
+        CeremonyQuestion question = new CeremonyQuestion();
+        question.ceremony = ceremony;
+        question.text = "New Parameter";
+        question.type = "TEXT";
+        question.isRequired = false;
+
+        // Simple max sequence logic
+        Integer maxSeq = CeremonyQuestion.find("ceremony = ?1 order by sequence desc", ceremony)
+                .firstResultOptional()
+                .map(q -> ((CeremonyQuestion) q).sequence)
+                .orElse(0);
+        question.sequence = maxSeq + 1;
+
+        question.persist();
+
+        return questionItemTemplate.data("question", question);
+    }
 }

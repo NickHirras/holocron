@@ -1,0 +1,148 @@
+Request: GET http://localhost:9091/api/questions/test
+Headers: [Accept=*/*,Host=localhost:9091,User-Agent=curl/8.18.0,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: POST http://localhost:9091/api/questions/8/delete
+Headers: [Accept=*/*,Host=localhost:9091,User-Agent=curl/8.18.0]
+Has Entity: false
+--------------------------------------------------
+Request: POST http://localhost:9091/api/ceremonies/7/questions/reorder
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Content-Length=28,Content-Type=application/x-www-form-urlencoded,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions,HX-Request=true,Origin=http://localhost:9091,Referer=http://localhost:9091/sect/ceremonies/7/questions,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: true
+Media Type: application/x-www-form-urlencoded
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=9999
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=9999,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=9999,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=forcebody
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=forcebody,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=forcebody,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=redirect
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=redirect,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=redirect,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=redirect2
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=redirect2,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=redirect2,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=cachebreak
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=cachebreak,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=cachebreak,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=inspect
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=inspect,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=inspect,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=formconsumes
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=formconsumes,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=formconsumes,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/api/questions/8
+Headers: [Accept=*/*,Cookie=dev-session=dmVlcnNAZW1waXJlLmdvdg==,Host=localhost:9091,User-Agent=curl/8.18.0]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=final2
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=final2,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=final2,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: POST http://localhost:9091/api/questions/test
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Content-Length=67,Content-Type=application/x-www-form-urlencoded,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=final2,HX-Request=true,HX-Target=7,Origin=http://localhost:9091,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=final2,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: true
+Media Type: application/x-www-form-urlencoded
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=final2
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=final2,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=final2,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=v2resource
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=v2resource,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=v2resource,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=compile
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=compile,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=compile,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=v2final
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36,x-quarkus-hot-deployment-done=true]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=v2final,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=v2final,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/sect/ceremonies/7/questions?v=v2retry
+Headers: [Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=document,Sec-Fetch-Mode=navigate,Sec-Fetch-Site=none,Sec-Fetch-User=?1,Upgrade-Insecure-Requests=1,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: GET http://localhost:9091/components/side-panel
+Headers: [Accept=*/*,Accept-Encoding=gzip, deflate, br, zstd,Accept-Language=en-US,en;q=0.9,Connection=keep-alive,Cookie=dev-session="dmVlcnNAZW1waXJlLmdvdg==",Host=localhost:9091,HX-Current-URL=http://localhost:9091/sect/ceremonies/7/questions?v=v2retry,HX-Request=true,HX-Target=side-panel,HX-Trigger=side-panel,Referer=http://localhost:9091/sect/ceremonies/7/questions?v=v2retry,sec-ch-ua="Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145",sec-ch-ua-mobile=?0,sec-ch-ua-platform="Linux",Sec-Fetch-Dest=empty,Sec-Fetch-Mode=cors,Sec-Fetch-Site=same-origin,User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36]
+Has Entity: false
+--------------------------------------------------
+Request: POST http://localhost:9091/api/questions_v2/8/delete
+Headers: [Accept=*/*,Content-Length=14,Content-Type=application/x-www-form-urlencoded,Cookie=dev-session=dmVlcnNAZW1waXJlLmdvdg==,Host=localhost:9091,User-Agent=curl/8.18.0]
+Has Entity: true
+Media Type: application/x-www-form-urlencoded
+--------------------------------------------------
+Request: GET http://localhost:9091/api/questions/8
+Headers: [Accept=*/*,Cookie=dev-session=dmVlcnNAZW1waXJlLmdvdg==,Host=localhost:9091,User-Agent=curl/8.18.0]
+Has Entity: false
+--------------------------------------------------
+Request: POST http://localhost:9091/api/questions/8/delete
+Headers: [Accept=*/*,Content-Length=14,Content-Type=application/x-www-form-urlencoded,Cookie=dev-session=dmVlcnNAZW1waXJlLmdvdg==,Host=localhost:9091,User-Agent=curl/8.18.0,x-quarkus-hot-deployment-done=true]
+Has Entity: true
+Media Type: application/x-www-form-urlencoded
+--------------------------------------------------
