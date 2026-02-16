@@ -17,6 +17,12 @@ So that I don't have to hunt for the "Sector Command" link in the bottom console
     *   Ensure the "SECTOR COMMAND" link in `base.html` is highlighted or pulsed if there are pending actions (e.g., blocked team members).
 
 ## Acceptance Criteria
-- [ ] Team Leads see a "Manage Team" button on the Dashboard.
-- [ ] Regular users DO NOT see this button.
-- [ ] The "Sector Command" link in the bottom console is verified to work for Leads.
+- [x] Team Leads see a "Manage Team" button on the Dashboard.
+- [x] Regular users DO NOT see this button.
+- [x] The "Sector Command" link in the bottom console is verified to work for Leads.
+
+## Implementation Details
+- **Side Panel**: Replaced bottom console with a slide-out side panel (`components/side_panel.html`) triggered by a hot-zone.
+- **HTMX**: Enabled partial navigation for Dashboard and Profile to prevent full page reloads.
+- **Global HUD**: Added status hex and system time to `base.html` header.
+- **Cleanup**: Removed legacy bottom navigation code.

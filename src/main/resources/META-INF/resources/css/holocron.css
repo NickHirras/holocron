@@ -152,8 +152,7 @@ h6 {
 .hologram-container {
   position: relative;
   min-height: 80vh;
-  padding-bottom: 5rem;
-  /* Space for bottom console */
+  padding-bottom: 2rem;
 }
 
 /* 2.2 Component Directives: Chamfered Edges & Buttons */
@@ -278,45 +277,7 @@ article {
   opacity: 0.5;
 }
 
-/* 3. Bottom Console ("The Dash") */
-.bottom-console {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: var(--durasteel);
-  border-top: 2px solid var(--faded-transmission);
-  padding: 1rem 2rem;
-  z-index: 2000;
-  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-}
 
-/* "Light Leak" effect on top edge */
-.bottom-console::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--holocron-cyan), transparent);
-  opacity: 0.7;
-}
-
-.console-controls {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1200px;
-  align-items: center;
-}
-
-.nav-group {
-  display: flex;
-  gap: 0.5rem;
-}
 
 /* 4. Vertical Boot-up Animation */
 .boot-sequence {
@@ -754,6 +715,88 @@ textarea:focus {
   }
 }
 
+/* 10. Navigation Improvements & Side Panel */
+#side-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 300px;
+  background-color: rgba(5, 10, 20, 0.98);
+  border-right: 1px solid var(--holocron-cyan);
+  z-index: 5000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  padding: 6rem 1.5rem 2rem 1.5rem;
+  /* Top padding clears HUD */
+  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+#side-panel.open {
+  transform: translateX(0);
+}
+
+#side-panel-trigger {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 20px;
+  height: 100px;
+  background: var(--faded-transmission);
+  border: 1px solid var(--holocron-cyan);
+  border-left: none;
+  transform: translateY(-50%);
+  z-index: 4999;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  clip-path: polygon(0 0, 100% 10%, 100% 90%, 0 100%);
+}
+
+#side-panel-trigger:hover {
+  opacity: 1;
+  background: var(--holocron-cyan);
+  box-shadow: 0 0 15px var(--holocron-cyan);
+}
+
+/* Side Panel Content */
+.side-nav-section {
+  margin-bottom: 2rem;
+}
+
+.side-nav-header {
+  font-family: "Orbitron", sans-serif;
+  color: var(--faded-transmission);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.side-nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--starlight);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-left: 2px solid transparent;
+}
+
+.side-nav-link:hover {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--holocron-cyan);
+  border-left-color: var(--holocron-cyan);
+  padding-left: 1.5rem;
+  /* Slide effect */
+}
+
+.side-nav-link.active {
+  background: rgba(0, 229, 255, 0.05);
+  color: var(--holocron-cyan);
+  border-left-color: var(--holocron-cyan);
+}
+
 /* 9. Light Mode (Balance of the Force) */
 @media (prefers-color-scheme: light) {
   :root {
@@ -797,6 +840,7 @@ textarea:focus {
     /* Remove vignette in light mode for cleaner parchment look */
     background: none;
   }
+
 
   .scanline-overlay {
     background: linear-gradient(to bottom, transparent 50%, rgba(0, 86, 179, 0.02) 51%);
