@@ -4,6 +4,7 @@ import io.holocron.ceremony.Ceremony;
 import io.holocron.pulse.PulseService;
 import io.holocron.team.Team;
 import io.holocron.user.User;
+import io.holocron.user.UserStats;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.security.Authenticated;
@@ -37,6 +38,7 @@ public class DashboardController {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
+    @jakarta.transaction.Transactional
     public TemplateInstance index(@QueryParam("teamId") Long teamId) {
         // 1. Identify User
         String email = identity.getPrincipal().getName();
@@ -94,6 +96,7 @@ public class DashboardController {
         List<io.holocron.report.StatsService.LeaderStat> leaderStats = java.util.Collections.emptyList();
         if (user != null) {
             leaderStats = statsService.getLeaderStats(user);
+            ensureStats(user);
         }
 
         return dashboard
@@ -105,5 +108,23 @@ public class DashboardController {
                 .data("hasSubmitted", hasSubmitted)
                 .data("leaderStats", leaderStats)
                 .data("systemTime", java.time.LocalDateTime.now());
+    }
+
+    private void ensureStats(User user) {
+        if (user.stats == null) {
+            if (user.id != null) {
+                UserStats stats = io.holocron.user.UserStats.findByUser(user);
+                if (stats != null) {
+                    user.stats = stats;
+                } else {
+                    stats = new io.holocron.user.UserStats();
+                    stats.user = user;
+                    stats.persist();
+                    user.stats = stats;
+                }
+            } else {
+                user.stats = new io.holocron.user.UserStats();
+            }
+        }
     }
 }

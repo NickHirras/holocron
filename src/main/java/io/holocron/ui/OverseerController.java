@@ -27,7 +27,7 @@ public class OverseerController {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance index() {
+    public TemplateInstance index(@jakarta.ws.rs.HeaderParam("HX-Request") boolean hxRequest) {
         String email = identity.getPrincipal().getName();
         User user = User.findByEmail(email);
 
@@ -42,6 +42,12 @@ public class OverseerController {
         }
 
         OverseerService.OverseerDashboardDTO dashboardData = overseerService.getDashboardData(user);
+
+        if (hxRequest) {
+            return overseer.getFragment("overseer_deck")
+                    .data("dashboard", dashboardData)
+                    .data("user", user);
+        }
 
         return overseer.data("dashboard", dashboardData)
                 .data("user", user);

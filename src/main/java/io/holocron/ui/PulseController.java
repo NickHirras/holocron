@@ -5,6 +5,7 @@ import io.holocron.ceremony.CeremonyQuestion;
 import io.holocron.pulse.PulseService;
 import io.holocron.team.Team;
 import io.holocron.user.User;
+import io.holocron.user.UserStats;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -52,6 +53,7 @@ public class PulseController {
     @GET
     @Path("/{teamId}")
     @Produces(MediaType.TEXT_HTML)
+    @Transactional
     public Response show(@PathParam("teamId") Long teamId) {
         Team team = Team.findById(teamId);
         if (team == null) {
@@ -84,6 +86,8 @@ public class PulseController {
         List<CeremonyQuestion> questions = CeremonyQuestion.find("ceremony = ?1 order by sequence", ceremony).list();
         List<Integer> scaleValues = List.of(1, 2, 3, 4, 5);
 
+        ensureStats(user);
+
         return Response.ok(pulse.data("team", team)
                 .data("ceremony", ceremony)
                 .data("questions", questions)
@@ -96,22 +100,23 @@ public class PulseController {
     @POST
     @Path("/{teamId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     @Transactional
-    @io.holocron.audit.Audited(action = "SUBMIT_PULSE")
-    public Response submit(@PathParam("teamId") Long teamId, MultivaluedMap<String, String> formParams) {
+    public TemplateInstance submit(@PathParam("teamId") Long teamId, MultivaluedMap<String, String> formParams) {
         Team team = Team.findById(teamId);
         if (team == null)
-            return Response.status(Response.Status.NOT_FOUND).build();
+            // Error handling could be better, but for now returning error checks
+            return io.quarkus.qute.Qute.fmt("<div class='error'>Team not found</div>").instance();
 
         String email = identity.getPrincipal().getName();
         User user = User.findByEmail(email);
         if (user == null) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return io.quarkus.qute.Qute.fmt("<div class='error'>User not found</div>").instance();
         }
 
         Optional<Ceremony> activePulse = pulseService.findActivePulse(team);
         if (activePulse.isEmpty())
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return io.quarkus.qute.Qute.fmt("<div class='error'>No active pulse</div>").instance();
 
         Ceremony ceremony = activePulse.get();
 
@@ -120,8 +125,8 @@ public class PulseController {
 
         for (String key : formParams.keySet()) {
             if (key.startsWith("question_")) {
-                String questionIdStr = key.substring("question_".length());
                 try {
+                    String questionIdStr = key.substring("question_".length());
                     Long qId = Long.parseLong(questionIdStr);
                     answers.put(qId, formParams.getFirst(key));
                 } catch (NumberFormatException e) {
@@ -132,11 +137,36 @@ public class PulseController {
 
         try {
             pulseService.submitResponse(ceremony, user, answers, comments);
-        } catch (IllegalStateException e) {
-            // Already submitted
-            return Response.seeOther(URI.create("/pulse/" + teamId)).build();
-        }
 
-        return Response.seeOther(URI.create("/pulse/" + teamId + "?submitted=true")).build();
+            // Re-fetch user to get updated stats with fresh caching
+            user = User.findById(user.id);
+            ensureStats(user); // Ensure stats exist and are attached
+
+            // Return the updated rank card fragment for HTMX to swap
+            return io.quarkus.qute.Qute.fmt("{#include components/rank_card.html /}")
+                    .data("user", user)
+                    .instance();
+
+        } catch (IllegalStateException e) {
+            // Already submitted, just return current stats
+            user = User.findById(user.id);
+            ensureStats(user);
+            return io.quarkus.qute.Qute.fmt("{#include components/rank_card.html /}")
+                    .data("user", user)
+                    .instance();
+        }
+    }
+
+    private void ensureStats(User user) {
+        if (user.stats == null) {
+            // Try fetching manually
+            UserStats stats = UserStats.findByUser(user);
+            if (stats == null) {
+                stats = new UserStats();
+                stats.user = user;
+                stats.persist();
+            }
+            user.stats = stats;
+        }
     }
 }
