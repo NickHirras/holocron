@@ -42,6 +42,20 @@ public class ArchiveController {
     @Inject
     ObjectMapper objectMapper;
 
+    // ... existing methods ...
+
+    @GET
+    @Path("/search")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance search(@QueryParam("q") String query) {
+        // TODO: Get actual team
+        Team team = Team.findAll().firstResult();
+        List<Artifact> artifacts = artifactService.search(query, team);
+        // Reuse the archive content template to render the full view with filtered
+        // results
+        return archiveContentTemplate.data("artifacts", artifacts).data("selectedArtifact", null);
+    }
+
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance list(@jakarta.ws.rs.HeaderParam("HX-Request") boolean hxRequest) {

@@ -914,6 +914,7 @@ textarea:focus {
   /* Fix HUD Header Background */
   .hud-header {
     /* Durasteel with opacity */
+    background-color: rgba(232, 228, 217, 0.95);
     border-bottom: 2px solid var(--holocron-cyan);
   }
 

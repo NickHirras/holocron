@@ -95,4 +95,26 @@ public class ArtifactService {
             return java.util.Collections.emptyList();
         return Artifact.find("team = ?1 order by periodEnd desc", team).page(0, 10).list();
     }
+
+    @Inject
+    jakarta.persistence.EntityManager entityManager;
+
+    @SuppressWarnings("unchecked")
+    public List<Artifact> search(String query, Team team) {
+        if (query == null || query.trim().isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        // Use native query to join with FTS table
+        // We match against the virtual table but select from the entity table
+        String sql = "SELECT a.* FROM artifacts a " +
+                "JOIN artifacts_fts ON a.id = artifacts_fts.rowid " +
+                "WHERE a.team_id = :teamId AND artifacts_fts MATCH :query " +
+                "ORDER BY a.periodEnd DESC";
+
+        return entityManager.createNativeQuery(sql, Artifact.class)
+                .setParameter("teamId", team.id)
+                .setParameter("query", query + "*") // Prefix search
+                .getResultList();
+    }
 }
