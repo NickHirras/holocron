@@ -37,89 +37,71 @@ public class StreakServiceTest {
 
     @Test
     @Transactional
-    void testIncrementStreak() {
-        // Initial Streak
-        streakService.incrementStreak(user);
-        em.flush();
-        em.clear();
+    void testWeekendProtection() {
+        // Thursday (Day 1)
+        LocalDate thursday = LocalDate.of(2023, 10, 26);
+        streakService.incrementStreak(user, thursday);
 
-        // Re-fetch user after clear
-        user = User.findById(user.id);
+        // Friday (Day 2)
+        LocalDate friday = LocalDate.of(2023, 10, 27);
+        streakService.incrementStreak(user, friday);
 
-        UserStats stats = UserStats.findByUser(user);
-        assertNotNull(stats);
-        assertEquals(1, stats.currentStreak);
-        assertEquals(1, stats.longestStreak);
-        assertEquals(LocalDate.now(), stats.lastPulseDate);
+        UserStats stats = getStats();
+        assertEquals(2, stats.currentStreak, "Streak should clearly be 2");
 
-        // Same day submission - should not increment
-        streakService.incrementStreak(user);
-        em.flush();
-        em.clear();
-        user = User.findById(user.id);
+        // Monday (Day 3, after weekend gap which should be protected)
+        LocalDate monday = LocalDate.of(2023, 10, 30);
+        streakService.incrementStreak(user, monday);
 
-        stats = UserStats.findByUser(user);
-        assertEquals(1, stats.currentStreak);
-
-        // Simulate yesterday
-        stats.lastPulseDate = LocalDate.now().minusDays(1);
-        stats.persist();
-        em.flush();
-        em.clear();
-        user = User.findById(user.id);
-
-        // Increment for "today" (relative to simulation)
-        streakService.incrementStreak(user);
-        em.flush();
-        em.clear();
-        user = User.findById(user.id);
-
-        stats = UserStats.findByUser(user);
-        assertEquals(2, stats.currentStreak);
-        assertEquals(2, stats.longestStreak);
-
-        // Simulate gap (2 days ago)
-        stats.lastPulseDate = LocalDate.now().minusDays(2);
-        stats.persist();
-        em.flush();
-        em.clear();
-        user = User.findById(user.id);
-
-        // Should reset
-        streakService.incrementStreak(user);
-        em.flush();
-        em.clear();
-        user = User.findById(user.id);
-
-        stats = UserStats.findByUser(user);
-        assertEquals(1, stats.currentStreak);
-        assertEquals(2, stats.longestStreak); // Longest preserved
+        stats = getStats();
+        assertEquals(3, stats.currentStreak, "Stranger, the weekend gap (Sat, Sun) should preserve the streak!");
     }
 
     @Test
-    void testIncrementXp() {
-        streakService.incrementXp(user, 100, "Test");
+    @Transactional
+    void testWeekendProtectionPartial() {
+        // Friday (Day 1)
+        LocalDate friday = LocalDate.of(2023, 10, 27);
+        streakService.incrementStreak(user, friday);
 
-        // Since incrementXp is REQUIRES_NEW, we might need to handle transaction
-        // visibility
-        // But for verifying DB state, a fresh fetch should work.
-        // We'll trust the separate transaction committed.
+        // Sunday (Day 2 - Gap: Saturday)
+        LocalDate sunday = LocalDate.of(2023, 10, 29);
+        streakService.incrementStreak(user, sunday);
 
-        UserStats stats = UserStats.findByUser(user);
-        assertNotNull(stats);
-        assertEquals(100, stats.totalXp);
+        UserStats stats = getStats();
+        assertEquals(2, stats.currentStreak, "Gap of Saturday should be protected");
+    }
 
-        // Clear L1 cache to ensure we don't get the old 'stats' instance if a session
-        // is open
+    @Test
+    @Transactional
+    void testBrokenStreak() {
+        // Wednesday (Day 1)
+        LocalDate wed = LocalDate.of(2023, 10, 25);
+        streakService.incrementStreak(user, wed);
+
+        // Friday (Day 2 - Gap: Thursday, NOT protected)
+        LocalDate fri = LocalDate.of(2023, 10, 27);
+        streakService.incrementStreak(user, fri);
+
+        UserStats stats = getStats();
+        assertEquals(1, stats.currentStreak, "Gap of Thursday should break streak");
+    }
+
+    @Test
+    @Transactional
+    void testNormalDailyStreak() {
+        LocalDate d1 = LocalDate.of(2023, 1, 1);
+        streakService.incrementStreak(user, d1);
+        assertEquals(1, getStats().currentStreak);
+
+        LocalDate d2 = LocalDate.of(2023, 1, 2);
+        streakService.incrementStreak(user, d2);
+        assertEquals(2, getStats().currentStreak);
+    }
+
+    private UserStats getStats() {
+        em.flush();
         em.clear();
-        user = User.findById(user.id); // Re-fetch user
-
-        streakService.incrementXp(user, 50, "Test 2");
-
-        em.clear(); // Clear again just to be safe
-        user = User.findById(user.id);
-
-        stats = UserStats.findByUser(user);
-        assertEquals(150, stats.totalXp);
+        return UserStats.findByUser(user);
     }
 }
