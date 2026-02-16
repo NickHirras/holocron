@@ -68,10 +68,7 @@
             <artifactId>quarkus-jdbc-sqlite</artifactId>
             <version>3.0.10</version>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-h2</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
