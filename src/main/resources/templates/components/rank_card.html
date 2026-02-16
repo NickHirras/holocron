@@ -1,0 +1,20 @@
+<article
+    class="rank-card {#if user.stats.currentStreak > 30}glow-high{#else if user.stats.currentStreak > 7}glow-med{#else if user.stats.currentStreak > 3}glow-low{/if}"
+    id="rank-card-component">
+    <header class="rank-header">
+        <span class="rank-title">{user.stats.rankTitle}</span>
+        <div class="xp-bar-container">
+            <div class="xp-bar" style="width: {user.stats.rankProgress}%"></div>
+        </div>
+    </header>
+    <div class="rank-stats grid">
+        <div class="stat-item">
+            <span class="stat-value holo-text">{user.stats.currentStreak}</span>
+            <span class="stat-label">Streak</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">{user.stats.totalXp}</span>
+            <span class="stat-label">XP</span>
+        </div>
+    </div>
+</article>

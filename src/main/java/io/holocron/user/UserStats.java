@@ -37,4 +37,22 @@ public class UserStats extends PanacheEntityBase {
     public static UserStats findByUser(User user) {
         return find("user", user).firstResult();
     }
+
+    public String getRankTitle() {
+        if (totalXp >= 5000)
+            return "Master";
+        if (totalXp >= 1000)
+            return "Knight";
+        return "Padawan";
+    }
+
+    public int getRankProgress() {
+        if (totalXp < 1000) {
+            return (int) ((totalXp / 1000.0) * 100);
+        } else if (totalXp < 5000) {
+            return (int) (((totalXp - 1000) / 4000.0) * 100);
+        } else {
+            return 100;
+        }
+    }
 }

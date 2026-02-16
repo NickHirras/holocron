@@ -26,6 +26,9 @@ public class User extends PanacheEntityBase {
 
     public String jobTitle;
 
+    @jakarta.persistence.OneToOne(mappedBy = "user")
+    public UserStats stats;
+
     public static User findByEmail(String email) {
         return find("email", email).firstResult();
     }

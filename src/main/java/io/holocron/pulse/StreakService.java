@@ -44,7 +44,7 @@ public class StreakService {
         stats.persist();
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public void incrementXp(User user, long amount, String reason) {
         if (amount <= 0)
             return;
