@@ -1,0 +1,60 @@
+{#include layout/base.html}
+{#title}Overseer Deck{/title}
+
+<div class="overseer-deck">
+    <h1>// OVERSEER DECK</h1>
+
+    {#for team in dashboard.teams}
+    <section class="mb-4">
+        <h2>{team.teamName} <small style="font-size: 0.6em; color: var(--faded-transmission)">// SECTOR CONTROL</small>
+        </h2>
+
+        <div class="operative-grid">
+            {#for operative in team.operatives}
+            <article class="operative-card status-{operative.status}"
+                hx-get="/overseer/operative/{operative.userId}/details" hx-trigger="click"
+                hx-target="#details-{operative.userId}" hx-swap="innerHTML">
+
+                <div class="card-header">
+                    <div class="status-indicator"></div>
+                    <span class="operative-name">{operative.name}</span>
+                    <span class="operative-role">{operative.role}</span>
+                </div>
+
+                <div class="card-body">
+                    {#if operative.status == 'SUBMITTED'}
+                    <div class="transmission-preview">
+                        "{operative.latestResponseSnippet}"
+                    </div>
+                    {#else if operative.status == 'MISSING'}
+                    <div class="transmission-missing">
+                        // SIGNAL LOST
+                    </div>
+                    {#else if operative.status == 'BLOCKED'}
+                    <div class="transmission-blocked">
+                        // DISTRESS SIGNAL
+                    </div>
+                    {#else}
+                    <div class="transmission-offline">
+                        // OFFLINE
+                    </div>
+                    {/if}
+                </div>
+
+                <!-- Container for expanded details -->
+                <div id="details-{operative.userId}" class="operative-details"></div>
+
+            </article>
+            {/for}
+        </div>
+    </section>
+    {/for}
+
+    {#if dashboard.teams.isEmpty()}
+    <article>
+        <h3>// NO SECTORS ASSIGNED</h3>
+        <p>You are not currently monitoring any teams.</p>
+    </article>
+    {/if}
+</div>
+{/include}

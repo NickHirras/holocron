@@ -1,0 +1,24 @@
+<div class="details-panel"
+    style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--faded-transmission); animation: scanline 0.5s ease-out;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <small style="color: var(--holocron-cyan); text-transform: uppercase;">
+            // Transmission Logged: {details.submittedAt}
+        </small>
+        <span class="badge"
+            style="font-size: 0.7em; border: 1px solid var(--forest-moon); color: var(--forest-moon); padding: 2px 6px;">VERIFIED</span>
+    </div>
+
+    <div class="response-full">
+        <p
+            style="margin-bottom: 0; color: var(--starlight); font-family: 'Share Tech Mono', monospace; line-height: 1.6;">
+            "{details.fullResponse}"
+        </p>
+    </div>
+
+    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+        <button class="outline contrast" style="font-size: 0.8em; padding: 4px 12px; border-radius: 0;">
+            // ACKNOWLEDGE
+        </button>
+        <!-- Future: Nudge button if missing -->
+    </div>
+</div>
