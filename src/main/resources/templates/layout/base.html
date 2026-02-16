@@ -14,9 +14,15 @@
     <!-- Styles -->
     <link rel="stylesheet" href="/css/pico.min.css">
     <link rel="stylesheet" href="/css/holocron.css">
+
+    <!-- HTMX -->
+    <script src="/js/htmx.min.js"></script>
 </head>
 
-<body>
+<body hx-indicator="#global-indicator">
+    <div id="global-indicator" class="htmx-indicator">
+        DECRYPTING...
+    </div>
     <header class="container">
         <nav>
             <ul>
