@@ -25,7 +25,7 @@ public class PulseTest {
         // But QuarkusTest wraps entire test class? No, per method.
         // However, standard @QuarkusTest runs against the same DB as dev mode if
         // configured so, or a test container.
-        // Usually it uses H2 or Testcontainers.
+        // Usually it uses SQLite in-memory or Testcontainers.
 
         Team team = new Team();
         team.name = "Test Team Pulse";

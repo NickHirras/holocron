@@ -1,4 +1,4 @@
-package com.holocron.ui;
+package io.holocron.ui;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
