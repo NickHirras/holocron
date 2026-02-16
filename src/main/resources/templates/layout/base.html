@@ -38,8 +38,15 @@
             <div id="kyber-status" class="kyber-hex status-neutral" title="System Status"></div>
             <span class="hud-label" id="connection-status">CONNECTED</span>
         </div>
-        <div class="hud-center">
-            <h1 class="hud-title">HOLOCRON <span class="version">v1.0.0-ALPHA</span></h1>
+        <div class="hud-center"
+            style="flex: 1; display: flex; justify-content: center; align-items: center; gap: 2rem;">
+            <h1 class="hud-title" style="margin: 0;">HOLOCRON <span class="version">v1.0.0-ALPHA</span></h1>
+
+            <!-- Global Search -->
+            <input type="search" name="q" placeholder="SEARCH ARCHIVES..." aria-label="Search"
+                style="margin: 0; width: 300px; padding: 0.25rem 0.5rem; font-size: 0.8rem; background: rgba(0,0,0,0.5); border-color: var(--holocron-cyan);"
+                hx-get="/archives/search" hx-trigger="keyup changed delay:500ms, search" hx-target="#main-content"
+                hx-push-url="true" hx-indicator="#global-indicator">
         </div>
         <div class="hud-right">
             <span class="hud-label" id="system-time">--:--:--</span>

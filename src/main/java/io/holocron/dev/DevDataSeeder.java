@@ -17,12 +17,16 @@ import io.holocron.user.User;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class DevDataSeeder {
 
     @ConfigProperty(name = "holocron.auth.dev-mode", defaultValue = "false")
     boolean devMode;
+
+    @Inject
+    io.holocron.archive.ArtifactService artifactService;
 
     @Transactional
     public void onStart(@Observes StartupEvent ev) {
@@ -168,6 +172,11 @@ public class DevDataSeeder {
                     createResponse(ceremony, u, date, rand);
                 }
             }
+
+            // Generate Artifact for this historical week
+            // Period is typically Mon-Fri for a weekly pulse
+            LocalDate periodStart = date.minusDays(4);
+            artifactService.generateArtifact(ceremony, periodStart, date);
         }
     }
 

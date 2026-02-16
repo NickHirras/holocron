@@ -1,0 +1,49 @@
+<!-- Archive Detail Fragment -->
+<div id="detail_content">
+    <header style="border-bottom: 1px solid var(--holocron-cyan); margin-bottom: 2rem; padding-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: end;">
+            <div>
+                <h1 style="margin: 0; font-size: 2.5rem;">MISSION DEBRIEF</h1>
+                <div style="color: var(--holocron-cyan); letter-spacing: 2px;">
+                    {selectedArtifact.ceremony.title} // {selectedArtifact.periodEnd}
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div class="kyber-hex status-active"></div>
+                <span style="font-family: 'Share Tech Mono';">ARCHIVE_ID: {selectedArtifact.id}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid-content">
+        {#if archiveDto}
+        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+            {#for response in archiveDto.responses}
+            <article class="operative-card status-SUBMITTED">
+                <header class="card-header">
+                    <span class="operative-name">{response.userName}</span>
+                    <span class="transmission-preview">{response.submittedAt}</span>
+                </header>
+                <div style="font-size: 0.9rem; color: var(--starlight);">
+                    {#if response.comments}
+                    <div style="margin-bottom: 1rem; font-style: italic;">"{response.comments}"</div>
+                    {/if}
+
+                    {#for answer in response.answers}
+                    <div style="margin-bottom: 0.5rem;">
+                        <div style="color: var(--faded-transmission); font-size: 0.7rem;">{answer.questionText}</div>
+                        <div style="color: var(--holocron-cyan);">{answer.answerValue}</div>
+                    </div>
+                    {/for}
+                </div>
+            </article>
+            {/for}
+        </div>
+        {#else}
+        <div
+            style="background: rgba(0,0,0,0.5); padding: 1rem; border: 1px solid var(--faded-transmission); font-family: monospace; white-space: pre-wrap;">
+            {selectedArtifact.summaryJson}
+        </div>
+        {/if}
+    </div>
+</div>
