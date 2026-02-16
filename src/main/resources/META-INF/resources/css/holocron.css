@@ -753,3 +753,124 @@ textarea:focus {
     opacity: 1;
   }
 }
+
+/* 9. Light Mode (Balance of the Force) */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Jedi Temple Palette */
+    --void-black: #f4f1ea;
+    /* Parchment */
+    --durasteel: #e8e4d9;
+    /* Aged Stone */
+    --holocron-cyan: #0056b3;
+    /* Guardian Blue (Darkened for contrast) */
+    --rebel-orange: #d35400;
+    /* Burnt Orange */
+    --forest-moon: #27ae60;
+    /* Old Growth Green */
+    --sith-red: #c0392b;
+    /* Crimson */
+    --starlight: #2c3e50;
+    /* Archive Ink */
+    --faded-transmission: #95a5a6;
+    /* Duracrete */
+
+    /* Adjust Primary mixins for new bases */
+    --pico-primary-underline: rgba(0, 86, 179, 0.5);
+    --pico-primary-hover: #004494;
+    --pico-primary-hover-background: #003366;
+    --pico-primary-focus: rgba(0, 86, 179, 0.25);
+
+    /* Shadows - Switch to Drop Shadows instead of Glows */
+    --pico-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Adjust Holographic Effects for Light Mode */
+  body {
+    background-image:
+      linear-gradient(rgba(44, 62, 80, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(44, 62, 80, 0.03) 1px, transparent 1px);
+    /* Subtle grid on parchment */
+  }
+
+  body::before {
+    /* Remove vignette in light mode for cleaner parchment look */
+    background: none;
+  }
+
+  .scanline-overlay {
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 86, 179, 0.02) 51%);
+    opacity: 0.3;
+    /* Very subtle scanline */
+  }
+
+  .hologram-overlay {
+    opacity: 0.05;
+    /* Barely visible noise */
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  /* Text Readability Overrides */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-shadow: none;
+    /* Remove glow for cleaner text */
+    font-weight: 700;
+  }
+
+  .hud-title {
+    text-shadow: none;
+  }
+
+  /* Card & Panel Adjustments */
+  .operative-card,
+  .console-btn,
+  article,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: var(--durasteel);
+  }
+
+  .console-btn {
+    background-color: var(--durasteel);
+    color: var(--holocron-cyan);
+    border: 2px solid var(--holocron-cyan);
+    /* Thicker border for visibility */
+  }
+
+  .console-btn:hover {
+    color: white;
+    background-color: var(--holocron-cyan);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    background-color: #fff;
+  }
+
+  /* Footer/Console Visibility */
+  .bottom-console {
+    background-color: #dfdbcf;
+    /* Slightly darker parchment */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .bottom-console::before {
+    background: linear-gradient(90deg, transparent, var(--holocron-cyan), transparent);
+    opacity: 0.5;
+  }
+
+  /* Fix HUD Header Background */
+  .hud-header {
+    background: rgba(232, 228, 217, 0.95);
+    /* Durasteel with opacity */
+    border-bottom: 2px solid var(--holocron-cyan);
+  }
+}
