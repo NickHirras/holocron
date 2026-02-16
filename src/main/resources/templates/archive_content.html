@@ -1,0 +1,43 @@
+<div class="grid" style="grid-template-columns: 300px 1fr; gap: 2rem; align-items: start;">
+
+    <!-- LEFT PANEL: Archive List -->
+    <aside>
+        <h3 class="hud-title">ARCHIVES</h3>
+        <div class="archive-list" style="max-height: 80vh; overflow-y: auto; padding-right: 0.5rem;">
+            {#if artifacts.isEmpty}
+            <div class="pico-muted-color">No archives found.</div>
+            {#else}
+            {#for artifact in artifacts}
+            <a href="/archives/{artifact.id}" class="contrast outline" role="button"
+                style="display: block; margin-bottom: 1rem; text-align: left;" hx-get="/archives/{artifact.id}"
+                hx-target="#archive-detail" hx-swap="innerHTML transition:true" hx-push-url="true">
+                <div style="font-size: 0.8rem; color: var(--holocron-cyan);">{artifact.periodEnd}</div>
+                <div style="font-weight: bold;">{artifact.ceremony.title}</div>
+                <div style="font-size: 0.7rem; color: var(--faded-transmission);">
+                    ID: {artifact.id}
+                </div>
+            </a>
+            {/for}
+            {/if}
+        </div>
+    </aside>
+
+    <!-- RIGHT PANEL: Archive Detail -->
+    <section id="archive-detail" class="hologram-container"
+        style="border: 1px solid var(--faded-transmission); padding: 2rem; position: relative;">
+        <!-- Background Grid Effect specific to this container -->
+        <div class="hologram-overlay"></div>
+
+        {#if selectedArtifact}
+        {#include archive_detail.html /}
+        {#else}
+        <!-- Empty State -->
+        <div style="text-align: center; padding-top: 20vh; opacity: 0.7;">
+            <div class="holocron-cube" style="margin: 0 auto 2rem auto;"></div>
+            <h2>SELECT DATA CORE</h2>
+            <p>Initialize playback sequence from the archive list.</p>
+        </div>
+        {/if}
+    </section>
+
+</div>

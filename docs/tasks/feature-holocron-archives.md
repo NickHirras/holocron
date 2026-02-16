@@ -1,25 +1,55 @@
-# Feature: Holocron Archives (Search)
+# Feature: Holocron Archives
 
 ## Strategic Value
-The value of a daily standup is not just in the moment, but in the history. "Holocron Archives" unlocks this value by allowing users to search past blockers, accomplishments, and team history, effectively creating a team knowledge base.
+The value of a daily standup is not just in the moment, but in the history. "Holocron Archives" unlocks this value by allowing users to browse past blockers, accomplishments, and team history, effectively creating a team knowledge base. 
+Phase 1 focuses on the immutable storage and retrieval of these records ("Data Cores"). Phase 2 will introduce deep search capabilities.
 
-## User Story
+## Phase 1: Immutable Records (Completed)
+
+### User Story
+As a **Team Lead**,
+I want to browse past "Mission Debriefs" (completed pulses),
+So that I can review the team's progress and blockers over time without altering historical data.
+
+### Technical Implementation
+1.  **Immutable Storage**:
+    - `Artifact` entity stores a snapshot of the pulse data as a JSON blob (`summaryJson`).
+    - This ensures that even if team structure or questions change, the historical record remains accurate to the time of generation.
+2.  **Navigation & UI**:
+    - "ARCHIVES" link in the side console.
+    - Two-pane layout (`archive.html`): List of past pulses on the left, detailed "Holographic" view on the right.
+    - Uses HTMX for seamless "Debrief Reveal" without page reloads.
+3.  **Data Generation**:
+    - `ArtifactService` aggregates `CeremonyResponse` and `CeremonyAnswer` data into `ArchiveDTO`s.
+    - Automated generation upon Pulse closure (simulated via `DevDataSeeder` for now).
+
+### Acceptance Criteria (Phase 1)
+- [x] `Artifact` entity created and mapped to `summaryJson`.
+- [x] `ArtifactService` correctly aggregates and serializes data.
+- [x] Web UI (`/archives`) displays list of past pulses.
+- [x] Detail view loads via HTMX.
+- [x] Historical data seeding implemented for development.
+
+---
+
+## Phase 2: Search & Discovery (Planned)
+
+### User Story
 As a **Developer**,
 I want to search for "API migration" to see when we last worked on it and what issues we faced,
 So that I don't repeat past mistakes.
 
-## Technical Blueprint
+### Technical Blueprint
 1.  **Database**:
-    *   Enable SQLite FTS5 (Full Text Search) extension (if supported by driver) or use `LIKE` queries for MVP.
-    *   Create a virtual table `responses_search` if using FTS5.
+    - Enable SQLite FTS5 (Full Text Search) extension (if supported by driver) or use `LIKE` queries for MVP.
+    - Create a virtual table `responses_search` if using FTS5.
 2.  **UI/UX**:
-    *   Add a Global Search input in the Top HUD.
-    *   Create `/archives` page for results.
-    *   Use HTMX to filter results as the user types (`hx-trigger="keyup changed delay:500ms"`).
+    - Add a Global Search input in the Top HUD.
+    - Filter Archive results as the user types (`hx-trigger="keyup changed delay:500ms"`).
 3.  **Privacy**:
-    *   Search results must respect Team visibility rules.
+    - Search results must respect Team visibility rules.
 
-## Acceptance Criteria
+### Acceptance Criteria (Phase 2)
 - [ ] Search bar is accessible from the global HUD.
 - [ ] Results update in real-time (HTMX) or via form submit.
 - [ ] Clicking a result navigates to the specific historical Pulse.

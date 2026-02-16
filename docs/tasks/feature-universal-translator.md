@@ -1,3 +1,44 @@
+To be done in the future, here's the prompt to start it: 
+
+```
+Context: I am implementing the Universal Translator epic. We are moving from hardcoded strings to a localized message bundle system that supports two "Lingo Themes": "A Long Time Ago" (default Star Wars aesthetic) and "21st Century" (standard corporate/Scrum lingo).
+
+Objective: Break down the implementation plan through the lenses of Engineering and UX to ensure a "Jedi-Grade" result.
+
+Step 1: Technical Reality Check (Engineering)
+
+Design a localized message bundle architecture using Quarkus i18n that allows for theme swapping via the HOLOCRON_LINGO_THEME environment variable.
+
+Ensure the string resolution logic is O(1) and utilizes Caffeine caching to prevent latency impacts on the "Critical Path."
+
+Draft the V1.0.5__Add_Lingo_Preference_Audit.sql migration to log theme initialization in the AuditEntry table.
+
+Step 2: UX & Interaction Design (UX Engineer/Designer)
+
+Audit base.html, dashboard.html, and pulse.html for hardcoded strings.
+
+Define the "Lingo Mapping" for the "21st Century" theme to ensure it feels professional but isn't "div soup" or "mystery meat" navigation.
+
+Validate that localized strings (especially in French or Spanish) won't break the Holographic Immersion typing animations or the 8dp linear scale grid.
+
+Step 3: Convergence & Execution
+
+Provide the Java TemplateExtensions required to expose these localized bundles to our Qute templates.
+
+Generate a sample messages_en.properties for both lingo themes.
+
+Constraints:
+
+No client-side state management (Redux/Alpine.js).
+
+Adhere strictly to the Google Java Style Guide.
+
+Ensure all strings meet WCAG AA contrast ratios regardless of the lingo theme.
+
+Transmission: Output a unified implementation roadmap and the starting code artifacts.
+```
+___
+
 # Feature Task: Universal Translator (i18n & Lingo Themes)
 
 > **Status**: Planned
