@@ -1,0 +1,57 @@
+{#include layout/base.html}
+{#title}Sector Management{/title}
+
+{#body}
+<div class="container">
+    <hgroup>
+        <h1 class="glitch-text" data-text="SECTOR COMMAND">SECTOR COMMAND</h1>
+        <h2>Manage organizational sectors and communication frequencies.</h2>
+    </hgroup>
+
+    <div class="grid">
+        <article>
+            <header>
+                <div class="grid">
+                    <strong>// ACTIVE SECTORS</strong>
+                    <a href="/teams/new" role="button" class="contrast outline"
+                        style="width: auto; margin-left: auto;">Init New Sector</a>
+                </div>
+            </header>
+
+            <table role="grid">
+                <thead>
+                    <tr>
+                        <th scope="col">Designation</th>
+                        <th scope="col">Time Dilation</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for team in teams}
+                    <tr>
+                        <td><strong>{team.name}</strong></td>
+                        <td>{team.timezoneId}</td>
+                        <td>
+                            <div class="grid" style="grid-template-columns: auto auto; gap: 0.5rem;">
+                                <a href="/teams/{team.id}/edit" role="button" class="secondary outline">Edit</a>
+                                <form action="/teams/{team.id}/delete" method="POST" style="margin: 0;"
+                                    onsubmit="return confirm('Terminate sector {team.name}? This action cannot be undone.');">
+                                    <button type="submit" class="outline contrast">Terminate</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {/for}
+                    {#if teams.size == 0}
+                    <tr>
+                        <td colspan="3" style="text-align: center;">No active sectors found. Initialize new sector
+                            above.</td>
+                    </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </article>
+    </div>
+</div>
+{/body}
+{/include}

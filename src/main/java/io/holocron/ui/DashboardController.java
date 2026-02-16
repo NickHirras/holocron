@@ -32,6 +32,9 @@ public class DashboardController {
     @Inject
     PulseService pulseService;
 
+    @Inject
+    io.holocron.report.StatsService statsService;
+
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance index(@QueryParam("teamId") Long teamId) {
@@ -88,6 +91,11 @@ public class DashboardController {
             }
         }
 
+        List<io.holocron.report.StatsService.LeaderStat> leaderStats = java.util.Collections.emptyList();
+        if (user != null) {
+            leaderStats = statsService.getLeaderStats(user);
+        }
+
         return dashboard
                 .data("user", user)
                 .data("team", team)
@@ -95,6 +103,7 @@ public class DashboardController {
                 .data("hasActivePulse", hasActivePulse)
                 .data("activeCeremony", activeCeremony)
                 .data("hasSubmitted", hasSubmitted)
+                .data("leaderStats", leaderStats)
                 .data("systemTime", java.time.LocalDateTime.now());
     }
 }
