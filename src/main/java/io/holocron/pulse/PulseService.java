@@ -17,6 +17,9 @@ import java.util.Optional;
 @ApplicationScoped
 public class PulseService {
 
+    @jakarta.inject.Inject
+    StreakService streakService;
+
     public Optional<Ceremony> findActivePulse(Team team) {
         return Ceremony.find("team = ?1 and type = ?2 and isActive = true", team, CeremonyType.PULSE)
                 .firstResultOptional();
@@ -56,5 +59,8 @@ public class PulseService {
                 answer.persist();
             }
         }
+
+        streakService.incrementStreak(user);
+        streakService.incrementXp(user, 10, "Pulse Submission");
     }
 }
