@@ -28,6 +28,11 @@ Holocron's mission is to eliminate engineering friction through structured inter
 - **Questionnaire Designer**: An HTMX-powered interface to add, remove, and reorder `CeremonyQuestion` entities.
 - **Manual Overrides**: Provide Team Leads with "Emergency Trigger" capabilities to manually initialize a Pulse outside of the schedule.
 
+## Still to-do:
+- [ ] Implement the "Questionnaire Designer" interactive features (drag-and-drop reordering) fully (currently read-only listing with placeholder add button).
+- [ ] Connect the `ScheduleService` to a real StartupEvent that loads all active ceremonies (logic is present but needs full integration testing with real time/scheduler).
+
+
 ## 🎯 Acceptance Criteria
 - [ ] Team Leads can create, edit, and terminate Ceremonies for their assigned Sectors.
 - [ ] Support for varied question types: `TEXT`, `SCALE`, `BOOLEAN`, `INTEGER`, and `SELECTION`.
