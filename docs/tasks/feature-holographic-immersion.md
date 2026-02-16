@@ -14,7 +14,7 @@ Transform the static "Pulse" form into an animated "Mission Debrief" experience 
 - [ ] **Frontend Implementation**
     - [ ] Refactor `pulse.html` to use HTMX for step-by-step form submission.
     - [ ] Implement "typing text" effect for questions.
-    - [ ] Add "hologram" visual elements (scanlines, glow effects).
+    - [x] Add "hologram" visual elements (scanlines, glow effects).
     - [ ] Create a "Transmission Complete" success state animation.
 - [ ] **Backend Adjustments**
     - [ ] Ensure `PulseController` can return HTML fragments for HTMX requests.

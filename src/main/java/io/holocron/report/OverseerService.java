@@ -32,17 +32,12 @@ public class OverseerService {
         List<TeamMember> leadMemberships = TeamMember.findByUser(lead);
 
         for (TeamMember membership : leadMemberships) {
-            Team team = membership.team;
+            // Access Control: Only "LEAD" role can view their team in the Overseer Deck
+            if (!"LEAD".equalsIgnoreCase(membership.role)) {
+                continue;
+            }
 
-            // Only include if role is Lead? The requirement says "Ensure only users with
-            // role = 'LEAD' ... can access".
-            // We'll enforce access control at the Controller level or here.
-            // For now, let's assume if they are viewing the dashboard, they want to see all
-            // teams they are part of.
-            // If strictly 'LEAD', we should filter: if
-            // (!"LEAD".equalsIgnoreCase(membership.role)) continue;
-            // Let's stick to showing all teams for now, but maybe add a visual indicator if
-            // they are just a member.
+            Team team = membership.team;
 
             TeamOverviewDTO teamOverview = new TeamOverviewDTO();
             teamOverview.teamName = team.name;
