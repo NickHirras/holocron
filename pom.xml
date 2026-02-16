@@ -91,6 +91,16 @@
             <artifactId>quarkus-rest-qute</artifactId>
             <version>${quarkus.platform.version}</version>
         </dependency> 
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-scheduler</artifactId>
+            <version>${quarkus.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dmfs</groupId>
+            <artifactId>lib-recur</artifactId>
+            <version>0.15.0</version>
+        </dependency> 
     </dependencies>
     <build>
         <plugins>
