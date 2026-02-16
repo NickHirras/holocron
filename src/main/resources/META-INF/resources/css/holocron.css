@@ -132,46 +132,240 @@ h6 {
   text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
 }
 
-/* 4. Component Overrides (No Div Soup!) */
+/* --- SPACE CONSOLE LAYOUT IMPLEMENTATION --- */
 
-/* Buttons: The Launch Key */
+/* 2.1 Holographic Overlay */
+.hologram-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 2px, 3px 100%;
+  z-index: 100;
+  opacity: 0.6;
+}
+
+.hologram-container {
+  position: relative;
+  min-height: 80vh;
+  padding-bottom: 5rem;
+  /* Space for bottom console */
+}
+
+/* 2.2 Component Directives: Chamfered Edges & Buttons */
 button,
+.console-btn,
 input[type="submit"],
 input[type="button"],
-[role="button"] {
-  --pico-border-radius: 0;
-  clip-path: polygon(10px 0, 100% 0,
-      100% calc(100% - 10px), calc(100% - 10px) 100%,
-      0 100%, 0 10px);
-  border: 1px solid var(--holocron-cyan);
-  background-color: rgba(0, 229, 255, 0.1);
-  color: var(--holocron-cyan);
-  transition: all 0.2s ease-in-out;
-  text-transform: uppercase;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover,
-input[type="submit"]:hover,
-[role="button"]:hover {
-  background-color: var(--holocron-cyan);
-  color: var(--void-black);
-  box-shadow: 0 0 15px var(--holocron-cyan);
-  border-color: var(--holocron-cyan);
-}
-
-/* Cards / Articles: The Datapad Panel */
+[role="button"],
 article {
   --pico-border-radius: 0;
-  background-color: rgba(13, 27, 42, 0.85);
-  /* Durasteel transparent */
-  border: 1px solid var(--faded-transmission);
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  position: relative;
-  margin-bottom: var(--pico-block-spacing-vertical);
-  padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.console-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(13, 27, 42, 0.9);
+  color: var(--holocron-cyan);
+  border: 1px solid var(--holocron-cyan);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-family: "Share Tech Mono", monospace;
+  box-shadow: inset 0 0 5px #000;
+  /* Recessed look */
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.console-btn:hover {
+  background-color: var(--holocron-cyan);
+  color: var(--void-black);
+  filter: brightness(1.2);
+  box-shadow: 0 0 15px var(--holocron-cyan);
+}
+
+.console-btn.danger {
+  border-color: var(--sith-red);
+  color: var(--sith-red);
+}
+
+.console-btn.danger:hover {
+  background-color: var(--sith-red);
+  color: var(--void-black);
+  box-shadow: 0 0 15px var(--sith-red);
+}
+
+.console-btn.special-command {
+  border-color: var(--rebel-orange);
+  color: var(--rebel-orange);
+}
+
+.console-btn.special-command:hover {
+  background-color: var(--rebel-orange);
+  box-shadow: 0 0 15px var(--rebel-orange);
+  color: black;
+}
+
+/* 1. HUD Header */
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  border-bottom: 2px solid var(--faded-transmission);
+  background: rgba(5, 10, 20, 0.95);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.hud-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.5rem;
+  margin: 0;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 10px var(--holocron-cyan);
+}
+
+.hud-title .version {
+  font-size: 0.6rem;
+  color: var(--faded-transmission);
+  vertical-align: super;
+}
+
+.hud-label {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.8rem;
+  color: var(--faded-transmission);
+  letter-spacing: 0.1em;
+}
+
+/* Kyber Status Hex */
+.kyber-hex {
+  width: 20px;
+  height: 20px;
+  background-color: var(--faded-transmission);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  transition: all 0.5s ease;
+}
+
+.kyber-hex.status-active {
+  background-color: var(--forest-moon);
+  box-shadow: 0 0 10px var(--forest-moon);
+  animation: pulse-green 2s infinite;
+}
+
+.kyber-hex.status-alert {
+  background-color: var(--sith-red);
+  box-shadow: 0 0 10px var(--sith-red);
+  animation: blink-fast 0.5s infinite;
+}
+
+.kyber-hex.status-neutral {
+  background-color: var(--holocron-cyan);
+  box-shadow: 0 0 5px var(--holocron-cyan);
+  opacity: 0.5;
+}
+
+/* 3. Bottom Console ("The Dash") */
+.bottom-console {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--durasteel);
+  border-top: 2px solid var(--faded-transmission);
+  padding: 1rem 2rem;
+  z-index: 2000;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+}
+
+/* "Light Leak" effect on top edge */
+.bottom-console::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--holocron-cyan), transparent);
+  opacity: 0.7;
+}
+
+.console-controls {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  align-items: center;
+}
+
+.nav-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* 4. Vertical Boot-up Animation */
+.boot-sequence {
+  animation: boot-up 0.3s ease-out forwards;
+  transform-origin: bottom;
+  overflow: hidden;
+}
+
+@keyframes boot-up {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes pulse-green {
+  0% {
+    opacity: 0.7;
+    box-shadow: 0 0 5px var(--forest-moon);
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 15px var(--forest-moon);
+  }
+
+  100% {
+    opacity: 0.7;
+    box-shadow: 0 0 5px var(--forest-moon);
+  }
+}
+
+@keyframes blink-fast {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* Add corner accents to articles */
@@ -396,6 +590,29 @@ textarea:focus {
   50% {
     opacity: 0;
   }
+}
+
+/* Command Link (Navigation) */
+.nav-command-link {
+  display: inline-block;
+  margin-right: 1.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--holocron-cyan);
+  border: 1px solid var(--holocron-cyan);
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 1px;
+  background-color: rgba(0, 229, 255, 0.05);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: all 0.3s ease;
+  vertical-align: middle;
+}
+
+.nav-command-link:hover {
+  background-color: var(--holocron-cyan);
+  color: var(--void-black);
+  box-shadow: 0 0 15px var(--holocron-cyan);
+  transform: translateY(-2px);
 }
 
 /* 7. Overseer Deck */

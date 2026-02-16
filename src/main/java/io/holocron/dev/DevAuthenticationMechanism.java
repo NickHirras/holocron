@@ -19,6 +19,10 @@ import jakarta.ws.rs.core.Cookie;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.holocron.user.User;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
+
 @ApplicationScoped
 @Priority(1000) // Ensure this runs before other mechanisms if active
 public class DevAuthenticationMechanism implements HttpAuthenticationMechanism {
@@ -36,11 +40,18 @@ public class DevAuthenticationMechanism implements HttpAuthenticationMechanism {
         if (cookie != null) {
             String email = new String(Base64.getDecoder().decode(cookie.getValue()));
 
-            return Uni.createFrom().item(QuarkusSecurityIdentity.builder()
-                    .setPrincipal(new QuarkusPrincipal(email))
-                    .addAttribute("email", email)
-                    .addRole("user")
-                    .build());
+            return Uni.createFrom().item(() -> {
+                return QuarkusTransaction.requiringNew().call(() -> User.findByEmail(email));
+            })
+                    .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+                    .map(user -> {
+                        String role = (user != null && user.role != null) ? user.role : "user";
+                        return (SecurityIdentity) QuarkusSecurityIdentity.builder()
+                                .setPrincipal(new QuarkusPrincipal(email))
+                                .addAttribute("email", email)
+                                .addRole(role)
+                                .build();
+                    });
         }
 
         return Uni.createFrom().optional(Optional.empty());

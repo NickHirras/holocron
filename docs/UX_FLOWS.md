@@ -61,7 +61,5 @@ For managers/leads to review team progress.
     *   Clicking a member card expands their "Hologram" (Details view).
     *   Shows their latest entry and historical stats.
 
-## 4. Navigation Model
-*   **Sidebar/Navbar**: hidden by default? Or a "Dock" at the bottom?
-*   **Proposal**: Top "HUD" bar for global status (User, Connection, Time). Side "Panel" for navigation that slides out on hover.
+
 

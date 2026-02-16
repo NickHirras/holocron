@@ -23,34 +23,49 @@
     <div id="global-indicator" class="htmx-indicator">
         DECRYPTING...
     </div>
-    <header class="container">
-        <nav>
-            <ul>
-                <li><strong>HOLOCRON</strong></li>
-            </ul>
-            <ul>
-                {#if identity.isAnonymous()}
-                <li><a href="/dev/auth/login" role="button" class="outline">Initialize</a></li>
-                {#else}
-                <li>
-                    <a href="/profile"
-                        style="margin-right: 1rem; color: var(--holocron-cyan); text-decoration: none;">Running as:
-                        {identity.principal.name}</a>
-                    <a href="/dev/auth/logout" role="button" class="outline contrast">Terminate</a>
-                </li>
-                {/if}
-            </ul>
-        </nav>
+
+    <!-- 1. Top HUD (Heads Up Display) -->
+    <header class="hud-header container-fluid">
+        <div class="hud-left">
+            <div id="kyber-status" class="kyber-hex status-neutral" title="System Status"></div>
+            <span class="hud-label">SYS-LOAD: 78%</span>
+        </div>
+        <div class="hud-center">
+            <h1 class="hud-title">HOLOCRON <span class="version">v1.0.0-ALPHA</span></h1>
+        </div>
+        <div class="hud-right">
+            <span class="hud-label">{#if identity.isAnonymous()}UNIDENTIFIED{#else}{identity.principal.name}{/if}</span>
+        </div>
     </header>
 
-    <main class="container">
-        {#insert body /}
+    <!-- 2. Main Content Area (Holographic Projection) -->
+    <main id="main-content" class="container hologram-container">
+        <div class="hologram-overlay"></div>
+        <div class="boot-sequence">
+            {#insert body /}
+        </div>
     </main>
 
-    <footer class="container">
-        <small>System Status: <span style="color: var(--forest-moon)">OPERATIONAL</span> // Holocron
-            v1.0.0-ALPHA</small>
-    </footer>
+    <!-- 3. Bottom Console (The "Dash") -->
+    <nav class="bottom-console container-fluid">
+        <div class="console-controls">
+            {#if identity.isAnonymous()}
+            <a href="/dev/auth/login" role="button" class="console-btn">Initialize Protocol</a>
+            {#else}
+            <div class="nav-group">
+                <a href="/dashboard" class="console-btn">Command Deck</a>
+                <a href="/profile" class="console-btn">Operative Profile</a>
+                {#if identity.hasRole('admin') or identity.hasRole('Lead')}
+                <a href="/overseer" hx-get="/overseer" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true"
+                    class="console-btn special-command">SECTOR COMMAND</a>
+                {/if}
+            </div>
+            <div class="nav-group right">
+                <a href="/dev/auth/logout" role="button" class="console-btn danger">Terminate</a>
+            </div>
+            {/if}
+        </div>
+    </nav>
 </body>
 
 </html>
