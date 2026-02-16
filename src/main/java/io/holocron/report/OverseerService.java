@@ -58,9 +58,15 @@ public class OverseerService {
             // 4. Pre-fetch responses if pulse is active to avoid N+1
             Map<Long, CeremonyResponse> responseMap = new java.util.HashMap<>();
             if (activePulse != null) {
+                // Fetch daily responses safely
                 List<CeremonyResponse> responses = pulseService.findResponses(activePulse, LocalDate.now());
                 responseMap = responses.stream()
-                        .collect(Collectors.toMap(r -> r.user.id, r -> r));
+                        .filter(r -> r.user != null && r.user.id != null)
+                        .collect(Collectors.toMap(
+                                r -> r.user.id,
+                                r -> r,
+                                (existing, replacement) -> existing // Keep first if duplicate
+                        ));
             }
 
             for (TeamMember member : teamMembers) {
