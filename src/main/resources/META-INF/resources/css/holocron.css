@@ -913,8 +913,47 @@ textarea:focus {
 
   /* Fix HUD Header Background */
   .hud-header {
-    background: rgba(232, 228, 217, 0.95);
     /* Durasteel with opacity */
     border-bottom: 2px solid var(--holocron-cyan);
+  }
+
+  /* Side Panel Light Mode Overrides */
+  #side-panel {
+    background-color: rgba(232, 228, 217, 0.98);
+    /* Light durasteel/parchment */
+    border-right: 1px solid var(--holocron-cyan);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  #side-panel-trigger {
+    background: var(--faded-transmission);
+    border: 1px solid var(--holocron-cyan);
+    border-left: none;
+  }
+
+  #side-panel-trigger:hover {
+    background: var(--holocron-cyan);
+    color: white;
+  }
+
+  .side-nav-header {
+    color: var(--starlight);
+    /* Dark blue/grey in light mode */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .side-nav-link {
+    color: var(--starlight);
+  }
+
+  .side-nav-link:hover {
+    background: rgba(0, 86, 179, 0.1);
+    /* Light cyan/blue */
+    color: var(--holocron-cyan);
+  }
+
+  .side-nav-link.active {
+    background: rgba(0, 86, 179, 0.05);
+    color: var(--holocron-cyan);
   }
 }
