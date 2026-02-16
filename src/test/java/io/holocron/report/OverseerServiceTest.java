@@ -107,4 +107,44 @@ public class OverseerServiceTest {
                 .findFirst().orElseThrow();
         assertEquals(OperativeStatus.MISSING, op2.status);
     }
+
+    @Test
+    @TestTransaction
+    public void testAccessControl() {
+        // 1. Setup Data
+        User lead = new User();
+        lead.email = "lead-access@test.com";
+        lead.name = "Lead User";
+        lead.persist();
+
+        User member = new User();
+        member.email = "member-access@test.com";
+        member.name = "Member User";
+        member.persist();
+
+        Team team = new Team();
+        team.name = "Beta Squad";
+        team.persist();
+
+        TeamMember tmLead = new TeamMember();
+        tmLead.user = lead;
+        tmLead.team = team;
+        tmLead.role = "LEAD";
+        tmLead.persist();
+
+        TeamMember tmMember = new TeamMember();
+        tmMember.user = member;
+        tmMember.team = team;
+        tmMember.role = "OPERATIVE";
+        tmMember.persist();
+
+        // 2. Lead should see the team
+        OverseerService.OverseerDashboardDTO leadDashboard = overseerService.getDashboardData(lead);
+        assertEquals(1, leadDashboard.teams.size(), "Lead should see the team");
+        assertEquals("Beta Squad", leadDashboard.teams.get(0).teamName);
+
+        // 3. Member should NOT see the team
+        OverseerService.OverseerDashboardDTO memberDashboard = overseerService.getDashboardData(member);
+        assertEquals(0, memberDashboard.teams.size(), "Member should NOT see the team");
+    }
 }
