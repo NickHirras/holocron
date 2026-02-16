@@ -914,13 +914,13 @@ textarea:focus {
   /* Fix HUD Header Background */
   .hud-header {
     /* Durasteel with opacity */
-    background-color: rgba(232, 228, 217, 0.95);
+    background: rgba(232, 228, 217, 0.95);
     border-bottom: 2px solid var(--holocron-cyan);
   }
 
   /* Side Panel Light Mode Overrides */
   #side-panel {
-    background-color: rgba(232, 228, 217, 0.98);
+    background: rgba(232, 228, 217, 0.98);
     /* Light durasteel/parchment */
     border-right: 1px solid var(--holocron-cyan);
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
