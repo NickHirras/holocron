@@ -24,16 +24,26 @@
         DECRYPTING...
     </div>
 
+    <!-- Side Panel Trigger -->
+    <div id="side-panel-trigger" onclick="toggleSidePanel()"></div>
+
+    <!-- Side Panel Container (HTMX Loaded) -->
+    <aside id="side-panel" hx-get="/components/side-panel" hx-trigger="load" hx-swap="innerHTML">
+        <!-- Content loaded via HTMX -->
+    </aside>
+
     <!-- 1. Top HUD (Heads Up Display) -->
     <header class="hud-header container-fluid">
         <div class="hud-left">
             <div id="kyber-status" class="kyber-hex status-neutral" title="System Status"></div>
-            <span class="hud-label">SYS-LOAD: 78%</span>
+            <span class="hud-label" id="connection-status">CONNECTED</span>
         </div>
         <div class="hud-center">
             <h1 class="hud-title">HOLOCRON <span class="version">v1.0.0-ALPHA</span></h1>
         </div>
         <div class="hud-right">
+            <span class="hud-label" id="system-time">--:--:--</span>
+            <span class="hud-separator">|</span>
             <span class="hud-label">{#if identity.isAnonymous()}UNIDENTIFIED{#else}{identity.principal.name}{/if}</span>
         </div>
     </header>
@@ -46,26 +56,58 @@
         </div>
     </main>
 
-    <!-- 3. Bottom Console (The "Dash") -->
-    <nav class="bottom-console container-fluid">
-        <div class="console-controls">
-            {#if identity.isAnonymous()}
-            <a href="/dev/auth/login" role="button" class="console-btn">Initialize Protocol</a>
-            {#else}
-            <div class="nav-group">
-                <a href="/dashboard" class="console-btn">Command Deck</a>
-                <a href="/profile" class="console-btn">Operative Profile</a>
-                {#if identity.hasRole('admin') or identity.hasRole('Lead')}
-                <a href="/overseer" hx-get="/overseer" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true"
-                    class="console-btn special-command">SECTOR COMMAND</a>
-                {/if}
-            </div>
-            <div class="nav-group right">
-                <a href="/dev/auth/logout" role="button" class="console-btn danger">Terminate</a>
-            </div>
-            {/if}
-        </div>
-    </nav>
+
+
+    <script>
+        // System Time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('system-time').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Side Panel Toggle
+        function toggleSidePanel() {
+            document.getElementById('side-panel').classList.toggle('open');
+        }
+
+        // Close side panel when clicking outside
+        document.addEventListener('click', function (event) {
+            const panel = document.getElementById('side-panel');
+            const trigger = document.getElementById('side-panel-trigger');
+            if (!panel.contains(event.target) && !trigger.contains(event.target) && panel.classList.contains('open')) {
+                panel.classList.remove('open');
+            }
+        });
+
+        // HTMX Connection Status Monitoring
+        document.body.addEventListener('htmx:beforeRequest', function (evt) {
+            const hex = document.getElementById('kyber-status');
+            const label = document.getElementById('connection-status');
+            hex.className = 'kyber-hex status-active'; // Pulse green
+            label.innerText = "TRANSMITTING...";
+        });
+
+        document.body.addEventListener('htmx:afterRequest', function (evt) {
+            const hex = document.getElementById('kyber-status');
+            const label = document.getElementById('connection-status');
+            if (evt.detail.successful) {
+                hex.className = 'kyber-hex status-neutral'; // Cyan/Idle
+                label.innerText = "CONNECTED";
+            } else {
+                hex.className = 'kyber-hex status-alert'; // Red blink
+                label.innerText = "SIGNAL LOST";
+            }
+        });
+
+        document.body.addEventListener('htmx:sendError', function (evt) {
+            const hex = document.getElementById('kyber-status');
+            const label = document.getElementById('connection-status');
+            hex.className = 'kyber-hex status-alert';
+            label.innerText = "OFFLINE";
+        });
+    </script>
 </body>
 
 </html>

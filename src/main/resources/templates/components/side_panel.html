@@ -1,0 +1,33 @@
+<nav class="side-nav-section">
+    <header class="side-nav-header">// MISSION CONTROL</header>
+    <a href="/" class="side-nav-link">
+        SYSTEM ROOT
+    </a>
+    <a href="/dashboard" hx-get="/dashboard" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true"
+        class="side-nav-link">
+        COMMAND DECK
+    </a>
+    <a href="/profile" hx-get="/profile" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true"
+        class="side-nav-link">
+        OPERATIVE PROFILE
+    </a>
+</nav>
+
+{#if teams }
+<nav class="side-nav-section">
+    <header class="side-nav-header">// SECTOR COMMAND</header>
+    {#for team in teams}
+    <a href="/dashboard?teamId={team.id}" hx-get="/dashboard?teamId={team.id}" hx-target="#main-content"
+        hx-swap="innerHTML" hx-push-url="true" class="side-nav-link">
+        {team.name}
+    </a>
+    {/for}
+</nav>
+{/if}
+
+<nav class="side-nav-section" style="margin-top: auto;">
+    <header class="side-nav-header">// PROTOCOLS</header>
+    <a href="/dev/auth/logout" class="side-nav-link" style="color: var(--sith-red);">
+        TERMINATE SESSION
+    </a>
+</nav>

@@ -11,6 +11,7 @@ import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -39,7 +40,8 @@ public class DashboardController {
     @GET
     @Produces(MediaType.TEXT_HTML)
     @jakarta.transaction.Transactional
-    public TemplateInstance index(@QueryParam("teamId") Long teamId) {
+    public TemplateInstance index(@QueryParam("teamId") Long teamId,
+            @HeaderParam("HX-Request") boolean hxRequest) {
         // 1. Identify User
         String email = identity.getPrincipal().getName();
         User user = User.findByEmail(email);
@@ -57,7 +59,10 @@ public class DashboardController {
         // This correctly results in a "No Team" / Drifter state for unassigned users.
 
         // 2. Fetch Teams & Determine Active Sector
-        List<TeamMember> memberships = TeamMember.findByUser(user);
+        List<TeamMember> memberships = java.util.Collections.emptyList();
+        if (user.id != null) {
+            memberships = TeamMember.findByUser(user);
+        }
         List<Team> teams = memberships.stream().map(m -> m.team).toList();
 
         Team team = null;
@@ -95,8 +100,22 @@ public class DashboardController {
 
         List<io.holocron.report.StatsService.LeaderStat> leaderStats = java.util.Collections.emptyList();
         if (user != null) {
-            leaderStats = statsService.getLeaderStats(user);
+            if (user.id != null) {
+                leaderStats = statsService.getLeaderStats(user);
+            }
             ensureStats(user);
+        }
+
+        if (hxRequest) {
+            return dashboard.getFragment("dashboard_content")
+                    .data("user", user)
+                    .data("team", team)
+                    .data("teams", teams)
+                    .data("hasActivePulse", hasActivePulse)
+                    .data("activeCeremony", activeCeremony)
+                    .data("hasSubmitted", hasSubmitted)
+                    .data("leaderStats", leaderStats)
+                    .data("systemTime", java.time.LocalDateTime.now());
         }
 
         return dashboard

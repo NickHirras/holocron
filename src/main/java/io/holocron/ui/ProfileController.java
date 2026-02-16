@@ -8,6 +8,7 @@ import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -31,7 +32,7 @@ public class ProfileController {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance index() {
+    public TemplateInstance index(@HeaderParam("HX-Request") boolean hxRequest) {
         // 1. Identify User
         String email = identity.getPrincipal().getName();
         User user = getOrCreateUser(email);
@@ -45,6 +46,13 @@ public class ProfileController {
         List<Team> availableTeams = allTeams.stream()
                 .filter(t -> !memberTeamIds.contains(t.id))
                 .toList();
+
+        if (hxRequest) {
+            return profile.getFragment("profile_content")
+                    .data("user", user)
+                    .data("memberships", memberships)
+                    .data("availableTeams", availableTeams);
+        }
 
         return profile
                 .data("user", user)
