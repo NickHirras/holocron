@@ -29,35 +29,43 @@
 
     <hr class="holographic-divider" />
 
-    <div class="grid">
-        <!-- Sidebar: Settings -->
-        <aside class="col-3">
+    <div>
+        <!-- Settings Section -->
+        <section style="margin-bottom: 2rem;">
             <article class="hologram-card">
                 <header>
                     <h3><i class="fas fa-cogs"></i> Configuration</h3>
                 </header>
                 <form hx-put="/ceremonies/{ceremony.id}" hx-trigger="change delay:500ms" hx-indicator="#save-status">
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" value="{ceremony.title}" required>
-
-                    <label for="scheduleType">Schedule</label>
-                    <select id="scheduleType" name="scheduleType">
-                        <option value="DAILY" {#if ceremony.scheduleType.equals('DAILY')}selected{/if}>Daily</option>
-                        <option value="WEEKLY" {#if ceremony.scheduleType.equals('WEEKLY')}selected{/if}>Weekly</option>
-                        <option value="BIWEEKLY" {#if ceremony.scheduleType.equals('BIWEEKLY')}selected{/if}>Bi-Weekly
-                        </option>
-                    </select>
-
-                    <label for="isActive">
-                        <input type="checkbox" id="isActive" name="isActive" {#if ceremony.isActive}checked{/if}>
-                        Active Pulse?
-                    </label>
+                    <div class="grid">
+                        <div class="col-4">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title" value="{ceremony.title}" required>
+                        </div>
+                        <div class="col-4">
+                            <label for="scheduleType">Schedule</label>
+                            <select id="scheduleType" name="scheduleType">
+                                <option value="DAILY" {#if ceremony.scheduleType.equals('DAILY')}selected{/if}>Daily
+                                </option>
+                                <option value="WEEKLY" {#if ceremony.scheduleType.equals('WEEKLY')}selected{/if}>Weekly
+                                </option>
+                                <option value="BIWEEKLY" {#if ceremony.scheduleType.equals('BIWEEKLY')}selected{/if}>
+                                    Bi-Weekly</option>
+                            </select>
+                        </div>
+                        <div class="col-4 d-flex align-items-end mb-2">
+                            <label for="isActive">
+                                <input type="checkbox" id="isActive" name="isActive" {#if ceremony.isActive}checked{/if}>
+                                Active Pulse?
+                            </label>
+                        </div>
+                    </div>
                 </form>
             </article>
-        </aside>
+        </section>
 
         <!-- Main Canvas: Questions -->
-        <main class="col-9">
+        <section>
             <div id="question-list" class="question-list" hx-get="/ceremonies/builder/{ceremony.id}/questions"
                 hx-trigger="questionsChanged from:body, newQuestion from:body">
                 {#fragment id=question_list}
@@ -75,7 +83,7 @@
                     <i class="fas fa-plus"></i> Add Transmission Query
                 </button>
             </div>
-        </main>
+        </section>
     </div>
 </div>
 
