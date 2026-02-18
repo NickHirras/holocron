@@ -12,12 +12,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.BadRequestException;
 import java.net.URI;
 import java.util.List;
 
 @Path("/ceremonies/{id}/questions")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class CeremonyQuestionResource {
 
     @GET
@@ -27,6 +27,7 @@ public class CeremonyQuestionResource {
 
     @POST
     @Transactional
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response create(@PathParam("id") Long ceremonyId, CeremonyQuestion question) {
         Ceremony ceremony = Ceremony.findById(ceremonyId);
         if (ceremony == null) {
@@ -46,6 +47,7 @@ public class CeremonyQuestionResource {
     @PUT
     @Path("/{questionId}")
     @Transactional
+    @Consumes(MediaType.APPLICATION_JSON)
     public CeremonyQuestion update(@PathParam("id") Long ceremonyId, @PathParam("questionId") Long questionId,
             CeremonyQuestion question) {
         CeremonyQuestion entity = CeremonyQuestion.findById(questionId);
@@ -63,37 +65,32 @@ public class CeremonyQuestionResource {
     @DELETE
     @Path("/{questionId}")
     @Transactional
+    @Consumes(MediaType.WILDCARD)
     public Response delete(@PathParam("id") Long ceremonyId, @PathParam("questionId") Long questionId) {
         CeremonyQuestion entity = CeremonyQuestion.findById(questionId);
         if (entity == null || !entity.ceremony.id.equals(ceremonyId)) {
             throw new NotFoundException();
         }
         entity.delete();
-        return Response.noContent().build();
+        // Return 200 OK instead of 204 so HTMX performs the swap (deleting the element)
+        return Response.ok().build();
     }
 
     @POST
     @Path("/reorder")
     @Transactional
-    public Response reorder(@PathParam("id") Long ceremonyId, List<Long> questionIds) {
-        // Verify ceremony exists
-        Ceremony ceremony = Ceremony.findById(ceremonyId);
-        if (ceremony == null) {
-            throw new NotFoundException();
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response reorder(@PathParam("id") Long ceremonyId, ReorderRequest request) {
+        List<Long> questionIds = request.values;
+        // Verify all belong to ceremony
+        long count = CeremonyQuestion.count("ceremony.id = ?1 and id in ?2", ceremonyId, questionIds);
+        if (count != questionIds.size()) {
+            throw new BadRequestException("Invalid question IDs");
         }
 
+        // Update sequence
         for (int i = 0; i < questionIds.size(); i++) {
-            Long qId = questionIds.get(i);
-            CeremonyQuestion question = CeremonyQuestion.findById(qId);
-            if (question != null && question.ceremony.id.equals(ceremonyId)) {
-                question.sequence = i + 1; // 1-based sequence
-                // Implicit persistence due to transaction
-            } else {
-                // Skip or error? Design review says "sorting failures" should revert UI.
-                // Ideally we validate all first, but finding by ID inside loop is okay for
-                // small sets.
-                // Providing robustness: only update if belongs to ceremony.
-            }
+            CeremonyQuestion.update("sequence = ?1 where id = ?2", i + 1, questionIds.get(i));
         }
 
         return Response.ok().build();
@@ -102,20 +99,25 @@ public class CeremonyQuestionResource {
     @POST
     @Path("/{questionId}/move")
     @Transactional
+    @Consumes(MediaType.WILDCARD)
     public Response move(@PathParam("id") Long ceremonyId,
             @PathParam("questionId") Long questionId,
             @jakarta.ws.rs.QueryParam("dir") String direction) {
-
         CeremonyQuestion question = CeremonyQuestion.findById(questionId);
-        if (question == null || !question.ceremony.id.equals(ceremonyId)) {
+        if (question == null || !question.ceremony.id.equals(ceremonyId))
             throw new NotFoundException();
-        }
 
         List<CeremonyQuestion> allQuestions = CeremonyQuestion.list("ceremony.id = ?1 order by sequence", ceremonyId);
-        int currentIndex = allQuestions.indexOf(question);
+        int currentIndex = -1;
+        for (int i = 0; i < allQuestions.size(); i++) {
+            if (allQuestions.get(i).id.equals(questionId)) {
+                currentIndex = i;
+                break;
+            }
+        }
 
         if (currentIndex == -1)
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.ok().build(); // Should not happen
 
         if ("UP".equalsIgnoreCase(direction) && currentIndex > 0) {
             CeremonyQuestion other = allQuestions.get(currentIndex - 1);
@@ -129,6 +131,10 @@ public class CeremonyQuestionResource {
             other.sequence = temp;
         }
 
-        return Response.ok().header("HX-Trigger", "questionsChanged").build();
+        return Response.ok().build();
+    }
+
+    public static class ReorderRequest {
+        public List<Long> values;
     }
 }

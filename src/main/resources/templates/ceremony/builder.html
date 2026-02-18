@@ -98,14 +98,27 @@
                     ids.push(card.getAttribute('data-id'));
                 });
 
-                // Trigger HTMX request to update order
-                htmx.ajax('POST', '/ceremonies/{ceremony.id}/questions/reorder', {
-                    values: ids,
-                    target: '#save-status', // Update status
-                    swap: 'innerHTML' // We might need a better response handling for status
+                // Use fetch to ensure JSON content type
+                fetch('/ceremonies/{ceremony.id}/questions/reorder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ values: ids })
+                }).then(function (response) {
+                    if (response.ok) {
+                        document.getElementById('save-status').innerHTML = '<i class="fas fa-check-circle"></i> All changes saved';
+                        document.getElementById('save-status').classList.remove('saving');
+                    } else {
+                        document.getElementById('save-status').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error saving changes';
+                        document.getElementById('save-status').classList.add('error');
+                    }
+                }).catch(function (err) {
+                    document.getElementById('save-status').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error saving changes';
+                    document.getElementById('save-status').classList.add('error');
                 });
 
-                // Optional: Visual feedback "Saving..."
+                // Visual feedback "Saving..."
                 document.getElementById('save-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving order...';
             }
         });

@@ -31,8 +31,8 @@ public class CeremonyQuestionResourceTest {
 
                 // Reorder: 3, 1, 2
                 given()
-                                .contentType(ContentType.JSON)
-                                .body(List.of(q3, q1, q2))
+                                .contentType(ContentType.URLENC)
+                                .formParam("values", q3, q1, q2)
                                 .post("/ceremonies/" + ceremonyId + "/questions/reorder")
                                 .then()
                                 .statusCode(200);
