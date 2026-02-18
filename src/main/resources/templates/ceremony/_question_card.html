@@ -1,0 +1,97 @@
+<div class="question-card" data-id="{question.id}" id="question-{question.id}">
+    <div class="grid">
+        <!-- Drag Handle & Controls -->
+        <div class="col-1 d-flex flex-column align-items-center justify-content-center gap-2">
+            <button class="btn btn-sm btn-ghost mb-1"
+                hx-post="/ceremonies/{question.ceremony.id}/questions/{question.id}/move?dir=UP" hx-swap="none"
+                title="Move Up">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+
+            <i class="fas fa-grip-vertical drag-handle" title="Drag to reorder" style="cursor: move; opacity: 0.7;"></i>
+
+            <button class="btn btn-sm btn-ghost mt-1"
+                hx-post="/ceremonies/{question.ceremony.id}/questions/{question.id}/move?dir=DOWN" hx-swap="none"
+                title="Move Down">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+
+        <!-- Question Content -->
+        <div class="col-11">
+            <!-- Use Builder Controller for Update to get HTML back -->
+            <form hx-put="/ceremonies/builder/{question.ceremony.id}/questions/{question.id}"
+                hx-trigger="change delay:500ms" hx-swap="none"> <!-- Default: Don't swap on text changes -->
+
+                <div class="grid">
+                    <div class="col-8">
+                        <input type="text" name="text" value="{question.text}" class="question-input mb-2"
+                            placeholder="Enter question text..." autocomplete="off">
+
+                        <!-- Dynamic Preview -->
+                        <div class="question-preview text-muted small">
+                            {#if question.type.equals('TEXT')}
+                            <i class="far fa-keyboard"></i> Text Answer
+                            {#else if question.type.equals('SCALE')}
+                            <div class="d-flex align-items-center gap-2">
+                                <span>1</span>
+                                <div class="progress w-25" style="height: 4px;">
+                                    <div class="progress-bar bg-cyan" style="width: 100%"></div>
+                                </div>
+                                <span>5</span>
+                            </div>
+                            {#else if question.type.equals('BOOLEAN')}
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" disabled>Yes</button>
+                                <button class="btn btn-outline-secondary" disabled>No</button>
+                            </div>
+                            {/if}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <select name="type" hx-put="/ceremonies/builder/{question.ceremony.id}/questions/{question.id}"
+                            hx-include="closest form" hx-target="#question-{question.id}" hx-swap="outerHTML">
+                            <option value="TEXT" {#if question.type.equals('TEXT')}selected{/if}>Text</option>
+                            <option value="SCALE" {#if question.type.equals('SCALE')}selected{/if}>Scale (1-5)</option>
+                            <option value="BOOLEAN" {#if question.type.equals('BOOLEAN')}selected{/if}>Yes/No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid mt-2">
+                    <div class="col-6">
+                        <label>
+                            <input type="checkbox" name="isRequired" {#if question.isRequired}checked{/if}>
+                            Required
+                        </label>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button class="btn btn-sm btn-outline-danger"
+                            hx-delete="/ceremonies/builder/{question.ceremony.id}/questions/{question.id}"
+                            hx-target="#question-{question.id}" hx-swap="outerHTML"
+                            hx-confirm="Are you sure you want to delete this question?">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <style>
+        .question-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--holocron-cyan-dim);
+            color: var(--holocron-text);
+            font-size: 1.1rem;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        .question-input:focus {
+            outline: none;
+            border-bottom-color: var(--holocron-cyan);
+            background: rgba(0, 255, 255, 0.05);
+        }
+    </style>
+</div>

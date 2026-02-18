@@ -1,0 +1,196 @@
+{#include layout/base.html}
+{#title}Ceremony Builder | Holocron{/title}
+
+{#body}
+<div class="container">
+
+    <!-- Header -->
+    <div class="grid">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/ceremonies">Ceremonies</a></li>
+                    <li>Builder</li>
+                </ul>
+            </nav>
+            <h1 class="glow-text">
+                Reference: {ceremony.title}
+            </h1>
+            <p class="text-muted">{ceremony.description}</p>
+        </div>
+        <div style="text-align: right;">
+            <span id="save-status" class="status-indicator">
+                <!-- Status will be updated via HTMX out-of-band swaps or events -->
+                <i class="fas fa-check-circle"></i> All changes saved
+            </span>
+        </div>
+    </div>
+
+    <hr class="holographic-divider" />
+
+    <div class="grid">
+        <!-- Sidebar: Settings -->
+        <aside class="col-3">
+            <article class="hologram-card">
+                <header>
+                    <h3><i class="fas fa-cogs"></i> Configuration</h3>
+                </header>
+                <form hx-put="/ceremonies/{ceremony.id}" hx-trigger="change delay:500ms" hx-indicator="#save-status">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" value="{ceremony.title}" required>
+
+                    <label for="scheduleType">Schedule</label>
+                    <select id="scheduleType" name="scheduleType">
+                        <option value="DAILY" {#if ceremony.scheduleType.equals('DAILY')}selected{/if}>Daily</option>
+                        <option value="WEEKLY" {#if ceremony.scheduleType.equals('WEEKLY')}selected{/if}>Weekly</option>
+                        <option value="BIWEEKLY" {#if ceremony.scheduleType.equals('BIWEEKLY')}selected{/if}>Bi-Weekly
+                        </option>
+                    </select>
+
+                    <label for="isActive">
+                        <input type="checkbox" id="isActive" name="isActive" {#if ceremony.isActive}checked{/if}>
+                        Active Pulse?
+                    </label>
+                </form>
+            </article>
+        </aside>
+
+        <!-- Main Canvas: Questions -->
+        <main class="col-9">
+            <div id="question-list" class="question-list" hx-get="/ceremonies/builder/{ceremony.id}/questions"
+                hx-trigger="questionsChanged from:body, newQuestion from:body">
+                {#fragment id=question_list}
+                {#for question in questions}
+                {#include ceremony/_question_card.html question=question /}
+                {/for}
+                {/fragment}
+            </div>
+
+            <!-- Add Question FAB / Card -->
+            <div class="add-question-container">
+                <button class="btn btn-outline-cyber w-100" hx-post="/ceremonies/builder/{ceremony.id}/questions"
+                    hx-target="#question-list" hx-swap="beforeend"
+                    hx-vals='{"text": "New Question", "type": "TEXT", "isRequired": false}'>
+                    <i class="fas fa-plus"></i> Add Transmission Query
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/assets/js/sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var el = document.getElementById('question-list');
+        var sortable = Sortable.create(el, {
+            animation: 150,
+            handle: '.drag-handle',
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                var itemEl = evt.item;
+                var newIndex = evt.newIndex;
+
+                // Collect all IDs in new order
+                var ids = [];
+                document.querySelectorAll('#question-list .question-card').forEach(function (card) {
+                    ids.push(card.getAttribute('data-id'));
+                });
+
+                // Trigger HTMX request to update order
+                htmx.ajax('POST', '/ceremonies/{ceremony.id}/questions/reorder', {
+                    values: ids,
+                    target: '#save-status', // Update status
+                    swap: 'innerHTML' // We might need a better response handling for status
+                });
+
+                // Optional: Visual feedback "Saving..."
+                document.getElementById('save-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving order...';
+            }
+        });
+    });
+
+    // Global HTMX Event Listeners for Save Status
+    document.body.addEventListener('htmx:beforeSend', function (evt) {
+        if (evt.detail.elt.closest('form') || evt.detail.elt.closest('.question-card')) {
+            document.getElementById('save-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            document.getElementById('save-status').classList.add('saving');
+        }
+    });
+
+    document.body.addEventListener('htmx:afterOnLoad', function (evt) {
+        if (evt.detail.elt.closest('form') || evt.detail.elt.closest('.question-card')) {
+            // Simulate a slight delay for "Saving..." to be readable or just switch to Saved
+            setTimeout(function () {
+                document.getElementById('save-status').innerHTML = '<i class="fas fa-check-circle"></i> All changes saved';
+                document.getElementById('save-status').classList.remove('saving');
+            }, 500);
+        }
+    });
+
+    document.body.addEventListener('htmx:responseError', function (evt) {
+        document.getElementById('save-status').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error saving changes';
+        document.getElementById('save-status').classList.add('error');
+    });
+
+</script>
+<style>
+    .status-indicator {
+        font-family: 'Share Tech Mono', monospace;
+        color: var(--holocron-cyan);
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .status-indicator.saving {
+        color: var(--holocron-gold);
+        text-shadow: 0 0 5px var(--holocron-gold);
+    }
+
+    .status-indicator.error {
+        color: var(--holocron-red);
+    }
+
+    .hologram-card {
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid var(--holocron-cyan-dim);
+        backdrop-filter: blur(5px);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        /* Slight chamfer */
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.05);
+    }
+
+    .question-card {
+        background: rgba(10, 10, 20, 0.8);
+        border: 1px solid var(--holocron-cyan-dim);
+        margin-bottom: 1rem;
+        padding: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+    }
+
+    .question-card:hover {
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        border-color: var(--holocron-cyan);
+    }
+
+    .sortable-ghost {
+        opacity: 0.4;
+        background: var(--holocron-cyan-dim);
+    }
+
+    .drag-handle {
+        cursor: move;
+        color: var(--holocron-cyan-dim);
+        padding: 0.5rem;
+    }
+
+    .drag-handle:hover {
+        color: var(--holocron-cyan);
+    }
+</style>
+{/body}
+{/include}
