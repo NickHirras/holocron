@@ -1,0 +1,78 @@
+{#include layout/base.html}
+{#title}Protocol Configuration{/title}
+
+{#body}
+{#fragment id="ceremony_form_content"}
+<div class="container">
+    <hgroup>
+        <h1 class="glitch-text" data-text="PROTOCOL CONFIG">PROTOCOL CONFIG</h1>
+        <h2>{#if ceremony.id}Reconfigure protocol parameters.{#else}Initialize new protocol parameters.{/if}</h2>
+    </hgroup>
+
+    <article class="holocron-card" style="border-left: 5px solid var(--holocron-cyan);">
+        <header>
+            <strong>// PROTOCOL PARAMETERS</strong>
+        </header>
+        <div class="card-body">
+            <form action="{action}" method="POST">
+                <div class="grid">
+                    <div>
+                        <label for="title">Protocol Designation</label>
+                        <input type="text" id="title" name="title" value="{ceremony.title}"
+                            required placeholder="e.g. Daily Briefing">
+                    </div>
+                    <div>
+                        <label for="type">Protocol Type</label>
+                        <select id="type" name="type" required>
+                            {#for t in types}
+                            <option value="{t}" {#if ceremony.type}{#if ceremony.type.name eq t.name}selected{/if}{/if}>{t}</option>
+                            {/for}
+                        </select>
+                    </div>
+                </div>
+
+                <label for="description">Mission Brief</label>
+                <textarea id="description" name="description" rows="3"
+                    placeholder="Describe the purpose of this ceremony...">{ceremony.description}</textarea>
+
+                <div class="grid">
+                    <div>
+                        <label for="teamId">Assigned Sector</label>
+                        <select id="teamId" name="teamId" required>
+                            <option value="">-- Select Sector --</option>
+                            {#for t in teams}
+                            <option value="{t.id}" {#if ceremony.team}{#if ceremony.team.id eq t.id}selected{/if}{/if}>{t.name}</option>
+                            {/for}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="scheduleType">Frequency</label>
+                        <select id="scheduleType" name="scheduleType">
+                            <option value="DAILY" {#if ceremony.scheduleType eq 'DAILY'}selected{/if}>DAILY</option>
+                            <option value="WEEKLY" {#if ceremony.scheduleType eq 'WEEKLY'}selected{/if}>WEEKLY</option>
+                            <option value="BIWEEKLY" {#if ceremony.scheduleType eq 'BIWEEKLY'}selected{/if}>BIWEEKLY</option>
+                            <option value="MONTHLY" {#if ceremony.scheduleType eq 'MONTHLY'}selected{/if}>MONTHLY</option>
+                            <option value="MANUAL" {#if ceremony.scheduleType eq 'MANUAL'}selected{/if}>MANUAL</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>
+                    <input type="checkbox" id="isActive" name="isActive"
+                        {#if ceremony.isActive}checked{/if}>
+                    Activate Protocol Immediately
+                </label>
+
+                <div class="grid" style="margin-top: 1rem;">
+                    <button type="submit" class="contrast">
+                        {#if ceremony.id}Update Protocol{#else}Initialize Protocol{/if}
+                    </button>
+                    <a href="/ceremonies" role="button" class="secondary outline">Abort</a>
+                </div>
+            </form>
+        </div>
+    </article>
+</div>
+{/fragment}
+{/body}
+{/include}

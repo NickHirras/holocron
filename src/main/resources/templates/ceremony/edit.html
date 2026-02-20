@@ -1,0 +1,250 @@
+{#include layout/base.html}
+{#title}Protocol Editor — {ceremony.title}{/title}
+
+{#body}
+{#fragment id="ceremony_edit_content"}
+<div class="container">
+    <hgroup>
+        <h1 class="glitch-text" data-text="PROTOCOL EDITOR">PROTOCOL EDITOR</h1>
+        <h2>Configuring: <span style="color: var(--holocron-cyan);">{ceremony.title}</span>
+            &mdash; {ceremony.team.name}
+            <span class="type-badge type-{ceremony.type}" style="margin-left: 0.5rem;">{ceremony.type}</span>
+        </h2>
+    </hgroup>
+
+    <!-- Ceremony Details Section -->
+    <article style="border-left: 5px solid var(--holocron-cyan);">
+        <header>
+            <div class="grid" style="grid-template-columns: 1fr auto auto;">
+                <strong>// PROTOCOL DETAILS</strong>
+                <span>
+                    {#if ceremony.isActive}
+                    <span class="status-badge active">ACTIVE</span>
+                    {#else}
+                    <span class="status-badge inactive">INACTIVE</span>
+                    {/if}
+                </span>
+                <a href="/ceremonies" class="console-btn" style="font-size: 0.75rem; padding: 0.3rem 0.8rem;">
+                    &larr; BACK TO REGISTRY
+                </a>
+            </div>
+        </header>
+
+        <form action="/ceremonies/{ceremony.id}" method="POST">
+            <div class="grid">
+                <div>
+                    <label for="title">Designation</label>
+                    <input type="text" id="title" name="title" value="{ceremony.title}" required>
+                </div>
+                <div>
+                    <label for="type">Type</label>
+                    <select id="type" name="type" required>
+                        {#for t in types}
+                        <option value="{t}" {#if ceremony.type.name eq t.name}selected{/if}>{t}</option>
+                        {/for}
+                    </select>
+                </div>
+            </div>
+
+            <label for="description">Mission Brief</label>
+            <textarea id="description" name="description" rows="2">{ceremony.description}</textarea>
+
+            <div class="grid">
+                <div>
+                    <label for="teamId">Sector</label>
+                    <select id="teamId" name="teamId" required>
+                        {#for t in teams}
+                        <option value="{t.id}" {#if ceremony.team.id eq t.id}selected{/if}>{t.name}</option>
+                        {/for}
+                    </select>
+                </div>
+                <div>
+                    <label for="scheduleType">Frequency</label>
+                    <select id="scheduleType" name="scheduleType">
+                        <option value="DAILY" {#if ceremony.scheduleType eq 'DAILY'}selected{/if}>DAILY</option>
+                        <option value="WEEKLY" {#if ceremony.scheduleType eq 'WEEKLY'}selected{/if}>WEEKLY</option>
+                        <option value="BIWEEKLY" {#if ceremony.scheduleType eq 'BIWEEKLY'}selected{/if}>BIWEEKLY</option>
+                        <option value="MONTHLY" {#if ceremony.scheduleType eq 'MONTHLY'}selected{/if}>MONTHLY</option>
+                        <option value="MANUAL" {#if ceremony.scheduleType eq 'MANUAL'}selected{/if}>MANUAL</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>
+                <input type="checkbox" name="isActive" {#if ceremony.isActive}checked{/if}>
+                Protocol Active
+            </label>
+
+            <button type="submit" class="console-btn" style="margin-top: 0.5rem;">
+                UPDATE PROTOCOL
+            </button>
+        </form>
+    </article>
+
+    <!-- Question Management Section -->
+    <article style="border-left: 5px solid var(--rebel-orange);">
+        <header>
+            <strong>// QUERY MATRIX &mdash; {questions.size} {questions.size == 1 ? 'QUERY' : 'QUERIES'} CONFIGURED</strong>
+        </header>
+
+        <!-- Question List (HTMX target) -->
+        <div id="question-list">
+            {#fragment id=question_list}
+            {#if questions.size > 0}
+            <table role="grid" class="question-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 50px;">#</th>
+                        <th scope="col">Query Text</th>
+                        <th scope="col" style="width: 100px;">Type</th>
+                        <th scope="col" style="width: 80px;">Req?</th>
+                        <th scope="col" style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for q in questions}
+                    <tr class="question-row" id="question-row-{q.id}">
+                        <td>
+                            <span class="question-seq">{q.sequence}</span>
+                        </td>
+                        <td>
+                            <div class="question-text-display" id="display-{q.id}">
+                                <span>{q.text}</span>
+                                <button type="button" class="edit-trigger"
+                                    onclick="toggleEdit({q.id})" title="Edit">&#9998;</button>
+                            </div>
+                            <div class="question-text-edit" id="edit-{q.id}" style="display: none;">
+                                <form hx-post="/ceremonies/{ceremony.id}/questions/{q.id}"
+                                    hx-target="#question-list"
+                                    hx-swap="innerHTML"
+                                    hx-indicator="#global-indicator">
+                                    <input type="text" name="text" value="{q.text}" required
+                                        style="margin-bottom: 0.5rem;">
+                                    <div class="grid" style="grid-template-columns: 1fr 1fr auto auto; gap: 0.5rem;">
+                                        <select name="type">
+                                            <option value="TEXT" {#if q.type eq 'TEXT'}selected{/if}>TEXT</option>
+                                            <option value="SCALE" {#if q.type eq 'SCALE'}selected{/if}>SCALE</option>
+                                            <option value="BOOLEAN" {#if q.type eq 'BOOLEAN'}selected{/if}>BOOLEAN</option>
+                                            <option value="SELECTION" {#if q.type eq 'SELECTION'}selected{/if}>SELECTION</option>
+                                        </select>
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                                            <input type="checkbox" name="isRequired" {#if q.isRequired}checked{/if}
+                                                style="margin: 0;"> Req
+                                        </label>
+                                        <button type="submit" class="console-btn"
+                                            style="font-size: 0.7rem; padding: 0.3rem 0.6rem;">SAVE</button>
+                                        <button type="button" class="console-btn danger"
+                                            style="font-size: 0.7rem; padding: 0.3rem 0.6rem;"
+                                            onclick="toggleEdit({q.id})">CANCEL</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        <td><span class="type-badge type-{q.type}">{q.type}</span></td>
+                        <td>
+                            {#if q.isRequired}
+                            <span style="color: var(--rebel-orange);">YES</span>
+                            {#else}
+                            <span style="color: var(--faded-transmission);">NO</span>
+                            {/if}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <!-- Move Up -->
+                                <button class="console-btn" style="font-size: 0.7rem; padding: 0.3rem 0.5rem;"
+                                    hx-post="/ceremonies/{ceremony.id}/questions/{q.id}/move/up"
+                                    hx-target="#question-list"
+                                    hx-swap="innerHTML"
+                                    {#if q_count == 1}disabled{/if}
+                                    title="Move Up">&uarr;</button>
+                                <!-- Move Down -->
+                                <button class="console-btn" style="font-size: 0.7rem; padding: 0.3rem 0.5rem;"
+                                    hx-post="/ceremonies/{ceremony.id}/questions/{q.id}/move/down"
+                                    hx-target="#question-list"
+                                    hx-swap="innerHTML"
+                                    {#if q_count == questions.size}disabled{/if}
+                                    title="Move Down">&darr;</button>
+                                <!-- Delete -->
+                                <button class="console-btn danger" style="font-size: 0.7rem; padding: 0.3rem 0.5rem;"
+                                    hx-post="/ceremonies/{ceremony.id}/questions/{q.id}/delete"
+                                    hx-target="#question-list"
+                                    hx-swap="innerHTML"
+                                    hx-confirm="Remove query [{q.text}]?"
+                                    title="Delete">&#x2715;</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+            {#else}
+            <div style="text-align: center; padding: 2rem; color: var(--faded-transmission);">
+                <p>No queries configured. Add your first question below.</p>
+            </div>
+            {/if}
+            {/fragment}
+        </div>
+
+        <!-- Add New Question Form -->
+        <div class="add-question-form" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--faded-transmission);">
+            <header style="margin-bottom: 0.5rem;">
+                <strong style="color: var(--forest-moon);">+ ADD NEW QUERY</strong>
+            </header>
+            <form hx-post="/ceremonies/{ceremony.id}/questions"
+                hx-target="#question-list"
+                hx-swap="innerHTML"
+                hx-indicator="#global-indicator"
+                hx-on::after-request="if(event.detail.successful) this.reset()">
+
+                <div class="grid" style="grid-template-columns: 1fr auto auto auto; gap: 0.5rem; align-items: end;">
+                    <div>
+                        <label for="new-q-text" style="font-size: 0.8rem;">Query Text</label>
+                        <input type="text" id="new-q-text" name="text" required
+                            placeholder="Enter the question to ask operatives...">
+                    </div>
+                    <div>
+                        <label for="new-q-type" style="font-size: 0.8rem;">Type</label>
+                        <select id="new-q-type" name="type">
+                            <option value="TEXT">TEXT</option>
+                            <option value="SCALE">SCALE</option>
+                            <option value="BOOLEAN">BOOLEAN</option>
+                            <option value="SELECTION">SELECTION</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center;">
+                        <label style="font-size: 0.8rem;">Required</label>
+                        <input type="checkbox" name="isRequired" style="margin-top: 0.5rem;">
+                    </div>
+                    <div>
+                        <button type="submit" class="console-btn special-command"
+                            style="padding: 0.5rem 1rem; white-space: nowrap;">
+                            + ADD QUERY
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </article>
+</div>
+
+<script>
+    function toggleEdit(questionId) {
+        var display = document.getElementById('display-' + questionId);
+        var edit = document.getElementById('edit-' + questionId);
+        if (display && edit) {
+            if (edit.style.display === 'none') {
+                display.style.display = 'none';
+                edit.style.display = 'block';
+                // Focus the text input
+                var input = edit.querySelector('input[name="text"]');
+                if (input) input.focus();
+            } else {
+                display.style.display = 'flex';
+                edit.style.display = 'none';
+            }
+        }
+    }
+</script>
+{/fragment}
+{/body}
+{/include}
