@@ -7,6 +7,8 @@
 
 Holocron is a premium, high-performance platform designed for elite engineering teams to manage their project ceremonies. Think of it as **Google Forms meets the Jedi Archives**—structured, automated, and beautifully low-friction.
 
+[Screen recording 2026-02-20 9.28.54 AM.webm](https://github.com/user-attachments/assets/8a256acf-1cf9-4d13-acfe-c062ca5c58ad)
+
 ---
 
 ## ⚡ The Concept
