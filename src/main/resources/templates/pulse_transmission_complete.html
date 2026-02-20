@@ -1,0 +1,17 @@
+<article class="debrief-panel debrief-complete step-enter">
+    <div class="transmission-success">
+        <div class="success-icon">&#x1F4E1;</div>
+        <h2 class="typing-text" data-text="TRANSMISSION COMPLETE"></h2>
+        <p class="success-subtitle">Debrief logged. The Council has received your report.</p>
+
+        {#if user.stats}
+        <div class="success-stats">
+            {#include components/rank_card.html /}
+        </div>
+        {/if}
+
+        <div class="success-actions">
+            <a href="/dashboard" class="console-btn">Return to Command Deck</a>
+        </div>
+    </div>
+</article>

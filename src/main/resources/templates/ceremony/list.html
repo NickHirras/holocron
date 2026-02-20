@@ -1,0 +1,85 @@
+{#include layout/base.html}
+{#title}Ceremony Registry{/title}
+
+{#body}
+{#fragment id="ceremony_list_content"}
+<div class="container">
+    <hgroup>
+        <h1 class="glitch-text" data-text="CEREMONY REGISTRY">CEREMONY REGISTRY</h1>
+        <h2>Manage team protocols and communication rituals.</h2>
+    </hgroup>
+
+    <div class="grid">
+        <article>
+            <header>
+                <div class="grid" style="grid-template-columns: 1fr auto;">
+                    <strong>// ACTIVE PROTOCOLS</strong>
+                    <a href="/ceremonies/new" role="button" class="contrast outline"
+                        style="width: auto; margin-left: auto;">Initialize Protocol</a>
+                </div>
+            </header>
+
+            <table role="grid">
+                <thead>
+                    <tr>
+                        <th scope="col">Designation</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Sector</th>
+                        <th scope="col">Schedule</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for c in ceremonies}
+                    <tr>
+                        <td><strong>{c.title}</strong></td>
+                        <td>
+                            <span class="type-badge type-{c.type}">{c.type}</span>
+                        </td>
+                        <td>{c.team.name}</td>
+                        <td>{c.scheduleType ?: '—'}</td>
+                        <td>
+                            <span id="status-{c.id}"
+                                hx-post="/ceremonies/{c.id}/toggle-active"
+                                hx-target="#status-{c.id}"
+                                hx-swap="outerHTML"
+                                style="cursor: pointer;"
+                                title="Click to toggle">
+                                {#if c.isActive}
+                                <span class="status-badge active">ACTIVE</span>
+                                {#else}
+                                <span class="status-badge inactive">INACTIVE</span>
+                                {/if}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a href="/ceremonies/{c.id}/edit" class="console-btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+                                    CONFIGURE
+                                </a>
+                                <form action="/ceremonies/{c.id}/delete" method="POST" style="margin: 0;"
+                                    onsubmit="return confirm('Decommission protocol [{c.title}]? All associated data will be purged.');">
+                                    <button type="submit" class="console-btn danger" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+                                        PURGE
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {/for}
+                    {#if ceremonies.size == 0}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--faded-transmission);">
+                            No protocols registered. Initialize a new ceremony above.
+                        </td>
+                    </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </article>
+    </div>
+</div>
+{/fragment}
+{/body}
+{/include}

@@ -2,6 +2,7 @@ package io.holocron.ui;
 
 import io.holocron.audit.AuditEntry;
 import io.holocron.ceremony.Ceremony;
+import io.holocron.ceremony.CeremonyQuestion;
 import io.holocron.ceremony.CeremonyType;
 import io.holocron.pulse.PulseService;
 import io.holocron.team.Team;
@@ -70,15 +71,17 @@ public class PulseControllerTest {
         given()
                 .when().get("/pulse")
                 .then()
-                .statusCode(200);
+                .statusCode(200)
+                .body(containsString("MISSION DEBRIEF"));
     }
 
     @Test
     @TestSecurity(user = "unknown@holocron.io", roles = "user")
     public void testUnknownUserAccess() {
+        Team eng = Team.find("name", "Engineering").firstResult();
         given()
                 .redirects().follow(false)
-                .when().get("/pulse/1")
+                .when().get("/pulse/" + eng.id)
                 .then()
                 .statusCode(401);
     }
@@ -98,14 +101,15 @@ public class PulseControllerTest {
         userTransaction.commit();
 
         try {
-            // Submit a response
+            // Submit a response — should return Transmission Complete fragment
             given()
                     .contentType("application/x-www-form-urlencoded")
                     .formParam("comments", "Doing great!")
                     .redirects().follow(false)
                     .when().post("/pulse/" + team.id)
                     .then()
-                    .statusCode(200) // Expect OK with fragment now
+                    .statusCode(200)
+                    .body(containsString("TRANSMISSION COMPLETE"))
                     .body(containsString("rank-card"));
 
             // Verify Audit Entry
@@ -146,6 +150,7 @@ public class PulseControllerTest {
                     .when().post("/pulse/" + team.id)
                     .then()
                     .statusCode(200)
+                    .body(containsString("TRANSMISSION COMPLETE"))
                     .body(containsString("rank-card"))
                     .body(containsString("id=\"rank-card-component\""))
                     .body(containsString("Streak"));
@@ -153,6 +158,90 @@ public class PulseControllerTest {
         } finally {
             userTransaction.begin();
             Ceremony.delete("title", "Gamification Pulse");
+            userTransaction.commit();
+        }
+    }
+
+    @Test
+    @TestSecurity(user = "alice@holocron.io", roles = "LEAD")
+    public void testStepEndpointReturnsQuestionFragment() throws Exception {
+        userTransaction.begin();
+        Team team = Team.find("name", "Engineering").firstResult();
+        Ceremony c = new Ceremony();
+        c.team = team;
+        c.type = CeremonyType.PULSE;
+        c.isActive = true;
+        c.title = "Step Test Pulse";
+        c.persist();
+
+        CeremonyQuestion q = new CeremonyQuestion();
+        q.ceremony = c;
+        q.text = "How are you feeling today?";
+        q.type = "SCALE";
+        q.sequence = 1;
+        q.isRequired = true;
+        q.persist();
+        userTransaction.commit();
+
+        try {
+            // Step 0 should return the question fragment
+            given()
+                    .when().get("/pulse/" + team.id + "/step/0")
+                    .then()
+                    .statusCode(200)
+                    .body(containsString("How are you feeling today?"))
+                    .body(containsString("QUERY 1"));
+
+            // Step 1 (beyond questions count) should return comments step
+            given()
+                    .when().get("/pulse/" + team.id + "/step/1")
+                    .then()
+                    .statusCode(200)
+                    .body(containsString("FINAL QUERY"))
+                    .body(containsString("comments"));
+        } finally {
+            userTransaction.begin();
+            CeremonyQuestion.delete("ceremony", c);
+            Ceremony.delete("title", "Step Test Pulse");
+            userTransaction.commit();
+        }
+    }
+
+    @Test
+    @TestSecurity(user = "alice@holocron.io", roles = "LEAD")
+    public void testPulseShowsDebriefUI() throws Exception {
+        userTransaction.begin();
+        Team team = Team.find("name", "Engineering").firstResult();
+        Ceremony c = new Ceremony();
+        c.team = team;
+        c.type = CeremonyType.PULSE;
+        c.isActive = true;
+        c.title = "Debrief UI Pulse";
+        c.persist();
+
+        CeremonyQuestion q = new CeremonyQuestion();
+        q.ceremony = c;
+        q.text = "Rate your morale";
+        q.type = "SCALE";
+        q.sequence = 1;
+        q.isRequired = false;
+        q.persist();
+        userTransaction.commit();
+
+        try {
+            given()
+                    .redirects().follow(true)
+                    .when().get("/pulse/" + team.id)
+                    .then()
+                    .statusCode(200)
+                    .body(containsString("MISSION DEBRIEF"))
+                    .body(containsString("debrief-container"))
+                    .body(containsString("Rate your morale"))
+                    .body(containsString("debrief-progress"));
+        } finally {
+            userTransaction.begin();
+            CeremonyQuestion.delete("ceremony", c);
+            Ceremony.delete("title", "Debrief UI Pulse");
             userTransaction.commit();
         }
     }

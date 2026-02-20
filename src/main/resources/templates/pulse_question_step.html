@@ -1,0 +1,41 @@
+<article class="debrief-panel step-enter" id="debrief-current-step" data-step="{stepIndex}" data-total="{totalSteps}">
+    <header>
+        <span class="step-indicator">QUERY {stepIndex + 1} / {totalSteps}</span>
+        {#if question.isRequired}<span class="step-required">* REQUIRED</span>{/if}
+    </header>
+    <div class="debrief-question">
+        <p class="typing-text" data-text="{question.text}"></p>
+    </div>
+
+    <div class="debrief-input">
+        {#if question.type == 'SCALE'}
+        <div class="scale-selector">
+            {#for i in scaleValues}
+            <label class="scale-option">
+                <input type="radio" name="question_{question.id}" value="{i}"
+                    {#if question.isRequired}required{/if}
+                    onchange="document.getElementById('next-btn').disabled = false">
+                <span class="scale-value">{i}</span>
+            </label>
+            {/for}
+        </div>
+        {#else if question.type == 'TEXT'}
+        <textarea name="question_{question.id}" id="question_{question.id}" rows="3"
+            placeholder="Enter your transmission..."
+            {#if question.isRequired}required{/if}
+            oninput="document.getElementById('next-btn').disabled = false"></textarea>
+        {#else}
+        <input type="text" name="question_{question.id}" id="question_{question.id}"
+            placeholder="Enter your response..."
+            oninput="document.getElementById('next-btn').disabled = false">
+        {/if}
+    </div>
+
+    <footer class="debrief-actions">
+        <button type="button" id="next-btn" class="console-btn"
+            onclick="advanceStep({stepIndex + 1}, {totalSteps}, {teamId})"
+            {#if question.isRequired}disabled{/if}>
+            NEXT QUERY &rarr;
+        </button>
+    </footer>
+</article>

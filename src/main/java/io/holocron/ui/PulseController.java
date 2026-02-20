@@ -7,12 +7,11 @@ import io.holocron.team.Team;
 import io.holocron.user.User;
 import io.holocron.user.UserStats;
 import io.quarkus.qute.Template;
-import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -39,10 +38,17 @@ public class PulseController {
     @Inject
     Template pulse;
 
+    @Inject
+    Template pulse_question_step;
+
+    @Inject
+    Template pulse_comments_step;
+
+    @Inject
+    Template pulse_transmission_complete;
+
     @GET
     public Response index() {
-        // For now, default to "Engineering"
-        // In real app, would use logged-in user's team
         Team team = Team.find("name", "Engineering").firstResult();
         if (team == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Team not found").build();
@@ -60,41 +66,91 @@ public class PulseController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        // Use logged-in user
         String email = identity.getPrincipal().getName();
         User user = User.findByEmail(email);
         if (user == null) {
-            // If user not found in local DB, returning 401 or creating ephemeral?
-            // For rigorous security, 401.
             return Response.status(Response.Status.UNAUTHORIZED).entity("User not found in roster").build();
         }
 
         Optional<Ceremony> activePulse = pulseService.findActivePulse(team);
         if (activePulse.isEmpty()) {
-            // Pass user to template so we can say "Hello Alice"
-            return Response.ok(pulse.data("team", team).data("user", user).data("noActivePulse", true)).build();
+            return Response.ok(pulse.data("team", team)
+                    .data("user", user)
+                    .data("noActivePulse", true)
+                    .data("hasSubmitted", false)
+                    .data("totalSteps", 0)).build();
         }
 
         Ceremony ceremony = activePulse.get();
 
         if (pulseService.hasSubmitted(ceremony, user, java.time.LocalDate.now())) {
             return Response.ok(pulse.data("team", team)
+                    .data("user", user)
                     .data("hasSubmitted", true)
-                    .data("noActivePulse", false)).build();
+                    .data("noActivePulse", false)
+                    .data("totalSteps", 0)).build();
         }
 
-        List<CeremonyQuestion> questions = CeremonyQuestion.find("ceremony = ?1 order by sequence", ceremony).list();
+        List<CeremonyQuestion> questions = CeremonyQuestion
+                .find("ceremony = ?1 order by sequence", ceremony).list();
         List<Integer> scaleValues = List.of(1, 2, 3, 4, 5);
+        // totalSteps = questions + 1 (comments step)
+        int totalSteps = questions.size() + 1;
 
         ensureStats(user);
 
         return Response.ok(pulse.data("team", team)
+                .data("user", user)
                 .data("ceremony", ceremony)
                 .data("questions", questions)
                 .data("scaleValues", scaleValues)
-                .data("user", user)
                 .data("noActivePulse", false)
-                .data("hasSubmitted", false)).build();
+                .data("hasSubmitted", false)
+                .data("totalSteps", totalSteps)).build();
+    }
+
+    /**
+     * HTMX endpoint: returns the next question step as an HTML fragment.
+     */
+    @GET
+    @Path("/{teamId}/step/{stepIndex}")
+    @Produces(MediaType.TEXT_HTML)
+    @Transactional
+    public Response questionStep(
+            @PathParam("teamId") Long teamId,
+            @PathParam("stepIndex") int stepIndex) {
+        Team team = Team.findById(teamId);
+        if (team == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Optional<Ceremony> activePulse = pulseService.findActivePulse(team);
+        if (activePulse.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Ceremony ceremony = activePulse.get();
+        List<CeremonyQuestion> questions = CeremonyQuestion
+                .find("ceremony = ?1 order by sequence", ceremony).list();
+        int totalSteps = questions.size() + 1; // +1 for comments
+
+        // If stepIndex >= questions.size(), show comments step
+        if (stepIndex >= questions.size()) {
+            return Response.ok(pulse_comments_step
+                    .data("stepIndex", stepIndex)
+                    .data("totalSteps", totalSteps)
+                    .data("teamId", teamId)).build();
+        }
+
+        CeremonyQuestion question = questions.get(stepIndex);
+        List<Integer> scaleValues = List.of(1, 2, 3, 4, 5);
+
+        return Response.ok(pulse_question_step
+                .data("question", question)
+                .data("scaleValues", scaleValues)
+                .data("stepIndex", stepIndex)
+                .data("totalSteps", totalSteps)
+                .data("teamId", teamId)).build();
     }
 
     @POST
@@ -102,21 +158,28 @@ public class PulseController {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     @Transactional
-    public TemplateInstance submit(@PathParam("teamId") Long teamId, MultivaluedMap<String, String> formParams) {
+    public Response submit(
+            @PathParam("teamId") Long teamId,
+            @HeaderParam("HX-Request") String hxRequest,
+            MultivaluedMap<String, String> formParams) {
         Team team = Team.findById(teamId);
-        if (team == null)
-            // Error handling could be better, but for now returning error checks
-            return io.quarkus.qute.Qute.fmt("<div class='error'>Team not found</div>").instance();
+        if (team == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("<div class='error'>Team not found</div>").build();
+        }
 
         String email = identity.getPrincipal().getName();
         User user = User.findByEmail(email);
         if (user == null) {
-            return io.quarkus.qute.Qute.fmt("<div class='error'>User not found</div>").instance();
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("<div class='error'>User not found</div>").build();
         }
 
         Optional<Ceremony> activePulse = pulseService.findActivePulse(team);
-        if (activePulse.isEmpty())
-            return io.quarkus.qute.Qute.fmt("<div class='error'>No active pulse</div>").instance();
+        if (activePulse.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("<div class='error'>No active pulse</div>").build();
+        }
 
         Ceremony ceremony = activePulse.get();
 
@@ -130,36 +193,27 @@ public class PulseController {
                     Long qId = Long.parseLong(questionIdStr);
                     answers.put(qId, formParams.getFirst(key));
                 } catch (NumberFormatException e) {
-                    // ignore
+                    // ignore malformed keys
                 }
             }
         }
 
         try {
             pulseService.submitResponse(ceremony, user, answers, comments);
-
-            // Re-fetch user to get updated stats with fresh caching
-            user = User.findById(user.id);
-            ensureStats(user); // Ensure stats exist and are attached
-
-            // Return the updated rank card fragment for HTMX to swap
-            return io.quarkus.qute.Qute.fmt("{#include components/rank_card.html /}")
-                    .data("user", user)
-                    .instance();
-
         } catch (IllegalStateException e) {
-            // Already submitted, just return current stats
-            user = User.findById(user.id);
-            ensureStats(user);
-            return io.quarkus.qute.Qute.fmt("{#include components/rank_card.html /}")
-                    .data("user", user)
-                    .instance();
+            // Already submitted — fall through to success state
         }
+
+        user = User.findById(user.id);
+        ensureStats(user);
+
+        // Return the "Transmission Complete" fragment
+        return Response.ok(pulse_transmission_complete
+                .data("user", user)).build();
     }
 
     private void ensureStats(User user) {
         if (user.stats == null) {
-            // Try fetching manually
             UserStats stats = UserStats.findByUser(user);
             if (stats == null) {
                 stats = new UserStats();

@@ -958,3 +958,434 @@ textarea:focus {
     color: var(--holocron-cyan);
   }
 }
+
+/* ============================================================
+   11. MISSION DEBRIEF (Holographic Immersion - Pulse UI)
+   ============================================================ */
+
+/* Container */
+.debrief-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header */
+.debrief-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.debrief-title {
+  font-size: 2rem;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.25rem;
+}
+
+.debrief-subtitle {
+  color: var(--faded-transmission);
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Progress Bar */
+.debrief-progress {
+  position: relative;
+  height: 4px;
+  background: rgba(0, 229, 255, 0.1);
+  margin-bottom: 2rem;
+  overflow: visible;
+}
+
+.debrief-progress-bar {
+  height: 100%;
+  background: var(--holocron-cyan);
+  box-shadow: 0 0 8px var(--holocron-cyan);
+  transition: width 0.6s ease;
+  position: relative;
+}
+
+.debrief-progress-bar::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  background: var(--holocron-cyan);
+  box-shadow: 0 0 12px var(--holocron-cyan);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.debrief-progress-label {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  font-size: 0.7rem;
+  color: var(--faded-transmission);
+  letter-spacing: 0.15em;
+}
+
+/* Step Panel */
+.debrief-panel {
+  position: relative;
+  border: 1px solid var(--faded-transmission);
+  background: rgba(13, 27, 42, 0.85);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.debrief-panel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.step-indicator {
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.75rem;
+  color: var(--holocron-cyan);
+  letter-spacing: 0.2em;
+}
+
+.step-required {
+  font-size: 0.7rem;
+  color: var(--rebel-orange);
+  letter-spacing: 0.1em;
+}
+
+/* Step Enter Animation */
+.step-enter {
+  animation: step-fade-in 0.5s ease-out forwards;
+}
+
+@keyframes step-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typing Text */
+.typing-text {
+  visibility: hidden;
+  font-size: 1.1rem;
+  color: var(--starlight);
+  min-height: 1.5em;
+  line-height: 1.6;
+  border-right: 2px solid var(--holocron-cyan);
+  animation: cursor-blink 0.8s step-end infinite;
+  display: inline-block;
+  padding-right: 4px;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { border-color: var(--holocron-cyan); }
+  50% { border-color: transparent; }
+}
+
+/* Question Area */
+.debrief-question {
+  margin-bottom: 1.5rem;
+}
+
+.debrief-input {
+  margin-bottom: 1.5rem;
+}
+
+.debrief-input textarea,
+.debrief-input input[type="text"] {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--faded-transmission);
+  color: var(--holocron-cyan);
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.debrief-input textarea:focus,
+.debrief-input input[type="text"]:focus {
+  border-color: var(--holocron-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+  outline: none;
+}
+
+/* Scale Selector (Radio Buttons as Holographic Tiles) */
+.scale-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.scale-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.scale-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.scale-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--faded-transmission);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--starlight);
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.scale-option input[type="radio"]:checked + .scale-value {
+  background: var(--holocron-cyan);
+  color: var(--void-black);
+  border-color: var(--holocron-cyan);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+  transform: scale(1.15);
+}
+
+.scale-option:hover .scale-value {
+  border-color: var(--holocron-cyan);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Actions Footer */
+.debrief-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid rgba(0, 229, 255, 0.1);
+  padding-top: 1rem;
+}
+
+.debrief-actions .console-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Transmission Complete */
+.debrief-complete {
+  text-align: center;
+  border-color: var(--forest-moon);
+}
+
+.transmission-success {
+  padding: 1rem;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: pulse-success 2s ease-in-out infinite;
+}
+
+@keyframes pulse-success {
+  0%   { transform: scale(1); filter: drop-shadow(0 0 5px var(--forest-moon)); }
+  50%  { transform: scale(1.1); filter: drop-shadow(0 0 20px var(--forest-moon)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--forest-moon)); }
+}
+
+.success-subtitle {
+  color: var(--forest-moon);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.success-stats {
+  margin: 1.5rem 0;
+}
+
+.success-actions {
+  margin-top: 1.5rem;
+}
+
+/* Debrief success (already submitted) */
+.debrief-success {
+  border-color: var(--forest-moon);
+}
+
+/* ============================================================
+   12. CEREMONY MANAGEMENT (Protocol Editor)
+   ============================================================ */
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+.status-badge.active {
+  color: var(--forest-moon);
+  border-color: var(--forest-moon);
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2);
+}
+
+.status-badge.inactive {
+  color: var(--faded-transmission);
+  border-color: var(--faded-transmission);
+  background: rgba(75, 91, 110, 0.1);
+}
+
+/* Type Badges */
+.type-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--faded-transmission);
+  color: var(--faded-transmission);
+  background: rgba(75, 91, 110, 0.1);
+}
+
+.type-badge.type-PULSE {
+  color: var(--holocron-cyan);
+  border-color: var(--holocron-cyan);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.type-badge.type-STANDUP {
+  color: var(--forest-moon);
+  border-color: var(--forest-moon);
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.type-badge.type-RETROSPECTIVE {
+  color: var(--rebel-orange);
+  border-color: var(--rebel-orange);
+  background: rgba(255, 157, 0, 0.1);
+}
+
+.type-badge.type-PLANNING {
+  color: #bb86fc;
+  border-color: #bb86fc;
+  background: rgba(187, 134, 252, 0.1);
+}
+
+.type-badge.type-TEXT {
+  color: var(--holocron-cyan);
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+.type-badge.type-SCALE {
+  color: var(--rebel-orange);
+  border-color: rgba(255, 157, 0, 0.3);
+}
+
+.type-badge.type-BOOLEAN {
+  color: var(--forest-moon);
+  border-color: rgba(0, 255, 65, 0.3);
+}
+
+.type-badge.type-SELECTION {
+  color: #bb86fc;
+  border-color: rgba(187, 134, 252, 0.3);
+}
+
+/* Question Table */
+.question-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.question-table th {
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--faded-transmission);
+  border-bottom: 1px solid var(--faded-transmission);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.question-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(75, 91, 110, 0.2);
+  vertical-align: middle;
+}
+
+.question-row {
+  transition: background 0.2s ease;
+}
+
+.question-row:hover {
+  background: rgba(0, 229, 255, 0.03);
+}
+
+.question-seq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--faded-transmission);
+  color: var(--holocron-cyan);
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.75rem;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Inline Edit */
+.question-text-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-trigger {
+  background: none;
+  border: none;
+  color: var(--faded-transmission);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  clip-path: none;
+  box-shadow: none;
+}
+
+.question-row:hover .edit-trigger {
+  opacity: 1;
+}
+
+.edit-trigger:hover {
+  color: var(--holocron-cyan);
+}
+
+/* Add Question Form */
+.add-question-form {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--faded-transmission);
+}

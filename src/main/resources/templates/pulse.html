@@ -1,62 +1,176 @@
 {#include layout/base.html}
-{#title}Team Pulse{/title}
+{#title}Mission Debrief{/title}
 
 {#body}
-<div class="grid">
-    <div>
-        <h1>{team.name} Pulse</h1>
-        <p>Periodic team health check-in.</p>
+<div class="debrief-container">
+    <!-- Header: Mission Debrief Banner -->
+    <div class="debrief-header">
+        <h1 class="debrief-title glitch-text" data-text="MISSION DEBRIEF">MISSION DEBRIEF</h1>
+        <p class="debrief-subtitle">{team.name} &mdash; Pulse Protocol</p>
     </div>
+
+    {#if noActivePulse}
+    <article class="debrief-panel">
+        <header><strong>// NO ACTIVE SIGNAL</strong></header>
+        <p class="typing-text" data-text="No active Pulse ceremony detected for this sector. Awaiting command signal...">
+        </p>
+        <footer>
+            <a href="/dashboard" role="button" class="console-btn">Return to Command Deck</a>
+        </footer>
+    </article>
+
+    {#else if hasSubmitted}
+    <article class="debrief-panel debrief-success">
+        <header><strong>✅ TRANSMISSION LOGGED</strong></header>
+        <p class="typing-text" data-text="Your debrief has been recorded in the Holocron archives. Well done, Commander.">
+        </p>
+        <footer>
+            <a href="/dashboard" role="button" class="console-btn">Return to Command Deck</a>
+        </footer>
+    </article>
+
+    {#else}
+    <!-- Hidden form that accumulates all answers -->
+    <form id="debrief-form" action="/pulse/{team.id}" method="POST"
+        hx-post="/pulse/{team.id}"
+        hx-target="#debrief-step-container"
+        hx-swap="innerHTML"
+        hx-indicator="#global-indicator">
+
+        <!-- Progress Bar -->
+        <div class="debrief-progress">
+            <div class="debrief-progress-bar" id="debrief-progress-bar" style="width: 0%"></div>
+            <span class="debrief-progress-label" id="debrief-progress-label">STEP 1 / {totalSteps}</span>
+        </div>
+
+        <!-- Step Container: HTMX swaps content here -->
+        <div id="debrief-step-container">
+            {#if questions.size > 0}
+            {#let firstQ = questions.get(0)}
+            <article class="debrief-panel step-enter" id="debrief-current-step" data-step="0" data-total="{totalSteps}">
+                <header>
+                    <span class="step-indicator">QUERY 1 / {totalSteps}</span>
+                    {#if firstQ.isRequired}<span class="step-required">* REQUIRED</span>{/if}
+                </header>
+                <div class="debrief-question">
+                    <p class="typing-text" data-text="{firstQ.text}"></p>
+                </div>
+
+                <div class="debrief-input">
+                    {#if firstQ.type == 'SCALE'}
+                    <div class="scale-selector">
+                        {#for i in scaleValues}
+                        <label class="scale-option">
+                            <input type="radio" name="question_{firstQ.id}" value="{i}"
+                                {#if firstQ.isRequired}required{/if}
+                                onchange="document.getElementById('next-btn').disabled = false">
+                            <span class="scale-value">{i}</span>
+                        </label>
+                        {/for}
+                    </div>
+                    {#else if firstQ.type == 'TEXT'}
+                    <textarea name="question_{firstQ.id}" id="question_{firstQ.id}" rows="3"
+                        placeholder="Enter your transmission..."
+                        {#if firstQ.isRequired}required{/if}
+                        oninput="document.getElementById('next-btn').disabled = false"></textarea>
+                    {#else}
+                    <input type="text" name="question_{firstQ.id}" id="question_{firstQ.id}"
+                        placeholder="Enter your response..."
+                        oninput="document.getElementById('next-btn').disabled = false">
+                    {/if}
+                </div>
+
+                <footer class="debrief-actions">
+                    <button type="button" id="next-btn" class="console-btn"
+                        onclick="advanceStep(1, {totalSteps}, {team.id})"
+                        {#if firstQ.isRequired}disabled{/if}>
+                        NEXT QUERY &rarr;
+                    </button>
+                </footer>
+            </article>
+            {/let}
+            {/if}
+        </div>
+    </form>
+    {/if}
 </div>
 
-{#if noActivePulse}
-<article>
-    <header>No Active Pulse</header>
-    <p>There is no active Pulse ceremony for this team right now.</p>
-</article>
-{#else if hasSubmitted}
-<article>
-    <header>✅ Response Recorded</header>
-    <p>Thank you for checking in! Your response has been saved.</p>
-    <footer>
-        <a href="/" role="button" class="secondary">Back to Dashboard</a>
-    </footer>
-</article>
-{#else}
-<form action="/pulse/{team.id}" method="POST">
-    {#for question in questions}
-    <article>
-        <label for="question_{question.id}">
-            <strong>{question.sequence}. {question.text}</strong>
-            {#if question.isRequired} <small>*</small>{/if}
-        </label>
+<script>
+    // -- Typing Text Animation --
+    function typeText(element) {
+        const fullText = element.getAttribute('data-text');
+        if (!fullText) return;
+        element.textContent = '';
+        element.style.visibility = 'visible';
+        let i = 0;
+        const speed = 25; // ms per character
+        function typeChar() {
+            if (i < fullText.length) {
+                element.textContent += fullText.charAt(i);
+                i++;
+                setTimeout(typeChar, speed);
+            }
+        }
+        typeChar();
+    }
 
-        {#if question.type == 'SCALE'}
-        <div class="grid">
-            {#for i in scaleValues}
-            <label>
-                <input type="radio" name="question_{question.id}" value="{i}" {#if question.isRequired}required{/if}>
-                {i}
-            </label>
-            {/for}
-        </div>
-        {#else if question.type == 'TEXT'}
-        <textarea name="question_{question.id}" id="question_{question.id}" rows="3"
-            placeholder="Type your answer here..." {#if question.isRequired}required{/if}></textarea>
-        {#else}
-        <input type="text" name="question_{question.id}" id="question_{question.id}">
-        {/if}
-    </article>
-    {/for}
+    // Initialize typing on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.typing-text').forEach(function (el) {
+            typeText(el);
+        });
+    });
 
-    <article>
-        <label for="comments"><strong>Anything else on your mind?</strong> (Optional)</label>
-        <textarea name="comments" id="comments" rows="3"
-            placeholder="General comments, shout-outs, or rants..."></textarea>
-    </article>
+    // Re-initialize typing after HTMX swaps
+    document.body.addEventListener('htmx:afterSwap', function (evt) {
+        evt.detail.target.querySelectorAll('.typing-text').forEach(function (el) {
+            typeText(el);
+        });
+        // Update progress bar
+        var step = evt.detail.target.querySelector('[data-step]');
+        if (step) {
+            var current = parseInt(step.getAttribute('data-step'));
+            var total = parseInt(step.getAttribute('data-total'));
+            updateProgress(current, total);
+        }
+    });
 
-    <button type="submit">Submit Pulse</button>
-</form>
-{/if}
+    // -- Step Advancement --
+    function advanceStep(nextIndex, totalSteps, teamId) {
+        // Collect current step inputs into the hidden accumulator
+        var currentStep = document.getElementById('debrief-current-step');
+        if (currentStep) {
+            var inputs = currentStep.querySelectorAll('input, textarea, select');
+            inputs.forEach(function (input) {
+                if (input.name && input.value) {
+                    if (input.type === 'radio' && !input.checked) return;
+                    // Create hidden input in the form to preserve the answer
+                    var hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = input.name;
+                    hidden.value = input.value;
+                    document.getElementById('debrief-form').appendChild(hidden);
+                }
+            });
+        }
+
+        // Update progress
+        updateProgress(nextIndex, totalSteps);
+
+        // Fetch next step via HTMX
+        htmx.ajax('GET', '/pulse/' + teamId + '/step/' + nextIndex, {
+            target: '#debrief-step-container',
+            swap: 'innerHTML'
+        });
+    }
+
+    function updateProgress(current, total) {
+        var pct = Math.round(((current) / total) * 100);
+        var bar = document.getElementById('debrief-progress-bar');
+        var label = document.getElementById('debrief-progress-label');
+        if (bar) bar.style.width = pct + '%';
+        if (label) label.textContent = 'STEP ' + (current + 1) + ' / ' + total;
+    }
+</script>
 {/body}
 {/include}

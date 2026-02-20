@@ -4,6 +4,7 @@ import io.holocron.ceremony.Ceremony;
 import io.holocron.ceremony.CeremonyType;
 import io.holocron.team.Team;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,27 +48,40 @@ public class PulseTest {
             alice.email = "alice@holocron.io";
             alice.name = "Alice";
             alice.persist();
+
+            io.holocron.user.UserStats stats = new io.holocron.user.UserStats();
+            stats.user = alice;
+            stats.persist();
+        } else {
+            io.holocron.user.User alice = io.holocron.user.User.findByEmail("alice@holocron.io");
+            if (io.holocron.user.UserStats.findByUser(alice) == null) {
+                io.holocron.user.UserStats stats = new io.holocron.user.UserStats();
+                stats.user = alice;
+                stats.persist();
+            }
         }
     }
 
     @Test
+    @TestSecurity(user = "alice@holocron.io", roles = "LEAD")
     public void testPulsePage() {
         given()
                 .when().get("/pulse/" + teamId)
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
-                .body(containsString("Pulse"));
+                .body(containsString("MISSION DEBRIEF"));
     }
 
     @Test
+    @TestSecurity(user = "alice@holocron.io", roles = "LEAD")
     public void testSubmitPulse() {
         given()
                 .contentType(ContentType.URLENC)
                 .formParam("comments", "Start of a new journey")
                 .when().post("/pulse/" + teamId)
                 .then()
-                .statusCode(200) // Redirect followed
-                .body(containsString("Response Recorded"));
+                .statusCode(200)
+                .body(containsString("TRANSMISSION COMPLETE"));
     }
 }
