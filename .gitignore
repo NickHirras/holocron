@@ -1,0 +1,48 @@
+# ============================================================================
+# 1. GENERATED PROTOBUF CODE (The "Golden Loop" Artifacts)
+# ============================================================================
+backend/src/main/gen/
+frontend/src/proto-gen/
+
+# ============================================================================
+# 2. BACKEND: GRADLE & KOTLIN
+# ============================================================================
+backend/.gradle/
+backend/build/
+backend/buildSrc/build/
+!backend/gradle/wrapper/gradle-wrapper.jar
+backend/out/
+
+# ============================================================================
+# 3. FRONTEND: ANGULAR & NODE
+# ============================================================================
+frontend/node_modules/
+frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+frontend/.angular/
+frontend/bazel-out/
+npm-debug.log
+yarn-error.log
+frontend/.npm/
+
+# ============================================================================
+# 4. IDEs & EDITORS (Android Studio, IntelliJ, VS Code)
+# ============================================================================
+.idea/
+*.iml
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# ============================================================================
+# 5. OS & MISCELLANEOUS
+# ============================================================================
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+

@@ -1,0 +1,9 @@
+version: v1
+name: buf.build/holocron/ceremony
+lint:
+  use:
+    - STANDARD # Fixed deprecated DEFAULT
+breaking:
+  use:
+    - FILE
+

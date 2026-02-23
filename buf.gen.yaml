@@ -1,0 +1,23 @@
+version: v1
+plugins:
+  # 1. Generate Java base classes (REQUIRED for Kotlin)
+  - plugin: buf.build/protocolbuffers/java:v25.3
+    out: backend/src/main/gen
+    
+  # 2. Generate Kotlin Protobuf Extensions
+  - plugin: buf.build/protocolbuffers/kotlin:v25.3
+    out: backend/src/main/gen
+    
+  # 3. Generate Java gRPC Stubs (REQUIRED for Kotlin gRPC)
+  - plugin: buf.build/grpc/java:v1.62.2
+    out: backend/src/main/gen
+    
+  # 4. Generate Kotlin gRPC Coroutine Stubs
+  - plugin: buf.build/grpc/kotlin:v1.4.1
+    out: backend/src/main/gen
+
+  # 5. Generate ALL TypeScript code for Angular
+  - plugin: buf.build/bufbuild/es
+    out: frontend/src/proto-gen
+    opt: target=ts
+
