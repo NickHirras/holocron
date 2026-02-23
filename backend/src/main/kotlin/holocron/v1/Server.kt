@@ -1,17 +1,13 @@
 package holocron.v1
 
-import io.grpc.ServerBuilder
+import com.linecorp.armeria.common.HttpMethod
+import com.linecorp.armeria.common.HttpResponse
+import com.linecorp.armeria.server.Server
+import com.linecorp.armeria.server.cors.CorsService
+import com.linecorp.armeria.server.docs.DocService
+import com.linecorp.armeria.server.grpc.GrpcService
 import io.grpc.protobuf.services.ProtoReflectionService
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
-// This is where you will eventually put your database logic
 class CeremonyServiceImpl : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
     override suspend fun getCeremonyTemplate(request: GetCeremonyTemplateRequest): GetCeremonyTemplateResponse {
         println("Received request for Template ID: ${request.templateId}")
@@ -19,28 +15,34 @@ class CeremonyServiceImpl : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBa
     }
 }
 
-fun main() = runBlocking {
-    // 1. Boot up the gRPC Server (Port 50051 is standard for gRPC)
-    val grpcServer = ServerBuilder.forPort(50051)
+fun main() {
+    // 1. Configure the gRPC Service
+    val grpcService = GrpcService.builder()
         .addService(CeremonyServiceImpl())
         .addService(ProtoReflectionService.newInstance())
+        // Armeria enables gRPC-Web and REST fallback natively!
         .build()
-    
-    grpcServer.start()
-    println("✅ gRPC Server running on port 50051")
 
-    // 2. Boot up Ktor (Port 8080 for HTTP traffic)
-    launch(Dispatchers.IO) {
-        embeddedServer(Netty, port = 8080) {
-            routing {
-                get("/healthz") {
-                    call.respondText("Holocron Systems Operational.")
-                }
-            }
-        }.start(wait = true)
-    }
+    // 2. Build the all-in-one Server
+    val server = Server.builder()
+        .http(8080)
+        // Allow Angular (localhost:4200) to hit the server via browser preflight
+        .decorator(
+            CorsService.builderForAnyOrigin()
+                .allowRequestMethods(HttpMethod.POST, HttpMethod.OPTIONS)
+                .allowRequestHeaders("content-type", "x-grpc-web", "x-user-agent", "grpc-timeout")
+                .newDecorator()
+        )
+        // Mount gRPC
+        .service(grpcService)
+        // Mount REST Health Check
+        .service("/healthz") { _, _ -> HttpResponse.of("Holocron Systems Operational.") }
+        // Mount the magical Web GUI
+        .serviceUnder("/docs", DocService())
+        .build()
 
-    // Keep the JVM alive
-    grpcServer.awaitTermination()
+    server.start().join()
+    println("✅ Armeria Server running on port 8080")
+    println("🔍 API Explorer available at: http://localhost:8080/docs")
 }
 
