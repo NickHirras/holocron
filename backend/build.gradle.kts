@@ -16,6 +16,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.62.2")
     implementation("io.grpc:grpc-stub:1.62.2")
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("io.grpc:grpc-services:1.62.2")
 
     // The legacy annotation required by the v25.3 generated code
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")

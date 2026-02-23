@@ -1,6 +1,7 @@
 package holocron.v1
 
 import io.grpc.ServerBuilder
+import io.grpc.protobuf.services.ProtoReflectionService
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -22,6 +23,7 @@ fun main() = runBlocking {
     // 1. Boot up the gRPC Server (Port 50051 is standard for gRPC)
     val grpcServer = ServerBuilder.forPort(50051)
         .addService(CeremonyServiceImpl())
+        .addService(ProtoReflectionService.newInstance())
         .build()
     
     grpcServer.start()
