@@ -9,6 +9,8 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    // MongoDB Driver
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.0.0")
 
     // The Golden Lock (Keep these exactly as they are)
     implementation("com.google.protobuf:protobuf-kotlin:3.25.3")

@@ -10,6 +10,7 @@ Holocron uses Protocol Buffers as the ultimate Source of Truth. The schema dicta
 
 * **Contract:** Protocol Buffers (`proto3`) managed by the `buf` CLI.
 * **Backend:** Kotlin + Coroutines, powered by **Armeria**. Armeria natively serves gRPC, gRPC-Web, and REST on a single port without needing an Envoy proxy.
+* **Database:** MongoDB. Uses the `mongodb-driver-kotlin-coroutine` and the "Indexed Metadata + Opaque Blob" architecture.
 * **Frontend:** Angular 19 (Standalone Components, Signals) + **Connect-RPC** (speaking gRPC-Web over standard HTTP).
 * **Build System:** Gradle (Backend), Vite/NPM (Frontend), orchestrated via a central `Makefile`.
 
@@ -45,7 +46,13 @@ make gen
 ```
 *Note: This generates files into `backend/src/main/gen/` and `frontend/src/proto-gen/`. These directories are ignored by Git.*
 
-### 3. Boot the Backend (Kotlin / Armeria)
+### 3. Start the Database
+Holocron depends on MongoDB for data persistence. Start the local database instance using Docker Compose:
+```bash
+docker compose up -d
+```
+
+### 4. Boot the Backend (Kotlin / Armeria)
 The backend uses the Gradle wrapper to automatically download its dependencies and boot the Netty-based Armeria server.
 ```bash
 make run-backend
@@ -53,7 +60,7 @@ make run-backend
 * The gRPC-Web API will be live on `http://localhost:8080`.
 * 🔍 **API Explorer:** Navigate to [http://localhost:8080/docs](http://localhost:8080/docs) to see the interactive Armeria UI.
 
-### 4. Boot the Frontend (Angular)
+### 5. Boot the Frontend (Angular)
 In a new terminal tab, start the Angular development server:
 ```bash
 cd frontend

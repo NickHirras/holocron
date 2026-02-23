@@ -7,11 +7,48 @@ import com.linecorp.armeria.server.cors.CorsService
 import com.linecorp.armeria.server.docs.DocService
 import com.linecorp.armeria.server.grpc.GrpcService
 import io.grpc.protobuf.services.ProtoReflectionService
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import holocron.v1.repository.CeremonyTemplateRepository
+import java.util.UUID
+import io.grpc.Status
+import io.grpc.StatusException
 
-class CeremonyServiceImpl : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
+class CeremonyServiceImpl(
+    private val repository: CeremonyTemplateRepository
+) : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
+
+    override suspend fun createCeremonyTemplate(request: CreateCeremonyTemplateRequest): CreateCeremonyTemplateResponse {
+        val templateBuilder = request.template.toBuilder()
+        
+        if (templateBuilder.id.isEmpty()) {
+            templateBuilder.id = UUID.randomUUID().toString()
+        }
+        
+        val now = com.google.protobuf.Timestamp.newBuilder()
+            .setSeconds(System.currentTimeMillis() / 1000)
+            .build()
+            
+        if (!templateBuilder.hasCreatedAt()) {
+            templateBuilder.createdAt = now
+        }
+        templateBuilder.updatedAt = now
+        
+        val finalTemplate = templateBuilder.build()
+        repository.save(finalTemplate)
+        
+        return CreateCeremonyTemplateResponse.newBuilder()
+            .setTemplate(finalTemplate)
+            .build()
+    }
+
     override suspend fun getCeremonyTemplate(request: GetCeremonyTemplateRequest): GetCeremonyTemplateResponse {
         println("Received request for Template ID: ${request.templateId}")
-        return GetCeremonyTemplateResponse.getDefaultInstance()
+        val template = repository.findById(request.templateId)
+            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+            
+        return GetCeremonyTemplateResponse.newBuilder()
+            .setTemplate(template)
+            .build()
     }
 
     override suspend fun ping(request: PingRequest): PingResponse {
@@ -21,9 +58,12 @@ class CeremonyServiceImpl : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBa
 }
 
 fun main() {
+    val mongoClient = MongoClient.create("mongodb://localhost:27017")
+    val repository = CeremonyTemplateRepository(mongoClient)
+
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
-        .addService(CeremonyServiceImpl())
+        .addService(CeremonyServiceImpl(repository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!
         .build()
