@@ -1,33 +1,23 @@
-# Project Holocron: Context & Roadmap
+# Project Holocron: AI Agent Context
 
 ## Vision
-A "Google Forms" style ceremony tool for engineering teams (Standups, Retros, Check-ins).
-Built with the "Contract-First" (Protobuf) philosophy.
+Holocron is a "Google Forms" style dynamic ceremony tool for engineering teams (Standups, Retros).
+It strictly follows a **Contract-First Monorepo** architecture.
 
-## Technical Stack
-- **Source of Truth:** Protobuf (`/proto`)
-- **Backend:** Kotlin (JVM) - Target: Android Studio / IntelliJ
-- **Frontend:** Angular (TypeScript)
-- **Communication:** Connect-RPC (over HTTP)
-- **Tooling:** `buf` for linting and code generation, `make` for orchestration.
+## Technical Stack & Strict Constraints
+- **Source of Truth:** Protobuf (`proto/holocron/v1/ceremony.proto`). *All data model changes must happen here first.*
+- **Backend:** Kotlin (JVM) using **Armeria** (NOT Ktor, NOT Netty directly, NOT Spring Boot). Armeria handles gRPC-Web and REST natively on port `8080` without an Envoy proxy.
+- **Frontend:** Angular 19 (Standalone Components, Signals). 
+- **Networking:** `Connect-RPC` v2 (using `createGrpcWebTransport` and `createClient`).
+- **Build Tools:** `buf` for proto compilation, Gradle for Kotlin, NPM for Angular. Orchestrated via `make`.
 
-## Data Model Goals
-Support complex item types similar to Google Forms:
-- QuestionItem (Text, Choice, Scale)
-- QuestionGroupItem
-- Layout items (PageBreak, Image, Video)
+## The "Golden Loop" (Agent Instructions)
+If you need to add a feature or change a data model, you MUST follow this exact sequence:
+1. Modify `proto/holocron/v1/ceremony.proto`.
+2. Run `make gen` from the project root.
+3. NEVER manually edit files inside `backend/src/main/gen` or `frontend/src/proto-gen`. Treat these as read-only machine code.
+4. Implement the logic in Kotlin (`backend/src/main/kotlin`) or TypeScript (`frontend/src/app`).
 
-## RBAC (Roles)
-1. **Admin:** System-wide maintenance.
-2. **Team Leader:** Manages templates, schedules, and team membership.
-3. **Member:** Responds to ceremonies.
-
-## The Golden Loop
-1. Edit `.proto` in `/proto/holocron/v1/`.
-2. Run `make gen`.
-3. Implement logic in Kotlin/Angular using generated types.
-
-## Current State
-- Directory structure initialized.
-- Schema definition in progress.
+## Known Nuances (Do Not Attempt to Fix)
+- The Kotlin backend uses `javax.annotation` and `jakarta.annotation` via Tomcat APIs to bypass a known JPMS Kotlin compiler bug. Do not change the Gradle dependencies for these annotations.
 

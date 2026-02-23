@@ -13,6 +13,11 @@ class CeremonyServiceImpl : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBa
         println("Received request for Template ID: ${request.templateId}")
         return GetCeremonyTemplateResponse.getDefaultInstance()
     }
+
+    override suspend fun ping(request: PingRequest): PingResponse {
+        println("Received ping: ${request.message}")
+        return PingResponse.newBuilder().setMessage("Pong: ${request.message}").build()
+    }
 }
 
 fun main() {
