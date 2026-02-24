@@ -51,17 +51,32 @@
                     </div>
                 </div>
 
-                <div class="mt-6 pt-6 border-t border-slate-700/50 flex gap-6 text-sm">
-                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
-                        <input type="checkbox" formControlName="collectEmails"
-                            class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
-                        Collect emails
-                    </label>
-                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
-                        <input type="checkbox" formControlName="limitOneResponse"
-                            class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
-                        Limit to 1 response
-                    </label>
+                <div class="mt-6 pt-6 border-t border-slate-700/50 flex flex-col gap-4 text-sm">
+                    <div class="flex flex-wrap gap-6">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                            <input type="checkbox" formControlName="collectEmails"
+                                class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                            Collect emails
+                        </label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                            <input type="checkbox" formControlName="limitOneResponse"
+                                class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                            Limit to 1 response
+                        </label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"
+                            title="Allow unauthenticated users to submit responses">
+                            <input type="checkbox" formControlName="isPublic"
+                                class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                            Public Form (No Login Required)
+                        </label>
+                    </div>
+                    <div class="pt-2">
+                        <label class="block text-slate-400 mb-1">Share access with members (comma-separated
+                            emails):</label>
+                        <input type="text" formControlName="sharedWithEmails"
+                            placeholder="e.g. alice@acme.com, bob@acme.com"
+                            class="w-full bg-slate-800/50 border border-slate-600 hover:border-slate-500 focus:border-holocron-neon-blue rounded p-2 text-white focus:outline-none transition-colors placeholder:text-slate-600">
+                    </div>
                 </div>
             </section>
 

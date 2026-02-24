@@ -29,6 +29,10 @@ message CeremonyTemplate {
   bool limit_one_response = 9;
   bool shuffle_question_order = 10;
   string confirmation_message = 11;
+  
+  // Phase 6
+  bool is_public = 13;
+  repeated string shared_with_emails = 14;
 }
 
 message Item {
@@ -277,6 +281,9 @@ message ListCeremonyResponsesRequest {
   string ceremony_template_id = 1;
   int32 page_size = 2;
   string page_token = 3;
+  
+  google.protobuf.Timestamp filter_start_date = 4;
+  google.protobuf.Timestamp filter_end_date = 5;
 }
 
 message ListCeremonyResponsesResponse {

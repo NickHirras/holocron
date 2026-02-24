@@ -9,6 +9,16 @@
             <ng-container *ngIf="template() as tpl">
                 <h1>{{ tpl.title }} - Results</h1>
                 <div class="header-actions">
+                    <div class="date-filters"
+                        style="display: flex; gap: 0.5rem; align-items: center; margin-right: 1rem;">
+                        <input type="date" [ngModel]="startDate()"
+                            (ngModelChange)="startDate.set($event); applyDateFilter()" class="date-input"
+                            style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.25rem 0.5rem; color-scheme: dark;">
+                        <span style="color: #aaa; font-size: 0.9rem;">to</span>
+                        <input type="date" [ngModel]="endDate()"
+                            (ngModelChange)="endDate.set($event); applyDateFilter()" class="date-input"
+                            style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.25rem 0.5rem; color-scheme: dark;">
+                    </div>
                     <p class="response-count">{{ responses().length }} Responses</p>
                     <button class="export-btn" (click)="downloadCsv()">
                         <span class="material-symbols-outlined">download</span>

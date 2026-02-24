@@ -61,6 +61,8 @@ export class CeremonyCreator implements OnInit {
       limitOneResponse: [false],
       shuffleQuestionOrder: [false],
       confirmationMessage: ['Your response has been recorded.'],
+      isPublic: [false],
+      sharedWithEmails: [''],
       items: this.fb.array([])
     });
 
@@ -322,6 +324,8 @@ export class CeremonyCreator implements OnInit {
         limitOneResponse: formVal.limitOneResponse,
         shuffleQuestionOrder: formVal.shuffleQuestionOrder,
         confirmationMessage: formVal.confirmationMessage,
+        isPublic: formVal.isPublic,
+        sharedWithEmails: formVal.sharedWithEmails ? formVal.sharedWithEmails.split(',').map((e: string) => e.trim()).filter((e: string) => e) : [],
         items: protoItems
       });
 

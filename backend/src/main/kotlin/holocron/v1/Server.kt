@@ -54,6 +54,13 @@ class CeremonyServiceImpl(
         val template = templateRepository.findById(request.templateId)
             ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
             
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+
+        if (!template.isPublic && userEmail == null) {
+            throw StatusException(Status.UNAUTHENTICATED.withDescription("Authentication required for private templates"))
+        }
+            
         return GetCeremonyTemplateResponse.newBuilder()
             .setTemplate(template)
             .build()
@@ -65,16 +72,24 @@ class CeremonyServiceImpl(
             ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
 
         // For now, filter in memory. In a real app, this should be a DB query.
-        val templates = templateRepository.findAll().filter { it.creatorId == userEmail }
+        val templates = templateRepository.findAll().filter { 
+            it.creatorId == userEmail || it.sharedWithEmailsList.contains(userEmail) 
+        }
         return ListCeremonyTemplatesResponse.newBuilder()
             .addAllTemplates(templates)
             .build()
     }
 
     override suspend fun submitCeremonyResponse(request: SubmitCeremonyResponseRequest): SubmitCeremonyResponseResponse {
+        val template = templateRepository.findById(request.response.ceremonyTemplateId)
+            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
-            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
+        if (!template.isPublic && userEmail == null) {
+            throw StatusException(Status.UNAUTHENTICATED.withDescription("Authentication required for private templates"))
+        }
 
         val responseBuilder = request.response.toBuilder()
         
@@ -90,7 +105,7 @@ class CeremonyServiceImpl(
             responseBuilder.submittedAt = now
         }
         
-        responseBuilder.userId = userEmail // The team member submitting
+        responseBuilder.userId = userEmail ?: "anonymous"
         
         val finalResponse = responseBuilder.build()
         responseRepository.save(finalResponse)
@@ -108,11 +123,15 @@ class CeremonyServiceImpl(
         val template = templateRepository.findById(request.ceremonyTemplateId)
             ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
             
-        if (template.creatorId != userEmail) {
+        if (template.creatorId != userEmail && !template.sharedWithEmailsList.contains(userEmail)) {
             throw StatusException(Status.PERMISSION_DENIED.withDescription("You do not have permission to view these responses"))
         }
 
-        val responses = responseRepository.findByTemplateId(request.ceremonyTemplateId)
+        val responses = responseRepository.findByTemplateId(
+            request.ceremonyTemplateId,
+            if (request.hasFilterStartDate()) request.filterStartDate else null,
+            if (request.hasFilterEndDate()) request.filterEndDate else null
+        )
         return ListCeremonyResponsesResponse.newBuilder()
             .addAllResponses(responses)
             .build()

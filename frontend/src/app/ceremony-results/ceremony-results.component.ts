@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CeremonyClientService } from '../services/ceremony-client';
 import { CeremonyResponse, CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
 
@@ -17,7 +18,7 @@ interface ChartData {
 @Component({
     selector: 'app-ceremony-results',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, FormsModule],
     templateUrl: './ceremony-results.component.html',
     styleUrl: './ceremony-results.component.scss'
 })
@@ -29,6 +30,9 @@ export class CeremonyResultsComponent implements OnInit {
     responses = signal<CeremonyResponse[]>([]);
     isLoading = signal(true);
     error = signal<string | null>(null);
+
+    startDate = signal<string>('');
+    endDate = signal<string>('');
 
     // Computed signal to aggregate and process data per question
     questionData = computed(() => {
@@ -114,10 +118,18 @@ export class CeremonyResultsComponent implements OnInit {
         this.isLoading.set(true);
         this.error.set(null);
         try {
+            const start = this.startDate() ? new Date(this.startDate()) : undefined;
+            let end = this.endDate() ? new Date(this.endDate()) : undefined;
+
+            if (end) {
+                // Include the entire end day
+                end = new Date(end.getTime() + 24 * 60 * 60 * 1000 - 1);
+            }
+
             // Load both template and responses concurrently
             const [templateResp, responsesResp] = await Promise.all([
                 this.ceremonyClient.getTemplate(templateId),
-                this.ceremonyClient.listResponses(templateId)
+                this.ceremonyClient.listResponses(templateId, start, end)
             ]);
 
             if (templateResp.template) {
@@ -131,6 +143,13 @@ export class CeremonyResultsComponent implements OnInit {
             this.error.set(err?.message || 'Failed to load results');
         } finally {
             this.isLoading.set(false);
+        }
+    }
+
+    applyDateFilter() {
+        const id = this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.loadData(id);
         }
     }
 

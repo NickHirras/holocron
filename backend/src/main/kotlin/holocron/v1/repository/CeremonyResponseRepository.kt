@@ -28,8 +28,21 @@ class CeremonyResponseRepository(mongoClient: MongoClient) {
         )
     }
 
-    suspend fun findByTemplateId(templateId: String): List<CeremonyResponse> {
-        return collection.find(eq("templateId", templateId)).toList().map { doc ->
+    suspend fun findByTemplateId(
+        templateId: String,
+        startDate: com.google.protobuf.Timestamp? = null,
+        endDate: com.google.protobuf.Timestamp? = null
+    ): List<CeremonyResponse> {
+        val filters = mutableListOf<org.bson.conversions.Bson>(eq("templateId", templateId))
+        
+        if (startDate != null && startDate.seconds > 0) {
+            filters.add(com.mongodb.client.model.Filters.gte("submittedAt", startDate.seconds))
+        }
+        if (endDate != null && endDate.seconds > 0) {
+            filters.add(com.mongodb.client.model.Filters.lte("submittedAt", endDate.seconds))
+        }
+
+        return collection.find(com.mongodb.client.model.Filters.and(filters)).toList().map { doc ->
             val payload = doc.get("payload", Binary::class.java)
             CeremonyResponse.parseFrom(payload.data)
         }

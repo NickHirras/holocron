@@ -29,8 +29,17 @@ export class CeremonyClientService {
     return await this.client.submitCeremonyResponse(request);
   }
 
-  async listResponses(ceremonyTemplateId: string): Promise<ListCeremonyResponsesResponse> {
-    const request = create(ListCeremonyResponsesRequestSchema, { ceremonyTemplateId });
+  async listResponses(ceremonyTemplateId: string, filterStartDate?: Date, filterEndDate?: Date): Promise<ListCeremonyResponsesResponse> {
+    const data: any = { ceremonyTemplateId };
+
+    if (filterStartDate) {
+      data.filterStartDate = { seconds: BigInt(Math.floor(filterStartDate.getTime() / 1000)), nanos: 0 };
+    }
+    if (filterEndDate) {
+      data.filterEndDate = { seconds: BigInt(Math.floor(filterEndDate.getTime() / 1000)), nanos: 0 };
+    }
+
+    const request = create(ListCeremonyResponsesRequestSchema, data);
     return await this.client.listCeremonyResponses(request);
   }
 }
