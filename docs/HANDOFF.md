@@ -1,36 +1,42 @@
 # Project Holocron: Session Handoff
 
-## Current State: Analytics & Dashboards (Phase 4)
-We have successfully implemented the Analytics & Real-Time Dashboards feature, enabling creators to interpret the data collected by the Ceremony Responder. The complete functionality has been verified via a Browser Subagent.
-1. **Frontend Results Component**: A new route `/create/:id/results` provides a dedicated dashboard for visualizing ceremony responses. This route is accessible directly from the main user dashboard.
-2. **Data Aggregation Engine**: The frontend dynamically aggregates the un-typed `CeremonyResponse` Protobuf blobs based on the corresponding `CeremonyTemplate` schema. 
-3. **Custom Visualizations**: Built custom, performant, CSS-based visualizations that match the Holocron dark theme:
-    - **Multiple Choice**: Horizontal bar charts displaying response distribution.
-    - **Linear Scale**: Vertical histograms showing the frequency of selected values.
-    - **Text Answers**: Stylized lists of individual feedback.
-4. **Backend Retrieval**: Implemented `findByTemplateId` in `CeremonyResponseRepository` and the corresponding `ListCeremonyResponses` gRPC endpoint to fetch all responses for a given template.
+## Current State: Identity, Security, Export & UX Polish (Phase 5)
+We have successfully implemented Phase 5, solidifying the application's foundation with robust authorization, data export capabilities, and a polished user interface. The entire "Golden Loop" has been rigorously tested via a Browser Subagent.
 
-## Objective for Next Session: User Identity, Security & Data Export (Phase 5)
-Now that the core loop of creating, responding, and analyzing ceremonies is complete, the focus for the next session shifts to production-readiness, user identity, and extending functionality.
+1. **Backend Authorization 🔒**: 
+   - Enhanced `ceremony.proto` to include a `creator_id` on the `CeremonyTemplate`.
+   - Leveraged the established "Mock Header" (`x-mock-user-id`) pattern and Armeria's `MockAuthDecorator` to extract user identity.
+   - Enforced strict backend authorization in `CeremonyServiceImpl`: users can now only list their own templates, and only the template creator can query responses.
+2. **Data Export 📊**: 
+   - Implemented a "Export to CSV" feature directly on the `CeremonyResultsComponent` dashboard.
+   - The frontend parses the complex, polymorphic `CeremonyResponse` data and generates a clean, downloadable CSV file.
+3. **UI/UX Polish 💅 & Bug Fixes 🐛**: 
+   - Improved form validation UI in the Ceremony Responder (red error states).
+   - Polished empty/loading states in the Results Component to match the dark theme.
+   - Fixed missing Material Icons by properly importing the Google Fonts stylesheet in `index.html`.
+   - Fixed the "Return to Dashboard" button routing by importing `RouterModule` into the standalone responder component.
 
-### 1. Robust User Identity & Security
-Currently, the application relies on a "Mock Header" pattern (`x-mock-user-id`) for local development, creating "Shadow Profiles" on the backend.
-- **Implement Real Authentication**: Integrate a proper authentication provider (e.g., OAuth2 via Google, GitHub, or Okta) to replace the mock header.
-- **Authorization**: Ensure users can only edit their own templates and that results are only visible to the template creators (or authorized team members).
-- **Backend Validation**: Strengthen backend validation to prevent unauthorized access to `CeremonyTemplate` and `CeremonyResponse` data.
+## Objective for Next Session: Advanced Analytics & Team Collaboration (Phase 6)
+With the core architecture, data collection, and basic security in place, Phase 6 should focus on expanding the platform's utility for engineering teams.
 
-### 2. Data Export Capabilities
-Creators should be able to export their ceremony data for external analysis or record-keeping.
-- **CSV Export**: Implement a feature on the results dashboard to download all responses as a CSV file.
-- **Backend vs Frontend Export**: Decide whether the CSV generation should happen on the frontend (using the already aggregated data) or via a new dedicated backend endpoint.
+### 1. Advanced Analytics & Filtering
+Currently, the results dashboard shows all responses aggregated together.
+- **Date Filtering**: Allow creators to filter responses by a specific date range (e.g., "Show me standup results for the last two weeks").
+- **Cross-tabulation**: (Stretch Goal) Enable comparing responses across different questions (e.g., "Did people who reported blockers also rate their sprint lower?").
 
-### 3. Application Polish & UX Improvements
-- **Loading States & Error Handling**: Refine loading spinners and error messages across the application to provide a smoother user experience.
-- **Form Validation UI**: Improve the visual feedback for required fields and invalid inputs in the Ceremony Responder.
-- **Responsiveness**: Ensure the dashboard, creator, responder, and results views are fully responsive and usable on mobile devices.
+### 2. Team Collaboration & Sharing
+The rigid "creator-only" authorization model is secure but limits collaboration.
+- **Shared Ceremonies**: Implement a mechanism for a creator to grant "view" or "edit" access to other users (via email/ID).
+- **Public vs. Private Templates**: Allow templates to be marked as "Public" (anyone can respond) vs "Internal/Restricted" (only authenticated users can respond).
+- **Dashboard Enhancements**: Update the user dashboard to show "My Ceremonies" and "Shared with Me".
+
+### 3. Notification Integrations
+To make Holocron a true ceremony tool, it needs to integrate with where teams work.
+- **Slack/Discord Webhooks**: (Stretch Goal) When a ceremony is created or when a specific answer is given (e.g., a "Blocker" is reported), trigger a webhook to send a message to a team chat channel.
 
 ## Next Session "Golden Loop"
-1. Select an authentication provider and configure the backend Armeria server and Angular frontend to support it.
-2. Update the `UserService` and `AuthInterceptor` (or equivalent pattern) to handle real JWT tokens.
-3. Add CSV export functionality to the `CeremonyResultsComponent`.
-4. Perform comprehensive manual testing of the new authentication flow and data access controls.
+1. Update `ceremony.proto` to support shared access controls or date filtering parameters.
+2. Run `make gen` to generate the updated models.
+3. Implement the backend logic in Kotlin to handle the new queries or authorization rules.
+4. Update the Angular frontend components (Dashboard or Results) to expose the new features.
+5. Manually test the end-to-end flow.
