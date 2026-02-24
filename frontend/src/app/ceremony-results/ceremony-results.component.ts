@@ -133,4 +133,68 @@ export class CeremonyResultsComponent implements OnInit {
             this.isLoading.set(false);
         }
     }
+
+    downloadCsv() {
+        const tpl = this.template();
+        const resps = this.responses();
+        if (!tpl || !resps || resps.length === 0) return;
+
+        // 1. Create Headers (Question Titles)
+        const questions: { id: string, title: string, type: string }[] = [];
+        for (const item of tpl.items) {
+            if (item.kind.case === 'questionItem') {
+                const question = item.kind.value.question;
+                if (question) {
+                    questions.push({
+                        id: question.questionId,
+                        title: item.title,
+                        type: question.type.case || 'unknown'
+                    });
+                }
+            }
+        }
+
+        const headers = ['Response ID', 'Submitted At', ...questions.map(q => `"${q.title.replace(/"/g, '""')}"`)];
+        const rows: string[][] = [headers];
+
+        // 2. Create Rows (User Answers)
+        for (const resp of resps) {
+            const row = [
+                resp.responseId,
+                resp.submittedAt ? new Date(Number(resp.submittedAt.seconds) * 1000).toISOString() : ''
+            ];
+
+            for (const q of questions) {
+                const answer = resp.answers[q.id];
+                let cellValue = '';
+
+                if (answer) {
+                    if (answer.kind.case === 'textAnswer') {
+                        cellValue = answer.kind.value.value;
+                    } else if (answer.kind.case === 'choiceAnswer') {
+                        cellValue = answer.kind.value.values.join(', ');
+                    } else if (answer.kind.case === 'scaleAnswer') {
+                        cellValue = answer.kind.value.value.toString();
+                    }
+                    // Handle other types as needed
+                }
+
+                // Escape quotes and wrap in quotes for CSV
+                row.push(`"${cellValue.replace(/"/g, '""')}"`);
+            }
+            rows.push(row);
+        }
+
+        // 3. Generate and Download
+        const csvContent = rows.map(e => e.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${tpl.title}_results.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }

@@ -21,6 +21,10 @@ class CeremonyServiceImpl(
 ) : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
 
     override suspend fun createCeremonyTemplate(request: CreateCeremonyTemplateRequest): CreateCeremonyTemplateResponse {
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
         val templateBuilder = request.template.toBuilder()
         
         if (templateBuilder.id.isEmpty()) {
@@ -35,6 +39,7 @@ class CeremonyServiceImpl(
             templateBuilder.createdAt = now
         }
         templateBuilder.updatedAt = now
+        templateBuilder.creatorId = userEmail // Set the creator to the authenticated user
         
         val finalTemplate = templateBuilder.build()
         templateRepository.save(finalTemplate)
@@ -55,13 +60,22 @@ class CeremonyServiceImpl(
     }
 
     override suspend fun listCeremonyTemplates(request: ListCeremonyTemplatesRequest): ListCeremonyTemplatesResponse {
-        val templates = templateRepository.findAll()
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
+        // For now, filter in memory. In a real app, this should be a DB query.
+        val templates = templateRepository.findAll().filter { it.creatorId == userEmail }
         return ListCeremonyTemplatesResponse.newBuilder()
             .addAllTemplates(templates)
             .build()
     }
 
     override suspend fun submitCeremonyResponse(request: SubmitCeremonyResponseRequest): SubmitCeremonyResponseResponse {
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
         val responseBuilder = request.response.toBuilder()
         
         if (responseBuilder.responseId.isEmpty()) {
@@ -76,8 +90,7 @@ class CeremonyServiceImpl(
             responseBuilder.submittedAt = now
         }
         
-        // Ensure the userId is properly captured from context. 
-        // In a real app we'd verify the mock auth header.
+        responseBuilder.userId = userEmail // The team member submitting
         
         val finalResponse = responseBuilder.build()
         responseRepository.save(finalResponse)
@@ -88,6 +101,17 @@ class CeremonyServiceImpl(
     }
 
     override suspend fun listCeremonyResponses(request: ListCeremonyResponsesRequest): ListCeremonyResponsesResponse {
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
+        val template = templateRepository.findById(request.ceremonyTemplateId)
+            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+            
+        if (template.creatorId != userEmail) {
+            throw StatusException(Status.PERMISSION_DENIED.withDescription("You do not have permission to view these responses"))
+        }
+
         val responses = responseRepository.findByTemplateId(request.ceremonyTemplateId)
         return ListCeremonyResponsesResponse.newBuilder()
             .addAllResponses(responses)

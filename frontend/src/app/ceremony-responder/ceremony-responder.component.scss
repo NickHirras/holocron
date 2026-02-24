@@ -58,8 +58,10 @@
     }
 
     &.has-error {
-        border-left-color: #ef4444;
+        border-left-color: #ef4444; // red-500
         border-color: rgba(239, 68, 68, 0.5);
+        background: rgba(239, 68, 68, 0.05); // slight red tint
+        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1);
     }
 }
 

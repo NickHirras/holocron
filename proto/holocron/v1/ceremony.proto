@@ -18,8 +18,11 @@ message CeremonyTemplate {
   string description = 4;
   repeated Item items = 5;
   
+  
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
+  
+  string creator_id = 12; // Tracks the owner of the template for authorization
 
   // Form Settings
   bool collect_emails = 8;
