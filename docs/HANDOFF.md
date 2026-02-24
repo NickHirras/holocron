@@ -1,27 +1,36 @@
 # Project Holocron: Session Handoff
 
-## Current State: Ceremony Responder (Phase 3)
-We have successfully implemented the dynamic Ceremony Responder (similar to filling out a Google Form) and the associated backend storage and routing. The complete "Golden Loop" has been executed via a Browser Subagent:
-1. **Frontend Responder Component**: A new route `/ceremony/:id` reads a serialized `CeremonyTemplate` from the backend and constructs an iterative UI for end-users to provide answers.
-2. **Dynamic Web Forms**: The component utilizes Angular Reactive Forms to collect data securely while providing form validation logic matching the template's required rules. Supports Text, Multiple Choice, Scale, Date, and Time.
-3. **Protobuf Mapping & Serialization**: Transformed the loosely-typed UI output into strictly-typed `CeremonyResponse` Protobuf arrays.
-4. **Backend Storage**: Created `CeremonyResponseRepository` (`Indexes + Opaque blobs`) and the corresponding Armeria `SubmitCeremonyResponse` RPC logic to ingest and save subagent answers into MongoDB.
-5. **Dashboard Updates**: Standard users can now view available forms via the `Your Ceremonies` list implemented alongside `ListCeremonyTemplates`.
+## Current State: Analytics & Dashboards (Phase 4)
+We have successfully implemented the Analytics & Real-Time Dashboards feature, enabling creators to interpret the data collected by the Ceremony Responder. The complete functionality has been verified via a Browser Subagent.
+1. **Frontend Results Component**: A new route `/create/:id/results` provides a dedicated dashboard for visualizing ceremony responses. This route is accessible directly from the main user dashboard.
+2. **Data Aggregation Engine**: The frontend dynamically aggregates the un-typed `CeremonyResponse` Protobuf blobs based on the corresponding `CeremonyTemplate` schema. 
+3. **Custom Visualizations**: Built custom, performant, CSS-based visualizations that match the Holocron dark theme:
+    - **Multiple Choice**: Horizontal bar charts displaying response distribution.
+    - **Linear Scale**: Vertical histograms showing the frequency of selected values.
+    - **Text Answers**: Stylized lists of individual feedback.
+4. **Backend Retrieval**: Implemented `findByTemplateId` in `CeremonyResponseRepository` and the corresponding `ListCeremonyResponses` gRPC endpoint to fetch all responses for a given template.
 
-## Objective for Next Session: Analytics & Real-time Dashboards (Phase 4)
-Now that we can *create* templates and *collect* responses, the core objective for the next session is to organize and interpret this data.
+## Objective for Next Session: User Identity, Security & Data Export (Phase 5)
+Now that the core loop of creating, responding, and analyzing ceremonies is complete, the focus for the next session shifts to production-readiness, user identity, and extending functionality.
 
-### 1. Backend Result Aggregation (`ListCeremonyResponses`)
-- Retrieve and deserialize the blob responses connected to a specific `template_id`.
-- Depending on performance and architectural choices, compile answers into statistical objects (Averages, Distributions) either on the Backend or Frontend.
+### 1. Robust User Identity & Security
+Currently, the application relies on a "Mock Header" pattern (`x-mock-user-id`) for local development, creating "Shadow Profiles" on the backend.
+- **Implement Real Authentication**: Integrate a proper authentication provider (e.g., OAuth2 via Google, GitHub, or Okta) to replace the mock header.
+- **Authorization**: Ensure users can only edit their own templates and that results are only visible to the template creators (or authorized team members).
+- **Backend Validation**: Strengthen backend validation to prevent unauthorized access to `CeremonyTemplate` and `CeremonyResponse` data.
 
-### 2. Angular UI: Ceremony Results View
-- A dedicated analytics tab on the template editor (`/create/:id/results` or similar).
-- Need a visual dashboard corresponding to the question type (e.g., Pie charts or bar graphs for Multiple Choice, numerical range distributions for Linear Scale).
+### 2. Data Export Capabilities
+Creators should be able to export their ceremony data for external analysis or record-keeping.
+- **CSV Export**: Implement a feature on the results dashboard to download all responses as a CSV file.
+- **Backend vs Frontend Export**: Decide whether the CSV generation should happen on the frontend (using the already aggregated data) or via a new dedicated backend endpoint.
+
+### 3. Application Polish & UX Improvements
+- **Loading States & Error Handling**: Refine loading spinners and error messages across the application to provide a smoother user experience.
+- **Form Validation UI**: Improve the visual feedback for required fields and invalid inputs in the Ceremony Responder.
+- **Responsiveness**: Ensure the dashboard, creator, responder, and results views are fully responsive and usable on mobile devices.
 
 ## Next Session "Golden Loop"
-1. Define the Response Aggregation patterns.
-2. Add `ListCeremonyResponses` to `ceremony.proto` if not already fully specced for the use case.
-3. Scaffold the `CeremonyResultsComponent` UI.
-4. Integrate a charting library or build custom pure CSS/SVG visualizers.
-5. Test end-to-end data vis fidelity by simulating numerous response submissions via script or agent.
+1. Select an authentication provider and configure the backend Armeria server and Angular frontend to support it.
+2. Update the `UserService` and `AuthInterceptor` (or equivalent pattern) to handle real JWT tokens.
+3. Add CSV export functionality to the `CeremonyResultsComponent`.
+4. Perform comprehensive manual testing of the new authentication flow and data access controls.
