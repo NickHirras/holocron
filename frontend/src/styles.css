@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+
+:root {
+  --color-holocron-base: #0f172a;
+  /* slate-900 */
+  --color-holocron-surface: #1e293b;
+  /* slate-800 */
+  --color-holocron-surface-hover: #334155;
+  /* slate-700 */
+  --color-holocron-neon-blue: #38bdf8;
+  /* sky-400 */
+  --color-holocron-neon-blue-hover: #7dd3fc;
+  /* sky-300 */
+  --color-holocron-text-primary: #f8fafc;
+  /* slate-50 */
+  --color-holocron-text-secondary: #94a3b8;
+  /* slate-400 */
+}
+
+@theme {
+  --color-holocron-base: var(--color-holocron-base);
+  --color-holocron-surface: var(--color-holocron-surface);
+  --color-holocron-surface-hover: var(--color-holocron-surface-hover);
+  --color-holocron-neon-blue: var(--color-holocron-neon-blue);
+  --color-holocron-neon-blue-hover: var(--color-holocron-neon-blue-hover);
+  --color-holocron-text-primary: var(--color-holocron-text-primary);
+  --color-holocron-text-secondary: var(--color-holocron-text-secondary);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-holocron-base);
+  color: var(--color-holocron-text-primary);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}

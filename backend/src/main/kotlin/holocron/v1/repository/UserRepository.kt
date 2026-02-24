@@ -7,14 +7,17 @@ import holocron.v1.User
 import kotlinx.coroutines.flow.firstOrNull
 import java.util.UUID
 
+import org.bson.Document
+
 class UserRepository(private val mongoClient: MongoClient) {
     private val database = mongoClient.getDatabase("holocron")
-    private val collection: MongoCollection<User> = database.getCollection("users")
+    private val collection: MongoCollection<Document> = database.getCollection("users")
 
     suspend fun findOrCreate(email: String): User {
-        val existingUser = collection.find(eq("email", email)).firstOrNull()
-        if (existingUser != null) {
-            return existingUser
+        val existingDoc = collection.find(eq("email", email)).firstOrNull()
+        if (existingDoc != null) {
+            val blob = existingDoc.get("blob", org.bson.types.Binary::class.java).data
+            return User.parseFrom(blob)
         }
 
         val now = com.google.protobuf.Timestamp.newBuilder()
@@ -28,7 +31,11 @@ class UserRepository(private val mongoClient: MongoClient) {
             .setUpdatedAt(now)
             .build()
 
-        collection.insertOne(newUser)
+        val doc = Document("_id", newUser.id)
+            .append("email", newUser.email)
+            .append("blob", newUser.toByteArray())
+
+        collection.insertOne(doc)
         return newUser
     }
 }
