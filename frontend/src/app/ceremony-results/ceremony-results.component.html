@@ -1,0 +1,85 @@
+<div class="results-container">
+    <header class="results-header">
+        <div class="header-content">
+            <button class="back-btn" [routerLink]="['/dashboard']">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Back to Dashboard
+            </button>
+
+            <ng-container *ngIf="template() as tpl">
+                <h1>{{ tpl.title }} - Results</h1>
+                <p class="response-count">{{ responses().length }} Responses</p>
+            </ng-container>
+        </div>
+    </header>
+
+    <main class="results-content">
+        <div *ngIf="isLoading()" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading results...</p>
+        </div>
+
+        <div *ngIf="error()" class="error-state">
+            <span class="material-symbols-outlined">error</span>
+            <p>{{ error() }}</p>
+        </div>
+
+        <ng-container *ngIf="!isLoading() && !error()">
+            <div *ngIf="responses().length === 0" class="empty-state">
+                <span class="material-symbols-outlined">inbox</span>
+                <p>No responses yet.</p>
+            </div>
+
+            <div class="cards-container" *ngIf="responses().length > 0">
+                <div class="result-card" *ngFor="let q of questionData(); let i = index">
+                    <h3 class="question-title">{{ q.title }}</h3>
+                    <p class="question-meta">{{ responses().length }} responses</p>
+
+                    <!-- Choice Question Visualization (Bar chart simulation) -->
+                    <div *ngIf="q.type === 'choiceQuestion'" class="chart-container">
+                        <div class="bar-chart">
+                            <div class="bar-row" *ngFor="let item of q.distribution">
+                                <div class="bar-label">{{ item.label }}</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" [style.width.%]="(item.count / responses().length) * 100">
+                                    </div>
+                                </div>
+                                <div class="bar-value">{{ item.count }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linear Scale Visualization (Histogram simulation) -->
+                    <div *ngIf="q.type === 'scaleQuestion'" class="chart-container">
+                        <div class="histogram-chart">
+                            <div class="hist-col" *ngFor="let item of q.distribution">
+                                <div class="hist-value">{{ item.count }}</div>
+                                <div class="hist-track">
+                                    <div class="hist-fill" [style.height.%]="(item.count / responses().length) * 100">
+                                    </div>
+                                </div>
+                                <div class="hist-label">{{ item.label }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Answer Visualization -->
+                    <div *ngIf="q.type === 'textQuestion' || q.type === 'textItem'" class="text-answers-container">
+                        <div class="text-answer" *ngFor="let text of q.textAnswers">
+                            {{ text }}
+                        </div>
+                        <div *ngIf="!q.textAnswers?.length" class="no-answers">
+                            No answers provided.
+                        </div>
+                    </div>
+
+                    <!-- Fallback for other types -->
+                    <div *ngIf="q.type !== 'choiceQuestion' && q.type !== 'scaleQuestion' && q.type !== 'textQuestion'"
+                        class="fallback-answers">
+                        <p><i>Visualization not supported for this question type.</i></p>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </main>
+</div>

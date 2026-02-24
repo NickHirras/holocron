@@ -1,0 +1,263 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    font-family: 'Roboto', sans-serif;
+    color: #202124;
+}
+
+.results-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.results-header {
+    background-color: white;
+    border-bottom: 1px solid #dadce0;
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    .header-content {
+        max-width: 800px;
+        margin: 0 auto;
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 0;
+            margin-bottom: 16px;
+
+            &:hover {
+                color: #202124;
+            }
+
+            span {
+                font-size: 18px;
+            }
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 24px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .response-count {
+            margin: 0;
+            font-size: 14px;
+            color: #5f6368;
+        }
+    }
+}
+
+.results-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+
+    .cards-container {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+}
+
+.result-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    padding: 24px;
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+
+    .question-title {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .question-meta {
+        margin: 0 0 24px;
+        font-size: 12px;
+        color: #5f6368;
+    }
+}
+
+/* Base Chart Styles */
+.chart-container {
+    margin-top: 16px;
+}
+
+/* Horizontal Bar Chart (Multiple Choice) */
+.bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .bar-label {
+            width: 150px;
+            font-size: 14px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 24px;
+            background-color: #f1f3f4;
+            border-radius: 4px;
+            overflow: hidden;
+
+            .bar-fill {
+                height: 100%;
+                background-color: #1a73e8;
+                /* Google Blue */
+                border-radius: 4px;
+                transition: width 0.5s ease-in-out;
+            }
+        }
+
+        .bar-value {
+            width: 40px;
+            text-align: right;
+            font-size: 14px;
+            font-weight: 500;
+            color: #5f6368;
+        }
+    }
+}
+
+/* Vertical Histogram (Linear Scale) */
+.histogram-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 16px;
+    height: 200px;
+    padding-bottom: 30px;
+    position: relative;
+
+    .hist-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 60px;
+        height: 100%;
+
+        .hist-value {
+            font-size: 12px;
+            color: #5f6368;
+            margin-bottom: 4px;
+        }
+
+        .hist-track {
+            flex: 1;
+            width: 100%;
+            background-color: #f1f3f4;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            overflow: hidden;
+
+            .hist-fill {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: #1a73e8;
+                border-radius: 4px 4px 0 0;
+                transition: height 0.5s ease-in-out;
+            }
+        }
+
+        .hist-label {
+            position: absolute;
+            bottom: 0;
+            width: 60px;
+            text-align: center;
+            font-size: 14px;
+            padding-top: 8px;
+        }
+    }
+}
+
+/* Text Answers List */
+.text-answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .text-answer {
+        padding: 12px 16px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 1.5;
+        border: 1px solid #e8eaed;
+    }
+
+    .no-answers {
+        color: #80868b;
+        font-style: italic;
+        font-size: 14px;
+    }
+}
+
+.fallback-answers {
+    color: #80868b;
+    font-size: 14px;
+}
+
+/* States */
+.loading-state,
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: #5f6368;
+
+    span {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #dadce0;
+    }
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #1a73e8;
+    animation: spin 1s ease infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

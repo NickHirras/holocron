@@ -99,7 +99,10 @@ import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
               <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4">{{ tmpl.description || 'No description provided.' }}</p>
               <div class="flex items-center justify-between text-xs text-slate-500">
                   <span>{{ tmpl.items.length }} Questions</span>
-                  <span class="text-indigo-400 group-hover:underline">Respond &rarr;</span>
+                  <div class="flex gap-3">
+                    <span (click)="viewResults(tmpl.id); $event.stopPropagation()" class="text-emerald-400 hover:text-emerald-300 group-hover:underline">Results &rarr;</span>
+                    <span class="text-indigo-400 group-hover:underline">Respond &rarr;</span>
+                  </div>
               </div>
           </div>
         </div>
@@ -137,5 +140,9 @@ export class DashboardComponent implements OnInit {
 
   respondToTemplate(id: string) {
     this.router.navigate(['/ceremony', id]);
+  }
+
+  viewResults(id: string) {
+    this.router.navigate(['/create', id, 'results']);
   }
 }

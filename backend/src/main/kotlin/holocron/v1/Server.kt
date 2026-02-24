@@ -87,6 +87,13 @@ class CeremonyServiceImpl(
             .build()
     }
 
+    override suspend fun listCeremonyResponses(request: ListCeremonyResponsesRequest): ListCeremonyResponsesResponse {
+        val responses = responseRepository.findByTemplateId(request.ceremonyTemplateId)
+        return ListCeremonyResponsesResponse.newBuilder()
+            .addAllResponses(responses)
+            .build()
+    }
+
     override suspend fun ping(request: PingRequest): PingResponse {
         println("Received ping: ${request.message}")
         return PingResponse.newBuilder().setMessage("Pong: ${request.message}").build()

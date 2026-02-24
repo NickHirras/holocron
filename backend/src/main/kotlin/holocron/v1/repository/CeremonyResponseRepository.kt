@@ -6,6 +6,8 @@ import com.mongodb.kotlin.client.coroutine.MongoClient
 import holocron.v1.CeremonyResponse
 import org.bson.Document
 import org.bson.types.Binary
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.map
 
 class CeremonyResponseRepository(mongoClient: MongoClient) {
     private val database = mongoClient.getDatabase("holocron")
@@ -24,5 +26,12 @@ class CeremonyResponseRepository(mongoClient: MongoClient) {
             doc,
             ReplaceOptions().upsert(true)
         )
+    }
+
+    suspend fun findByTemplateId(templateId: String): List<CeremonyResponse> {
+        return collection.find(eq("templateId", templateId)).toList().map { doc ->
+            val payload = doc.get("payload", Binary::class.java)
+            CeremonyResponse.parseFrom(payload.data)
+        }
     }
 }

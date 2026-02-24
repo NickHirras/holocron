@@ -32,5 +32,10 @@ export const routes: Routes = [
         path: 'ceremony/:id',
         component: CeremonyResponderComponent,
         canActivate: [authGuard]
+    },
+    {
+        path: 'create/:id/results',
+        loadComponent: () => import('./ceremony-results/ceremony-results.component').then(m => m.CeremonyResultsComponent),
+        canActivate: [authGuard]
     }
 ];

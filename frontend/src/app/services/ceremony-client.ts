@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CEREMONY_CLIENT } from '../app.config';
-import { CeremonyTemplate, CreateCeremonyTemplateRequestSchema, CreateCeremonyTemplateResponse, GetCeremonyTemplateRequestSchema, GetCeremonyTemplateResponse, SubmitCeremonyResponseRequestSchema, SubmitCeremonyResponseResponse, CeremonyResponse, ListCeremonyTemplatesRequestSchema, ListCeremonyTemplatesResponse } from '../../proto-gen/holocron/v1/ceremony_pb';
+import { CeremonyTemplate, CreateCeremonyTemplateRequestSchema, CreateCeremonyTemplateResponse, GetCeremonyTemplateRequestSchema, GetCeremonyTemplateResponse, SubmitCeremonyResponseRequestSchema, SubmitCeremonyResponseResponse, CeremonyResponse, ListCeremonyTemplatesRequestSchema, ListCeremonyTemplatesResponse, ListCeremonyResponsesRequestSchema, ListCeremonyResponsesResponse } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { create } from '@bufbuild/protobuf';
 
 @Injectable({
@@ -27,5 +27,10 @@ export class CeremonyClientService {
   async submitResponse(response: CeremonyResponse): Promise<SubmitCeremonyResponseResponse> {
     const request = create(SubmitCeremonyResponseRequestSchema, { response });
     return await this.client.submitCeremonyResponse(request);
+  }
+
+  async listResponses(ceremonyTemplateId: string): Promise<ListCeremonyResponsesResponse> {
+    const request = create(ListCeremonyResponsesRequestSchema, { ceremonyTemplateId });
+    return await this.client.listCeremonyResponses(request);
   }
 }
