@@ -12,6 +12,7 @@ import holocron.v1.repository.CeremonyTemplateRepository
 import java.util.UUID
 import io.grpc.Status
 import io.grpc.StatusException
+import holocron.v1.repository.UserRepository
 
 class CeremonyServiceImpl(
     private val repository: CeremonyTemplateRepository
@@ -59,11 +60,13 @@ class CeremonyServiceImpl(
 
 fun main() {
     val mongoClient = MongoClient.create("mongodb://localhost:27017")
-    val repository = CeremonyTemplateRepository(mongoClient)
+    val templateRepository = CeremonyTemplateRepository(mongoClient)
+    val userRepository = UserRepository(mongoClient)
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
-        .addService(CeremonyServiceImpl(repository))
+        .addService(CeremonyServiceImpl(templateRepository))
+        .addService(UserServiceImpl(userRepository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!
         .build()
@@ -71,11 +74,13 @@ fun main() {
     // 2. Build the all-in-one Server
     val server = Server.builder()
         .http(8080)
+        // Global Auth Decorator
+        .decorator(MockAuthDecorator())
         // Allow Angular (localhost:4200) to hit the server via browser preflight
         .decorator(
             CorsService.builderForAnyOrigin()
                 .allowRequestMethods(HttpMethod.POST, HttpMethod.OPTIONS)
-                .allowRequestHeaders("content-type", "x-grpc-web", "x-user-agent", "grpc-timeout")
+                .allowRequestHeaders("content-type", "x-grpc-web", "x-user-agent", "grpc-timeout", "x-mock-user-id")
                 .newDecorator()
         )
         // Mount gRPC

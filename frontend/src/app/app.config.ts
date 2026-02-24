@@ -5,20 +5,29 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 
 // Connect-RPC Imports
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createClient, Client } from '@connectrpc/connect';
+import { createClient, Client, Interceptor } from '@connectrpc/connect';
 // IMPORT DIRECTLY FROM _pb NOW
-import { CeremonyService } from '../proto-gen/holocron/v1/ceremony_pb';
+import { CeremonyService, UserService } from '../proto-gen/holocron/v1/ceremony_pb';
+
+// Interceptor to inject the mock user ID
+const mockAuthInterceptor: Interceptor = (next) => async (req) => {
+  req.header.set('x-mock-user-id', 'testuser@example.com');
+  return await next(req);
+};
 
 // Set up the gRPC-Web transport to point to Armeria
 const transport = createGrpcWebTransport({
   baseUrl: 'http://localhost:8080',
+  interceptors: [mockAuthInterceptor]
 });
 
 // Create the v2 client
 const ceremonyClient = createClient(CeremonyService, transport);
+const userClient = createClient(UserService, transport);
 
 // Create an Angular Injection Token for strict typing in your components
 export const CEREMONY_CLIENT = new InjectionToken<Client<typeof CeremonyService>>('CeremonyClient');
+export const USER_CLIENT = new InjectionToken<Client<typeof UserService>>('UserClient');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,7 +36,8 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
 
     // Provide the client globally using the token
-    { provide: CEREMONY_CLIENT, useValue: ceremonyClient }
+    { provide: CEREMONY_CLIENT, useValue: ceremonyClient },
+    { provide: USER_CLIENT, useValue: userClient }
   ]
 };
 
