@@ -7,7 +7,7 @@
             </button>
 
             <ng-container *ngIf="template() as tpl">
-                <h1>{{ tpl.title }} - Results</h1>
+                <h1>{{ tpl.type }} - {{ tpl.name }} - Results</h1>
                 <p class="response-count">{{ responses().length }} Responses</p>
             </ng-container>
         </div>
