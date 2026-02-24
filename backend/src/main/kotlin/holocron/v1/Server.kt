@@ -14,6 +14,7 @@ import io.grpc.Status
 import io.grpc.StatusException
 import holocron.v1.repository.UserRepository
 import holocron.v1.repository.CeremonyResponseRepository
+import kotlinx.coroutines.launch
 
 class CeremonyServiceImpl(
     private val templateRepository: CeremonyTemplateRepository,
@@ -109,6 +110,39 @@ class CeremonyServiceImpl(
         
         val finalResponse = responseBuilder.build()
         responseRepository.save(finalResponse)
+        
+        // Dispatch Notifications
+        if (template.hasNotificationSettings()) {
+            val settings = template.notificationSettings
+            
+            // 1. Email Notifications (Mock/Log)
+            settings.emailAddressesList.forEach { email ->
+                println("📧 [EMAIL NOTIFICATION] To: $email - Subject: New Response for ${template.title}")
+            }
+            
+            // 2. Webhook Dispatch
+            if (settings.webhookUrlsCount > 0) {
+                val jsonPayload = """{"event": "response_submitted", "ceremony_template_id": "${template.id}", "user_id": "$userEmail"}"""
+                @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+                kotlinx.coroutines.GlobalScope.launch {
+                    val client = com.linecorp.armeria.client.WebClient.of()
+                    settings.webhookUrlsList.forEach { url ->
+                        try {
+                            println("🌐 Dispatching webhook to $url")
+                            val req = com.linecorp.armeria.common.HttpRequest.builder()
+                                .post(url)
+                                .content(com.linecorp.armeria.common.MediaType.JSON_UTF_8, jsonPayload)
+                                .build()
+                            val response = client.execute(req)
+                            response.aggregate().join()
+                            println("✅ Webhook to $url dispatched successfully.")
+                        } catch (e: Exception) {
+                            println("❌ Failed to dispatch webhook to $url: ${e.message}")
+                        }
+                    }
+                }
+            }
+        }
         
         return SubmitCeremonyResponseResponse.newBuilder()
             .setResponse(finalResponse)

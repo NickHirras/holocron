@@ -22,7 +22,8 @@ import {
   TextItemSchema,
   ImageItemSchema,
   VideoItemSchema,
-  QuestionGroupItemSchema
+  QuestionGroupItemSchema,
+  NotificationSettingsSchema
 } from '../../proto-gen/holocron/v1/ceremony_pb';
 
 @Component({
@@ -63,6 +64,9 @@ export class CeremonyCreator implements OnInit {
       confirmationMessage: ['Your response has been recorded.'],
       isPublic: [false],
       sharedWithEmails: [''],
+      // Integrations
+      webhookUrls: [''],
+      emailNotifications: [''],
       items: this.fb.array([])
     });
 
@@ -317,6 +321,11 @@ export class CeremonyCreator implements OnInit {
         });
       });
 
+      const notificationSettings = create(NotificationSettingsSchema, {
+        webhookUrls: formVal.webhookUrls ? formVal.webhookUrls.split(',').map((u: string) => u.trim()).filter((u: string) => u) : [],
+        emailAddresses: formVal.emailNotifications ? formVal.emailNotifications.split(',').map((e: string) => e.trim()).filter((e: string) => e) : []
+      });
+
       const template = create(CeremonyTemplateSchema, {
         title: formVal.title,
         description: formVal.description,
@@ -326,6 +335,7 @@ export class CeremonyCreator implements OnInit {
         confirmationMessage: formVal.confirmationMessage,
         isPublic: formVal.isPublic,
         sharedWithEmails: formVal.sharedWithEmails ? formVal.sharedWithEmails.split(',').map((e: string) => e.trim()).filter((e: string) => e) : [],
+        notificationSettings: notificationSettings,
         items: protoItems
       });
 

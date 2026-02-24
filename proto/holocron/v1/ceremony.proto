@@ -33,6 +33,14 @@ message CeremonyTemplate {
   // Phase 6
   bool is_public = 13;
   repeated string shared_with_emails = 14;
+
+  // Phase 7: Notifications
+  NotificationSettings notification_settings = 15;
+}
+
+message NotificationSettings {
+  repeated string webhook_urls = 1;
+  repeated string email_addresses = 2;
 }
 
 message Item {
