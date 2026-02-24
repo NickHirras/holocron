@@ -1,26 +1,53 @@
-# Current State & Next Steps
+# Project Holocron: Session Handoff
 
-## What We Have Finished
-- The Kotlin/Armeria backend is configured and serving gRPC-Web.
-- The MongoDB Coroutine persistence layer is established.
-- The Angular 19 frontend is connected to the backend via Connect-RPC.
-- A mock login mechanism/service has been implemented in the frontend.
+## Current State: Ceremony Creator (Phase 1)
+We have successfully implemented the foundation for the Ceremony Creator. The UI correctly renders a Reactive Form (with a dark premium aesthetic), uses ConnectRPC to pack form values into a `ceremony.proto` `CeremonyTemplate`, sends it to the Armeria backend on port `8080`, and persists it to MongoDB using the Coroutine driver.
 
-## Immediate Next Goal: Theming, Landing Page & Auth Flow
-**Agent Task:** Initialize Tailwind CSS to establish the "Holocron" visual identity, configure routing, build a public landing page, and implement the login UI using the existing mock authentication logic.
+*Present Capabilities:*
+- Dynamic `FormArray` structure.
+- Only supports `TextQuestion` items (both short-answer and paragraph boolean).
 
-### Architectural & Styling Constraints
-1. **UI Framework:** Use **Angular CDK (Component Dev Kit)** for all UI components. Use **Tailwind CSS** for all styling. We are going for a custom "Holocron" aesthetic: deep dark themes, subtle slate/neon-blue accents, and clean, minimalist typography. Do NOT use Angular Material.
-2. **Behavioral Framework:** Use `@angular/cdk/drag-drop` to handle the interactive sorting and dragging of form elements on the canvas. We'll need this later to create a drag-and-drop interface for building forms (ceremonies).
-3. **Angular Modernity:** Strictly use Angular 19 features:
-   - Standalone Components only.
-   - Use Signals (`signal()`, `computed()`) for UI state (e.g., loading states, auth status).
-   - Use the modern control flow syntax (`@for`, `@if`) in HTML templates.
-3. **Routing:** Leverage the Angular Router to separate the public marketing experience from the authentication flow.
+## Objective for Next Session: Complex Question Types & Google Forms Parity
+The core objective for the next session is to expand the Form Builder UI and the underlying data model to achieve parity with Google Forms.
 
-### Execution Steps
-1. **Install & Configure Tailwind:** Install `tailwindcss`, `postcss`, and `autoprefixer` in the `frontend/` directory. Configure `tailwind.config.js` and `styles.scss` with the base dark theme.
-2. **Setup Application Shell:** Create a main layout/navbar that can conditionally show a "Login" or "Dashboard" button based on the user's auth state.
-3. **Build the Landing Page (`/`):** Create a `LandingComponent` that acts as the public face of Holocron ("The 'Google Way' engineering ceremony tool"). Include a clear Call to Action (CTA).
-4. **Build the Login UI (`/login`):** Create a clean `LoginComponent` interface. 
-5. **Integrate Mock Auth:** Locate the existing mock login logic in the codebase and wire it to the `LoginComponent` UI. Ensure successful login redirects the user appropriately.
+### 1. Data Model Updates (`holocron/v1/ceremony.proto`)
+Our data model already supports:
+- `TextQuestion`, `ChoiceQuestion` (Radio, Checkbox, Dropdown), `ScaleQuestion` (Linear), `FileUploadQuestion`.
+- It also supports structural items: `QuestionGroupItem` (Multiple Choice Grid), `PageBreakItem` (Section), `TextItem` (Title/Desc), `ImageItem`, `VideoItem`.
+
+**Missing Data Model Features (Action Required):**
+- **Date Question:** Need to add `DateQuestion` to the `Question.type` oneof (include year, include time).
+- **Time Question:** Need to add `TimeQuestion` to the oneof (duration vs time of day).
+- **Section Navigation:** We need a way to support logic branching (e.g., "Go to section 2 based on answer" on specific `Option`s within a `ChoiceQuestion`). Look into adding a `string next_section_id` field to `Option` and `PageBreakItem`.
+- **Form Settings:** We may want form-level configurations (collect emails, limit to 1 response, shuffle question order, confirmation message) currently missing from `CeremonyTemplate`.
+
+### 2. Frontend Angular UI Implementation (`ceremony-creator.ts` / `.html`)
+The `CeremonyCreatorComponent` is currently rigged specifically for `TextQuestion`. To support dynamic types, we need:
+
+**Step 2a: Question Type Selector**
+- A dropdown (similar to Google Forms) inside each question card to pick the type: Short Answer, Paragraph, Multiple Choice, Checkboxes, Dropdown, File Upload, Linear Scale, Date, Time.
+
+**Step 2b: Dynamic Form Arrays (Nested)**
+- When a user selects a `ChoiceQuestion` (Multiple Choice / Checkbox / Dropdown), the UI must present an "Options List."
+- This requires a *nested* `FormArray` inside the question's `FormGroup`. Users must be able to add/remove options, and toggle the "Add 'Other'" option.
+
+**Step 2c: Polymorphic Sub-Forms**
+- **Linear Scale (`ScaleQuestion`)**: Inputs to set the range bounds (e.g. 1 to 5, 0 to 10) and the low/high text labels.
+- **File Upload (`FileUploadQuestion`)**: Inputs to set allowed types (PDF, Images, etc.), max files, and max file size.
+- **Date/Time**: Checkboxes for "Include Year", "Include Time" or "Duration".
+
+**Step 2d: Non-Question Structural Items**
+- Toolbars/FABs to insert items other than Questions: "Add Title and Description" (`TextItem`), "Add Image" (`ImageItem`), "Add Video" (`VideoItem`), "Add Section" (`PageBreakItem`).
+
+**Step 2e: Reordering (Drag and Drop)**
+- Using Angular CDK `@angular/cdk/drag-drop` to reorder the root `items` FormArray, ensuring `item_id` sequencing matches user intent.
+
+**Step 2f: Protobuf Serialization Logic**
+- Update the `saveTemplate()` method to properly branch on the `formVal` item types and instantiate the correct `ceremony_pb.ts` objects (e.g., `create(ChoiceQuestionSchema, ...)`).
+
+## Next Session "Golden Loop"
+1. Update `proto/holocron/v1/ceremony.proto` with the missing Question types (Date, Time).
+2. Run `make gen` from the root directory.
+3. Update `CeremonyCreatorComponent` to support selecting question types and rendering nested option arrays.
+4. Verify the serialization mapping in `saveTemplate()`. 
+5. Test End-to-End via the browser subagent.
