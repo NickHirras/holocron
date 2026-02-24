@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CeremonyClientService } from '../services/ceremony-client';
 import { CeremonyTemplate, Item, CeremonyResponseSchema, AnswerSchema, TextAnswerSchema, ChoiceAnswerSchema, ScaleAnswerSchema, DateAnswerSchema, TimeAnswerSchema } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { create } from '@bufbuild/protobuf';
@@ -9,7 +9,7 @@ import { create } from '@bufbuild/protobuf';
 @Component({
     selector: 'app-ceremony-responder',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterModule],
     templateUrl: './ceremony-responder.component.html',
     styleUrls: ['./ceremony-responder.component.scss']
 })
