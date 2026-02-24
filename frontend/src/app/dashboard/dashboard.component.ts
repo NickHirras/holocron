@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -39,7 +40,7 @@ import { AuthService } from '../services/auth.service';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           
           <!-- Create Standup Card -->
-          <div class="group relative bg-[#131d30] border border-slate-700/50 hover:border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] overflow-hidden">
+          <div (click)="createTemplate('standup')" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div class="relative z-10 flex flex-col h-full">
               <div class="bg-indigo-500/10 w-12 h-12 rounded-xl flex items-center justify-center border border-indigo-500/20 mb-4 group-hover:bg-indigo-500/20 transition-colors">
@@ -53,7 +54,7 @@ import { AuthService } from '../services/auth.service';
           </div>
 
           <!-- Create Retro Card -->
-          <div class="group relative bg-[#131d30] border border-slate-700/50 hover:border-holocron-neon-blue/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] overflow-hidden">
+          <div (click)="createTemplate('retro')" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-holocron-neon-blue/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-holocron-neon-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div class="relative z-10 flex flex-col h-full">
               <div class="bg-holocron-neon-blue/10 w-12 h-12 rounded-xl flex items-center justify-center border border-holocron-neon-blue/20 mb-4 group-hover:bg-holocron-neon-blue/20 transition-colors">
@@ -67,7 +68,7 @@ import { AuthService } from '../services/auth.service';
           </div>
           
           <!-- Blank/Custom Card -->
-          <div class="group relative bg-[#131d30] border border-dashed border-slate-600 hover:border-slate-400 rounded-2xl p-6 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center">
+          <div (click)="createTemplate('custom')" class="group relative bg-[#131d30] border border-dashed border-slate-600 hover:border-slate-400 rounded-2xl p-6 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center">
             <div class="bg-slate-800 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-slate-700 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-slate-300">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -85,4 +86,9 @@ import { AuthService } from '../services/auth.service';
 })
 export class DashboardComponent {
   auth = inject(AuthService);
+  router = inject(Router);
+
+  createTemplate(type: string) {
+    this.router.navigate(['/create'], { queryParams: { type } });
+  }
 }
