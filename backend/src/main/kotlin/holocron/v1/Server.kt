@@ -80,7 +80,11 @@ fun main() {
         .decorator(
             CorsService.builderForAnyOrigin()
                 .allowRequestMethods(HttpMethod.POST, HttpMethod.OPTIONS)
-                .allowRequestHeaders("content-type", "x-grpc-web", "x-user-agent", "grpc-timeout", "x-mock-user-id")
+                .allowRequestHeaders(
+                    "content-type", "x-grpc-web", "x-user-agent", "grpc-timeout", 
+                    "x-mock-user-id", "X-Mock-User-Id", "connect-protocol-version"
+                )
+                .exposeHeaders("grpc-status", "grpc-message", "grpc-status-details-bin")
                 .newDecorator()
         )
         // Mount gRPC
