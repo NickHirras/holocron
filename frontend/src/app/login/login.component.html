@@ -17,7 +17,7 @@
             class="absolute inset-0 rounded-2xl border border-holocron-neon-blue/0 group-hover:border-holocron-neon-blue/30 transition-colors duration-700 pointer-events-none">
         </div>
 
-        <div class="mb-10 relative">
+        <div class="mb-8 relative">
             <div
                 class="w-20 h-20 bg-gradient-to-br from-holocron-neon-blue/20 to-indigo-500/20 border border-holocron-neon-blue/40 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(56,189,248,0.15)] group-hover:shadow-[0_0_40px_rgba(56,189,248,0.3)] transition-all duration-500">
                 <!-- Minimal icon for Holocron Auth -->
@@ -33,7 +33,14 @@
                 Holocron</p>
         </div>
 
-        <button (click)="handleLogin()" [disabled]="isLoggingIn()"
+        <div class="mb-6 text-left">
+            <label class="block text-slate-400 mb-2 text-sm font-medium">Mock User Email</label>
+            <input type="email" [ngModel]="email()" (ngModelChange)="email.set($event)"
+                class="w-full bg-slate-800/50 border border-slate-600 hover:border-slate-500 focus:border-holocron-neon-blue rounded-xl p-3 text-white focus:outline-none transition-colors placeholder:text-slate-600"
+                placeholder="developer@local" (keyup.enter)="handleLogin()">
+        </div>
+
+        <button (click)="handleLogin()" [disabled]="isLoggingIn() || !email()"
             class="relative w-full overflow-hidden py-4 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-holocron-base bg-holocron-neon-blue hover:bg-holocron-neon-blue-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-holocron-neon-blue focus:ring-offset-holocron-base disabled:opacity-50 transition-all transform hover:-translate-y-0.5">
             <span class="relative z-10 flex items-center justify-center gap-2">
                 @if (isLoggingIn()) {

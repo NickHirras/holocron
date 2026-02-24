@@ -44,14 +44,16 @@ export class AuthService {
         }
     }
 
-    async login(redirectUrl: string = '/') {
+    async login(email: string, redirectUrl: string = '/') {
         try {
+            if (typeof window !== 'undefined' && window.localStorage) {
+                localStorage.setItem('mockUserEmail', email);
+                localStorage.setItem('mockLoggedIn', 'true');
+            }
+
             // The interceptor automatically attaches the 'x-mock-user-id' header
             const resp = await this.userClient.getSelf({});
             this._userProfile.set(resp.user);
-            if (typeof window !== 'undefined' && window.localStorage) {
-                localStorage.setItem('mockLoggedIn', 'true');
-            }
             console.log('✅ Authenticated as:', resp.user?.email);
             await this.router.navigateByUrl(redirectUrl);
         } catch (e) {
@@ -67,6 +69,7 @@ export class AuthService {
         this._userProfile.set(undefined);
         if (typeof window !== 'undefined' && window.localStorage) {
             localStorage.removeItem('mockLoggedIn');
+            localStorage.removeItem('mockUserEmail');
         }
         this.router.navigate(['/login']);
     }

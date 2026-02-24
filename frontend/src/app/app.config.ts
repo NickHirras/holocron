@@ -11,7 +11,14 @@ import { CeremonyService, UserService } from '../proto-gen/holocron/v1/ceremony_
 
 // Interceptor to inject the mock user ID
 const mockAuthInterceptor: Interceptor = (next) => async (req) => {
-  req.header.set('x-mock-user-id', 'testuser@example.com');
+  let email = 'testuser@example.com';
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const stored = localStorage.getItem('mockUserEmail');
+    if (stored) {
+      email = stored;
+    }
+  }
+  req.header.set('x-mock-user-id', email);
   return await next(req);
 };
 
