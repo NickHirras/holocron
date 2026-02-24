@@ -3,6 +3,7 @@ import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CeremonyCreator } from './ceremony-creator/ceremony-creator';
+import { CeremonyResponderComponent } from './ceremony-responder/ceremony-responder.component';
 import { guestGuard } from './guards/guest.guard';
 import { authGuard } from './guards/auth-guard';
 
@@ -25,6 +26,11 @@ export const routes: Routes = [
     {
         path: 'create',
         component: CeremonyCreator,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'ceremony/:id',
+        component: CeremonyResponderComponent,
         canActivate: [authGuard]
     }
 ];

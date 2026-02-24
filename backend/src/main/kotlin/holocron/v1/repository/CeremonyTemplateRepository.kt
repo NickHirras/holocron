@@ -8,6 +8,7 @@ import org.bson.Document
 import org.bson.types.Binary
 
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 
 class CeremonyTemplateRepository(mongoClient: MongoClient) {
     private val database = mongoClient.getDatabase("holocron")
@@ -31,5 +32,12 @@ class CeremonyTemplateRepository(mongoClient: MongoClient) {
         val doc = collection.find(eq("_id", id)).firstOrNull() ?: return null
         val payload = doc.get("payload", Binary::class.java) ?: return null
         return CeremonyTemplate.parseFrom(payload.data)
+    }
+
+    suspend fun findAll(): List<CeremonyTemplate> {
+        return collection.find().toList().mapNotNull { doc ->
+            val payload = doc.get("payload", Binary::class.java) ?: return@mapNotNull null
+            CeremonyTemplate.parseFrom(payload.data)
+        }
     }
 }

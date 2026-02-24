@@ -1,0 +1,339 @@
+.responder-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.ceremony-header {
+    background: #ffffff;
+    border-radius: 8px;
+    border-top: 10px solid #673ab7; // Google Forms classic purple edge
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+
+    h1 {
+        margin: 0 0 1rem 0;
+        font-size: 2rem;
+        color: #202124;
+    }
+
+    p {
+        margin: 0;
+        color: #5f6368;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .meta {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dadce0;
+
+        .required-note {
+            color: #d93025;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+    }
+}
+
+.item-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 3px solid transparent;
+    transition: box-shadow 0.2s ease, border-left-color 0.2s ease;
+
+    &:focus-within {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-left-color: #4285f4;
+    }
+
+    &.has-error {
+        border-left-color: #d93025;
+    }
+}
+
+/* Text, Image, Video Structural Items */
+.text-item,
+.page-break {
+    h3 {
+        margin: 0 0 0.5rem 0;
+    }
+
+    p {
+        margin: 0;
+        color: #5f6368;
+    }
+}
+
+.image-item {
+    img {
+        max-width: 100%;
+        border-radius: 4px;
+        margin: 1rem 0;
+    }
+}
+
+/* Question Items */
+.question-title {
+    font-size: 1.1rem;
+    color: #202124;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+
+    .required-asterisk {
+        color: #d93025;
+        margin-left: 4px;
+    }
+}
+
+.question-desc {
+    font-size: 0.9rem;
+    color: #5f6368;
+    margin-bottom: 1rem;
+}
+
+/* Form Controls */
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    color: #202124;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    transition: border-bottom-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-bottom-color: #673ab7;
+        border-bottom-width: 2px;
+    }
+
+    &.other-input {
+        width: auto;
+        margin-left: 0.5rem;
+        flex: 1;
+    }
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+/* Options List (Radio/Checkbox) */
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+
+    .option-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        color: #202124;
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: #673ab7;
+        }
+    }
+
+    .other-row {
+        align-items: flex-end;
+        /* Align bottom of text field with radio */
+    }
+}
+
+/* Scale */
+.scale-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    .scale-label {
+        color: #5f6368;
+        font-size: 0.9rem;
+    }
+
+    .scale-options {
+        width: 100px;
+        /* Temporary standard input styling for MVP */
+    }
+}
+
+/* Date / Time */
+.date-group {
+    display: flex;
+    gap: 1rem;
+
+    input[type="time"] {
+        max-width: 150px;
+    }
+}
+
+/* Error Message */
+.error-message {
+    color: #d93025;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &::before {
+        content: '!';
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        background: #d93025;
+        color: white;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 10px;
+    }
+}
+
+/* Actions */
+.actions-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+
+    .btn {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 4px;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s ease, opacity 0.2s ease;
+
+        &.btn-primary {
+            background: #673ab7;
+            color: #ffffff;
+
+            &:hover {
+                background: #5e35b1;
+            }
+
+            &:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+        }
+
+        &.btn-secondary {
+            background: transparent;
+            color: #673ab7;
+            font-weight: 600;
+
+            &:hover {
+                background: rgba(103, 58, 183, 0.05);
+            }
+        }
+    }
+}
+
+/* States */
+.loading-state,
+.error-state,
+.success-state {
+    max-width: 600px;
+    margin: 4rem auto;
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-top: 6px solid;
+}
+
+.loading-state {
+    border-top-color: #4285f4;
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #4285f4;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    p {
+        color: #5f6368;
+    }
+}
+
+.error-state {
+    border-top-color: #d93025;
+
+    .error-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    h3 {
+        color: #d93025;
+        margin: 0 0 0.5rem;
+    }
+
+    p {
+        color: #5f6368;
+    }
+}
+
+.success-state {
+    border-top-color: #34a853;
+
+    .success-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        color: #202124;
+        margin: 0 0 1rem;
+    }
+
+    p {
+        color: #5f6368;
+        margin-bottom: 2rem;
+    }
+
+    .btn-secondary {
+        display: inline-block;
+        text-decoration: none;
+        color: #1a73e8;
+        font-weight: 500;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

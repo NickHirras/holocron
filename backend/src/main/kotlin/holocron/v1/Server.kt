@@ -13,9 +13,11 @@ import java.util.UUID
 import io.grpc.Status
 import io.grpc.StatusException
 import holocron.v1.repository.UserRepository
+import holocron.v1.repository.CeremonyResponseRepository
 
 class CeremonyServiceImpl(
-    private val repository: CeremonyTemplateRepository
+    private val templateRepository: CeremonyTemplateRepository,
+    private val responseRepository: CeremonyResponseRepository
 ) : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
 
     override suspend fun createCeremonyTemplate(request: CreateCeremonyTemplateRequest): CreateCeremonyTemplateResponse {
@@ -35,7 +37,7 @@ class CeremonyServiceImpl(
         templateBuilder.updatedAt = now
         
         val finalTemplate = templateBuilder.build()
-        repository.save(finalTemplate)
+        templateRepository.save(finalTemplate)
         
         return CreateCeremonyTemplateResponse.newBuilder()
             .setTemplate(finalTemplate)
@@ -44,11 +46,44 @@ class CeremonyServiceImpl(
 
     override suspend fun getCeremonyTemplate(request: GetCeremonyTemplateRequest): GetCeremonyTemplateResponse {
         println("Received request for Template ID: ${request.templateId}")
-        val template = repository.findById(request.templateId)
+        val template = templateRepository.findById(request.templateId)
             ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
             
         return GetCeremonyTemplateResponse.newBuilder()
             .setTemplate(template)
+            .build()
+    }
+
+    override suspend fun listCeremonyTemplates(request: ListCeremonyTemplatesRequest): ListCeremonyTemplatesResponse {
+        val templates = templateRepository.findAll()
+        return ListCeremonyTemplatesResponse.newBuilder()
+            .addAllTemplates(templates)
+            .build()
+    }
+
+    override suspend fun submitCeremonyResponse(request: SubmitCeremonyResponseRequest): SubmitCeremonyResponseResponse {
+        val responseBuilder = request.response.toBuilder()
+        
+        if (responseBuilder.responseId.isEmpty()) {
+            responseBuilder.responseId = UUID.randomUUID().toString()
+        }
+        
+        val now = com.google.protobuf.Timestamp.newBuilder()
+            .setSeconds(System.currentTimeMillis() / 1000)
+            .build()
+            
+        if (!responseBuilder.hasSubmittedAt()) {
+            responseBuilder.submittedAt = now
+        }
+        
+        // Ensure the userId is properly captured from context. 
+        // In a real app we'd verify the mock auth header.
+        
+        val finalResponse = responseBuilder.build()
+        responseRepository.save(finalResponse)
+        
+        return SubmitCeremonyResponseResponse.newBuilder()
+            .setResponse(finalResponse)
             .build()
     }
 
@@ -61,11 +96,12 @@ class CeremonyServiceImpl(
 fun main() {
     val mongoClient = MongoClient.create("mongodb://localhost:27017")
     val templateRepository = CeremonyTemplateRepository(mongoClient)
+    val responseRepository = CeremonyResponseRepository(mongoClient)
     val userRepository = UserRepository(mongoClient)
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
-        .addService(CeremonyServiceImpl(templateRepository))
+        .addService(CeremonyServiceImpl(templateRepository, responseRepository))
         .addService(UserServiceImpl(userRepository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!

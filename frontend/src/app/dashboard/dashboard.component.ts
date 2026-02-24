@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { CeremonyClientService } from '../services/ceremony-client';
+import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
 
 @Component({
   selector: 'app-dashboard',
@@ -80,15 +82,60 @@ import { AuthService } from '../services/auth.service';
 
         </div>
         
+        <!-- Live Ceremonies List -->
+        <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-12">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+          </svg>
+          Your Ceremonies
+        </h2>
+
+        <div *ngIf="loading()" class="text-slate-400">Loading templates...</div>
+        <div *ngIf="!loading() && templates().length === 0" class="text-slate-500 italic border border-slate-700/50 rounded p-6 bg-[#131d30]">No ceremonies have been created yet. Get started above.</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!loading() && templates().length > 0">
+          <div *ngFor="let tmpl of templates()" (click)="respondToTemplate(tmpl.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-slate-500 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1">
+              <h3 class="text-lg font-bold text-white mb-2">{{ tmpl.title || 'Untitled Ceremony' }}</h3>
+              <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4">{{ tmpl.description || 'No description provided.' }}</p>
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                  <span>{{ tmpl.items.length }} Questions</span>
+                  <span class="text-indigo-400 group-hover:underline">Respond &rarr;</span>
+              </div>
+          </div>
+        </div>
+
       </div>
     </div>
   `
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   auth = inject(AuthService);
   router = inject(Router);
+  ceremonyClient = inject(CeremonyClientService);
+
+  templates = signal<CeremonyTemplate[]>([]);
+  loading = signal(true);
+
+  ngOnInit() {
+    this.loadTemplates();
+  }
+
+  async loadTemplates() {
+    try {
+      const response = await this.ceremonyClient.listTemplates();
+      this.templates.set(response.templates);
+    } catch (e) {
+      console.error("Failed to load templates", e);
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   createTemplate(type: string) {
     this.router.navigate(['/create'], { queryParams: { type } });
+  }
+
+  respondToTemplate(id: string) {
+    this.router.navigate(['/ceremony', id]);
   }
 }

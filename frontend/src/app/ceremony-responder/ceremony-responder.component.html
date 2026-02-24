@@ -1,0 +1,196 @@
+<div class="responder-container" *ngIf="!loading() && !error() && !submitted()">
+
+    <!-- Header -->
+    <div class="ceremony-header" *ngIf="template(); let t">
+        <h1>{{ t.title }}</h1>
+        <p *ngIf="t.description">{{ t.description }}</p>
+        <div class="meta" *ngIf="t.collectEmails">
+            <span class="required-note">* Required</span>
+        </div>
+    </div>
+
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" *ngIf="template()">
+
+        <!-- Render Current Page Items -->
+        <ng-container *ngFor="let item of pages()[currentPageIndex()]">
+
+            <!-- Structural Items -->
+            <div class="item-card text-item" *ngIf="item.kind.case === 'textItem'">
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+            </div>
+
+            <div class="item-card image-item" *ngIf="item.kind.case === 'imageItem'">
+                <h3>{{ item.title }}</h3>
+                <img [src]="item.kind.value.imageUrl" [alt]="item.kind.value.altText" />
+                <p>{{ item.description }}</p>
+            </div>
+
+            <div class="item-card video-item" *ngIf="item.kind.case === 'videoItem'">
+                <h3>{{ item.title }}</h3>
+                <!-- Simplified for MVP -->
+                <a [href]="item.kind.value.videoUrl" target="_blank">Watch Video</a>
+                <p>{{ item.kind.value.caption }}</p>
+            </div>
+
+            <div class="item-card page-break" *ngIf="item.kind.case === 'pageBreakItem'">
+                <!-- Just acts as a section header for the page -->
+                <h3 *ngIf="item.title">{{ item.title }}</h3>
+                <p *ngIf="item.description">{{ item.description }}</p>
+            </div>
+
+            <!-- Question Items -->
+            <div class="item-card question-item" *ngIf="item.kind.case === 'questionItem'"
+                [class.has-error]="formGroup.get(item.kind.value.question!.questionId)?.invalid && formGroup.get(item.kind.value.question!.questionId)?.touched">
+
+                <div class="question-title">
+                    {{ item.title }} <span class="required-asterisk" *ngIf="item.kind.value.question!.required">*</span>
+                </div>
+                <div class="question-desc" *ngIf="item.description">{{ item.description }}</div>
+
+                <ng-container [ngSwitch]="item.kind.value.question!.type.case">
+
+                    <!-- Text Question -->
+                    <ng-container *ngSwitchCase="'textQuestion'">
+                        <input *ngIf="!getTextQuestion(item)?.paragraph" type="text"
+                            [formControlName]="item.kind.value.question!.questionId" class="form-control"
+                            placeholder="Your answer" />
+
+                        <textarea *ngIf="getTextQuestion(item)?.paragraph"
+                            [formControlName]="item.kind.value.question!.questionId" class="form-control" rows="3"
+                            placeholder="Your answer"></textarea>
+                    </ng-container>
+
+                    <!-- Choice Question -->
+                    <ng-container *ngSwitchCase="'choiceQuestion'">
+
+                        <!-- Radio -->
+                        <div class="options-list" *ngIf="getChoiceQuestion(item)?.type === 1">
+                            <label class="option-row" *ngFor="let opt of getChoiceQuestion(item)?.options">
+                                <input type="radio" [formControlName]="item.kind.value.question!.questionId"
+                                    [value]="opt.value" />
+                                <span>{{ opt.value }}</span>
+                            </label>
+
+                            <!-- Check if 'Other' should be rendered -->
+                            <ng-container *ngFor="let opt of getChoiceQuestion(item)?.options">
+                                <label class="option-row other-row" *ngIf="opt.isOther">
+                                    <input type="radio" [formControlName]="item.kind.value.question!.questionId"
+                                        value="__other__" />
+                                    <span>Other:</span>
+                                    <input type="text"
+                                        [formControlName]="item.kind.value.question!.questionId + '_other'"
+                                        class="form-control other-input"
+                                        [disabled]="formGroup.get(item.kind.value.question!.questionId)?.value !== '__other__'" />
+                                </label>
+                            </ng-container>
+                        </div>
+
+                        <!-- Checkboxes -->
+                        <div class="options-list" *ngIf="getChoiceQuestion(item)?.type === 2">
+                            <label class="option-row"
+                                *ngFor="let opt of getChoiceQuestion(item)?.options; let i = index">
+                                <input type="checkbox" [value]="opt.value"
+                                    [checked]="isCheckboxChecked(item.kind.value.question!.questionId, opt.value)"
+                                    (change)="onCheckboxChange($event, item.kind.value.question!.questionId)" />
+                                <span>{{ opt.value }}</span>
+                            </label>
+
+                            <ng-container *ngFor="let opt of getChoiceQuestion(item)?.options">
+                                <label class="option-row other-row" *ngIf="opt.isOther">
+                                    <input type="checkbox" value="__other__"
+                                        [checked]="isCheckboxChecked(item.kind.value.question!.questionId, '__other__')"
+                                        (change)="onCheckboxChange($event, item.kind.value.question!.questionId)" />
+                                    <span>Other:</span>
+                                    <input type="text"
+                                        [formControlName]="item.kind.value.question!.questionId + '_other'"
+                                        class="form-control other-input"
+                                        [disabled]="!isCheckboxChecked(item.kind.value.question!.questionId, '__other__')" />
+                                </label>
+                            </ng-container>
+                        </div>
+
+                        <!-- Dropdown -->
+                        <div class="options-list" *ngIf="getChoiceQuestion(item)?.type === 3">
+                            <select [formControlName]="item.kind.value.question!.questionId" class="form-control">
+                                <option value="" disabled selected>Choose</option>
+                                <option *ngFor="let opt of getChoiceQuestion(item)?.options" [value]="opt.value">{{
+                                    opt.value }}</option>
+                            </select>
+                        </div>
+
+                    </ng-container>
+
+                    <!-- Scale Question -->
+                    <ng-container *ngSwitchCase="'scaleQuestion'">
+                        <div class="scale-container" *ngIf="getScaleQuestion(item); let sq">
+                            <div class="scale-label" *ngIf="sq.lowLabel">{{ sq.lowLabel }}</div>
+                            <div class="scale-options">
+                                <input type="number" [formControlName]="item.kind.value.question!.questionId"
+                                    class="form-control" [min]="sq.low" [max]="sq.high" />
+                            </div>
+                            <div class="scale-label" *ngIf="sq.highLabel">{{ sq.highLabel }}</div>
+                        </div>
+                    </ng-container>
+
+                    <!-- Date Question -->
+                    <ng-container *ngSwitchCase="'dateQuestion'">
+                        <div [formGroupName]="item.kind.value.question!.questionId" class="date-group"
+                            *ngIf="getDateQuestion(item); let dq">
+                            <input type="date" formControlName="date" class="form-control" />
+                            <input *ngIf="dq.includeTime" type="time" formControlName="time" class="form-control" />
+                        </div>
+                    </ng-container>
+
+                    <!-- Time Question -->
+                    <ng-container *ngSwitchCase="'timeQuestion'">
+                        <input type="time" [formControlName]="item.kind.value.question!.questionId"
+                            class="form-control" />
+                    </ng-container>
+
+                </ng-container>
+
+                <div class="error-message"
+                    *ngIf="formGroup.get(item.kind.value.question!.questionId)?.invalid && formGroup.get(item.kind.value.question!.questionId)?.touched">
+                    This is a required question
+                </div>
+
+            </div>
+
+        </ng-container>
+
+        <!-- Navigation / Submit -->
+        <div class="actions-footer">
+            <button type="button" class="btn btn-secondary" (click)="previousPage()"
+                *ngIf="currentPageIndex() > 0">Back</button>
+            <button type="button" class="btn btn-primary" (click)="nextPage()"
+                *ngIf="currentPageIndex() < pages().length - 1">Next</button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting()"
+                *ngIf="currentPageIndex() === pages().length - 1">
+                {{ submitting() ? 'Submitting...' : 'Submit' }}
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<!-- Loading State -->
+<div class="loading-state" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Loading template...</p>
+</div>
+
+<!-- Error State -->
+<div class="error-state" *ngIf="error()">
+    <div class="error-icon">⚠️</div>
+    <h3>Oops!</h3>
+    <p>{{ error() }}</p>
+</div>
+
+<!-- Success State -->
+<div class="success-state" *ngIf="submitted() && template()">
+    <div class="success-icon">✅</div>
+    <h2>{{ template()!.title }}</h2>
+    <p>{{ template()!.confirmationMessage || 'Your response has been recorded.' }}</p>
+    <a routerLink="/dashboard" class="btn btn-secondary">Return to Dashboard</a>
+</div>
