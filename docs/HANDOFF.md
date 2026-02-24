@@ -1,42 +1,33 @@
 # Project Holocron: Session Handoff
 
-## Current State: Identity, Security, Export & UX Polish (Phase 5)
-We have successfully implemented Phase 5, solidifying the application's foundation with robust authorization, data export capabilities, and a polished user interface. The entire "Golden Loop" has been rigorously tested via a Browser Subagent.
+## Current State: Advanced Analytics & Team Collaboration (Phase 6)
+We have successfully implemented Phase 6, bringing critical collaborative and analytical features to Holocron. The entire "Golden Loop" has been rigorously tested via a Browser Subagent.
 
-1. **Backend Authorization 🔒**: 
-   - Enhanced `ceremony.proto` to include a `creator_id` on the `CeremonyTemplate`.
-   - Leveraged the established "Mock Header" (`x-mock-user-id`) pattern and Armeria's `MockAuthDecorator` to extract user identity.
-   - Enforced strict backend authorization in `CeremonyServiceImpl`: users can now only list their own templates, and only the template creator can query responses.
-2. **Data Export 📊**: 
-   - Implemented a "Export to CSV" feature directly on the `CeremonyResultsComponent` dashboard.
-   - The frontend parses the complex, polymorphic `CeremonyResponse` data and generates a clean, downloadable CSV file.
-3. **UI/UX Polish 💅 & Bug Fixes 🐛**: 
-   - Improved form validation UI in the Ceremony Responder (red error states).
-   - Polished empty/loading states in the Results Component to match the dark theme.
-   - Fixed missing Material Icons by properly importing the Google Fonts stylesheet in `index.html`.
-   - Fixed the "Return to Dashboard" button routing by importing `RouterModule` into the standalone responder component.
+1. **Advanced Analytics & Filtering 📈**:
+   - Implemented Date Filtering for responses on the `CeremonyResultsComponent`.
+   - The backend `CeremonyResponseRepository` supports querying by `start_date` and `end_date`.
+2. **Team Collaboration & Sharing 🤝**:
+   - Added support for "Public" and "Shared" templates in `ceremony.proto`.
+   - Upgraded the Dashboard to differentiate between "My Ceremonies" and "Shared with Me".
+   - Creators can now grant access to specific users via email during template creation.
+3. **Dynamic Mock Authentication 🔐**:
+   - Enhanced the Angular Mock Auth interceptor to dynamically read the mock email from `localStorage`.
+   - The `LoginComponent` now features an email input, enabling developers to easily switch user contexts for testing shared ceremonies without code changes.
 
-## Objective for Next Session: Advanced Analytics & Team Collaboration (Phase 6)
-With the core architecture, data collection, and basic security in place, Phase 6 should focus on expanding the platform's utility for engineering teams.
+## Objective for Next Session: Notification Integrations & Polish (Phase 7)
+With Analytics and Collaboration in place, Holocron is well-positioned to integrate with team workflows.
 
-### 1. Advanced Analytics & Filtering
-Currently, the results dashboard shows all responses aggregated together.
-- **Date Filtering**: Allow creators to filter responses by a specific date range (e.g., "Show me standup results for the last two weeks").
-- **Cross-tabulation**: (Stretch Goal) Enable comparing responses across different questions (e.g., "Did people who reported blockers also rate their sprint lower?").
+### 1. Notification Integrations
+To make Holocron a true ceremony tool, it needs to connect with the places where teams already communicate.
+- **Slack/Discord Webhooks**: When a ceremony is created or when specific answers are collected (e.g., a "Blocker" is reported), trigger a webhook to a team chat channel.
+- **Email Notifications**: Option to email participants when a ceremony opens or closes.
 
-### 2. Team Collaboration & Sharing
-The rigid "creator-only" authorization model is secure but limits collaboration.
-- **Shared Ceremonies**: Implement a mechanism for a creator to grant "view" or "edit" access to other users (via email/ID).
-- **Public vs. Private Templates**: Allow templates to be marked as "Public" (anyone can respond) vs "Internal/Restricted" (only authenticated users can respond).
-- **Dashboard Enhancements**: Update the user dashboard to show "My Ceremonies" and "Shared with Me".
-
-### 3. Notification Integrations
-To make Holocron a true ceremony tool, it needs to integrate with where teams work.
-- **Slack/Discord Webhooks**: (Stretch Goal) When a ceremony is created or when a specific answer is given (e.g., a "Blocker" is reported), trigger a webhook to send a message to a team chat channel.
+### 2. Cross-tabulation & Advanced Insights
+- **Cross-tabulation**: Enable comparing responses across different questions (e.g., "Did people who reported blockers also rate their sprint lower?").
 
 ## Next Session "Golden Loop"
-1. Update `ceremony.proto` to support shared access controls or date filtering parameters.
+1. Update `ceremony.proto` to support Webhook configurations or notification preferences on the Template.
 2. Run `make gen` to generate the updated models.
-3. Implement the backend logic in Kotlin to handle the new queries or authorization rules.
-4. Update the Angular frontend components (Dashboard or Results) to expose the new features.
-5. Manually test the end-to-end flow.
+3. Implement backend logic in Kotlin to dispatch simple HTTP POST events or emails based on triggers.
+4. Update the Angular frontend components to allow configuring these integrations.
+5. Manually test the end-to-end integration flow.

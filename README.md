@@ -68,6 +68,9 @@ npm start
 ```
 * The web app will be live on [http://localhost:4200](http://localhost:4200).
 
+### 6. Dynamic Mock Authentication (Local Dev)
+For local development, Holocron uses a "Mock Header" authentication pattern (`x-mock-user-id`). The Angular application provides a dynamic login screen where you can input any email address (e.g., `creator@local` or `responder@local`). This email is stored in `localStorage` and automatically injected into all outbound gRPC-Web requests by an interceptor, making it trivial to test multi-user sharing and permissions locally without a real IdP.
+
 ---
 
 ## 🔄 The "Golden Loop" Workflow
