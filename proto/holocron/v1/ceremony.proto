@@ -20,6 +20,12 @@ message CeremonyTemplate {
   
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
+
+  // Form Settings
+  bool collect_emails = 8;
+  bool limit_one_response = 9;
+  bool shuffle_question_order = 10;
+  string confirmation_message = 11;
 }
 
 message Item {
@@ -42,6 +48,7 @@ message Item {
 
 message PageBreakItem {
   // Can be expanded later for conditional logic (e.g., "Go to section 2 based on answer")
+  string next_section_id = 1;
 }
 
 message TextItem {
@@ -78,6 +85,8 @@ message Question {
     ChoiceQuestion choice_question = 4;
     ScaleQuestion scale_question = 5;
     FileUploadQuestion file_upload_question = 6;
+    DateQuestion date_question = 7;
+    TimeQuestion time_question = 8;
   }
 }
 
@@ -99,6 +108,7 @@ message ChoiceQuestion {
 message Option {
   string value = 1;
   bool is_other = 2; // If true, frontend renders an "Other: [_____]" text input
+  string next_section_id = 3; // For logic branching
 }
 
 message ScaleQuestion {
@@ -112,6 +122,15 @@ message FileUploadQuestion {
   int32 max_files = 1;
   int64 max_file_size_bytes = 2;
   repeated string allowed_mime_types = 3; // e.g., "application/pdf", "image/png"
+}
+
+message DateQuestion {
+  bool include_year = 1;
+  bool include_time = 2;
+}
+
+message TimeQuestion {
+  bool duration = 1;
 }
 
 // ============================================================================
@@ -136,6 +155,8 @@ message Answer {
     ChoiceAnswer choice_answer = 2;
     ScaleAnswer scale_answer = 3;
     FileUploadAnswer file_upload_answer = 4;
+    DateAnswer date_answer = 5;
+    TimeAnswer time_answer = 6;
   }
 }
 
@@ -156,6 +177,20 @@ message ScaleAnswer {
 message FileUploadAnswer {
   // URLs or storage bucket paths to the uploaded files
   repeated string file_uris = 1; 
+}
+
+message DateAnswer {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+  int32 hours = 4;
+  int32 minutes = 5;
+}
+
+message TimeAnswer {
+  int32 hours = 1;
+  int32 minutes = 2;
+  int32 seconds = 3;
 }
 
 // ============================================================================

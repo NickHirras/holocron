@@ -1,5 +1,5 @@
 <div class="h-full w-full bg-holocron-base text-holocron-text-primary p-6 md:p-10 overflow-y-auto">
-    <div class="max-w-4xl mx-auto pb-20">
+    <div class="max-w-4xl mx-auto pb-20 relative">
 
         <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -33,107 +33,263 @@
             </button>
         </header>
 
-        <form [formGroup]="templateForm" class="space-y-8">
+        <form [formGroup]="templateForm" class="space-y-6">
 
             <!-- General Settings -->
-            <section class="bg-[#131d30] border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-                <h2 class="text-xl font-bold text-white mb-6 border-b border-slate-700/50 pb-2">General Settings</h2>
-
-                <div class="space-y-5">
+            <section class="bg-[#131d30] border-t-8 border-holocron-neon-blue rounded-xl p-6 shadow-xl">
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Template Title *</label>
-                        <input type="text" formControlName="title" placeholder="e.g. Daily Standup"
-                            class="w-full bg-slate-800/50 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-holocron-neon-blue focus:border-transparent transition-all placeholder:text-slate-500">
+                        <input type="text" formControlName="title" placeholder="Form title"
+                            class="w-full bg-transparent border-b border-transparent hover:border-slate-600 focus:border-holocron-neon-blue pb-2 text-3xl font-bold text-white focus:outline-none transition-colors placeholder:text-slate-500">
                         @if (templateForm.get('title')?.invalid && templateForm.get('title')?.touched) {
                         <p class="text-red-400 text-sm mt-1">Title is required.</p>
                         }
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Description</label>
-                        <input type="text" formControlName="description"
-                            placeholder="A brief description of this ceremony..."
-                            class="w-full bg-slate-800/50 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-holocron-neon-blue focus:border-transparent transition-all placeholder:text-slate-500">
+                        <input type="text" formControlName="description" placeholder="Form description"
+                            class="w-full bg-transparent border-b border-transparent hover:border-slate-600 focus:border-holocron-neon-blue pb-1 text-sm text-slate-300 focus:outline-none transition-colors placeholder:text-slate-500">
                     </div>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-700/50 flex gap-6 text-sm">
+                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                        <input type="checkbox" formControlName="collectEmails"
+                            class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                        Collect emails
+                    </label>
+                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                        <input type="checkbox" formControlName="limitOneResponse"
+                            class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                        Limit to 1 response
+                    </label>
                 </div>
             </section>
 
-            <!-- Items/Questions Array -->
-            <section>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-white">Questions & Items</h2>
-                    <span class="text-sm text-slate-400 font-medium bg-slate-800 px-3 py-1 rounded-full">{{ items.length
-                        }} Items</span>
-                </div>
+            <!-- Items Array -->
+            <div formArrayName="items" class="space-y-6" cdkDropList (cdkDropListDropped)="dropItem($event)">
+                @for (itemCtrl of items.controls; track itemCtrl; let i = $index) {
+                <div [formGroupName]="i" cdkDrag
+                    class="group relative bg-[#131d30] border border-slate-700 hover:border-slate-500 rounded-xl p-6 pl-10 transition-all shadow-lg shadow-black/20 focus-within:border-l-4 focus-within:border-l-holocron-neon-blue">
 
-                <div formArrayName="items" class="space-y-4">
-                    @for (itemCtrl of items.controls; track itemCtrl; let i = $index) {
-                    <div [formGroupName]="i"
-                        class="group relative bg-[#1c273b] border border-slate-700 hover:border-slate-500 rounded-xl p-5 transition-colors">
+                    <!-- Drag Handle -->
+                    <div cdkDragHandle
+                        class="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-grab hover:text-white text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+                        </svg>
+                    </div>
 
-                        <!-- Drag Handle (Visual Only for now) & Remove Button -->
-                        <div
-                            class="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" class="w-5 h-5 text-slate-500 cursor-grab">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
-                            </svg>
+                    <div class="flex flex-col md:flex-row gap-6 mb-4">
+                        <div class="flex-grow">
+                            <input type="text" formControlName="title" placeholder="Question"
+                                class="w-full bg-slate-800/50 border border-slate-600 rounded p-3 text-lg font-medium text-white focus:outline-none focus:ring-2 focus:ring-holocron-neon-blue placeholder:text-slate-500 focus:bg-slate-800">
+
+                            <input type="text" formControlName="description" placeholder="Description (optional)"
+                                class="w-full bg-transparent border-b border-transparent hover:border-slate-600 focus:border-holocron-neon-blue px-1 py-1 mt-2 text-sm text-slate-400 focus:outline-none transition-colors placeholder:text-slate-600">
                         </div>
 
-                        <div class="pl-6 flex flex-col md:flex-row md:items-start gap-4">
-                            <div class="flex-grow space-y-4">
-                                <div>
-                                    <input type="text" formControlName="title" placeholder="Question Title *"
-                                        class="w-full bg-transparent border-b border-slate-600 hover:border-slate-400 focus:border-holocron-neon-blue px-1 py-2 text-lg font-semibold text-white focus:outline-none transition-colors placeholder:text-slate-500">
-                                </div>
-                                <div>
-                                    <input type="text" formControlName="description"
-                                        placeholder="Question Description (Optional)"
-                                        class="w-full bg-transparent border-b border-transparent hover:border-slate-600 focus:border-holocron-neon-blue px-1 py-1 text-sm text-slate-300 focus:outline-none transition-colors placeholder:text-slate-500">
-                                </div>
-                                <div class="flex items-center gap-3 pt-2">
-                                    <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
-                                        <input type="checkbox" formControlName="paragraph"
-                                            class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue focus:ring-offset-slate-900">
-                                        Allow paragraph response
-                                    </label>
-                                </div>
-                            </div>
+                        @if (itemCtrl.value.kind === 'QUESTION') {
+                        <div class="w-full md:w-64 flex-shrink-0">
+                            <select formControlName="type"
+                                class="w-full bg-slate-800 border border-slate-600 rounded p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-holocron-neon-blue">
+                                @for (qt of questionTypes; track qt.value) {
+                                <option [value]="qt.value">{{ qt.label }}</option>
+                                }
+                            </select>
+                        </div>
+                        }
+                    </div>
 
-                            <div class="flex-shrink-0">
-                                <button type="button" (click)="removeQuestion(i)"
-                                    class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                    <!-- Polymorphic UI -->
+                    <div class="mt-4 px-1">
+
+                        @if (itemCtrl.value.kind === 'QUESTION') {
+                        <!-- Text Types -->
+                        @if (itemCtrl.value.type === 'TEXT_SHORT') {
+                        <div class="w-1/2 border-b border-dotted border-slate-500 pb-2 text-slate-500 text-sm">Short
+                            answer text</div>
+                        }
+                        @if (itemCtrl.value.type === 'TEXT_PARAGRAPH') {
+                        <div class="w-full border-b border-dotted border-slate-500 pb-6 text-slate-500 text-sm">Long
+                            answer text</div>
+                        }
+
+                        <!-- Choice Types -->
+                        @if (itemCtrl.value.type.startsWith('CHOICE_')) {
+                        <div formArrayName="options" class="space-y-3 mt-4">
+                            @for (optCtrl of getOptions(i).controls; track optCtrl; let optIndex = $index) {
+                            <div [formGroupName]="optIndex" class="flex items-center gap-3">
+                                @if (itemCtrl.value.type === 'CHOICE_RADIO') {
+                                <div class="w-5 h-5 rounded-full border-2 border-slate-500 shrink-0"></div>
+                                } @else if (itemCtrl.value.type === 'CHOICE_CHECKBOX') {
+                                <div class="w-5 h-5 rounded border-2 border-slate-500 shrink-0"></div>
+                                } @else {
+                                <div class="text-slate-500 font-medium w-5 text-center">{{ optIndex + 1 }}.</div>
+                                }
+
+                                @if (optCtrl.value.isOther) {
+                                <span class="text-white">Other...</span>
+                                } @else {
+                                <input type="text" formControlName="value" placeholder="Option"
+                                    class="bg-transparent border-b border-transparent hover:border-slate-600 focus:border-holocron-neon-blue text-white focus:outline-none w-full max-w-md placeholder:text-slate-500 transition-colors">
+                                }
+
+                                <!-- Logic Branching (if Radio or Dropdown) -->
+                                @if (itemCtrl.value.type !== 'CHOICE_CHECKBOX') {
+                                <select formControlName="nextSectionId"
+                                    class="text-xs bg-slate-800 border border-slate-700 text-slate-400 rounded px-2 py-1 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <option value="">Continue to next section</option>
+                                    <option value="SUBMIT">Submit form</option>
+                                </select>
+                                }
+
+                                <button type="button" (click)="removeOption(i, optIndex)"
+                                    class="text-slate-500 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
+                            }
                         </div>
+                        <div class="flex items-center gap-2 mt-4 text-sm">
+                            <div class="w-5 h-5 opacity-0"></div>
+                            <button type="button" (click)="addOption(i)"
+                                class="text-slate-400 hover:text-white border-b border-transparent hover:border-white transition-colors">Add
+                                option</button>
+                            @if (!itemCtrl.value.type.endsWith('DROPDOWN')) {
+                            <span class="text-slate-600">or</span>
+                            <button type="button" (click)="addOtherOption(i)"
+                                class="text-holocron-neon-blue hover:text-blue-300 transition-colors">add
+                                "Other"</button>
+                            }
+                        </div>
+                        }
 
+                        <!-- Scale Type -->
+                        @if (itemCtrl.value.type === 'SCALE') {
+                        <div class="flex items-center gap-4 mt-4">
+                            <select formControlName="scaleLow"
+                                class="bg-slate-800/50 border border-slate-600 rounded text-slate-300 py-1.5 px-3">
+                                <option [ngValue]="0">0</option>
+                                <option [ngValue]="1">1</option>
+                            </select>
+                            <span class="text-slate-500">to</span>
+                            <select formControlName="scaleHigh"
+                                class="bg-slate-800/50 border border-slate-600 rounded text-slate-300 py-1.5 px-3">
+                                @for (n of [2,3,4,5,6,7,8,9,10]; track n) {
+                                <option [ngValue]="n">{{n}}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mt-6 space-y-3 max-w-sm">
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-400 w-4">{{ itemCtrl.value.scaleLow }}</span>
+                                <input type="text" formControlName="scaleLowLabel" placeholder="Label (optional)"
+                                    class="bg-transparent border-b border-slate-700 focus:border-holocron-neon-blue text-sm text-white focus:outline-none w-full transition-colors">
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-400 w-4">{{ itemCtrl.value.scaleHigh }}</span>
+                                <input type="text" formControlName="scaleHighLabel" placeholder="Label (optional)"
+                                    class="bg-transparent border-b border-slate-700 focus:border-holocron-neon-blue text-sm text-white focus:outline-none w-full transition-colors">
+                            </div>
+                        </div>
+                        }
+
+                        <!-- Date / Time -->
+                        @if (itemCtrl.value.type === 'DATE') {
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 text-sm text-slate-300">
+                                <input type="checkbox" formControlName="includeYear"
+                                    class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                                Include year
+                            </label>
+                            <label class="flex items-center gap-2 text-sm text-slate-300">
+                                <input type="checkbox" formControlName="includeTime"
+                                    class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                                Include time
+                            </label>
+                        </div>
+                        }
+                        @if (itemCtrl.value.type === 'TIME') {
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 text-sm text-slate-300">
+                                <input type="checkbox" formControlName="duration"
+                                    class="rounded bg-slate-800 border-slate-600 text-holocron-neon-blue focus:ring-holocron-neon-blue">
+                                Duration format
+                            </label>
+                        </div>
+                        }
+                        }
                     </div>
-                    }
 
-                    @if (items.length === 0) {
-                    <div class="text-center py-10 border border-dashed border-slate-700 rounded-xl bg-[#131d30]">
-                        <p class="text-slate-400 font-medium">No questions added yet.</p>
-                        <p class="text-slate-500 text-sm mt-1">Click the button below to add your first question.</p>
+                    <!-- Card Actions (Bottom Right) -->
+                    <div class="mt-8 pt-4 border-t border-slate-700/50 flex justify-end items-center gap-4">
+                        <button type="button" (click)="removeItem(i)"
+                            class="text-slate-400 hover:text-red-400 transition-colors p-2" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                        </button>
+                        @if (itemCtrl.value.kind === 'QUESTION') {
+                        <div class="h-6 w-px bg-slate-700"></div>
+                        <label class="flex items-center gap-2 text-sm text-slate-300 font-medium">
+                            Required
+                            <input type="checkbox" formControlName="required"
+                                class="w-10 h-5 rounded-full bg-slate-700 border-none appearance-none focus:ring-0 focus:outline-none checked:bg-holocron-neon-blue transition-colors cursor-pointer relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:w-4 after:h-4 after:rounded-full checked:after:translate-x-5 after:transition-transform">
+                        </label>
+                        }
                     </div>
-                    }
-                </div>
 
-                <div class="mt-6">
-                    <button type="button" (click)="addTextQuestion()"
-                        class="flex items-center gap-2 text-holocron-neon-blue hover:text-white bg-holocron-neon-blue/10 hover:bg-holocron-neon-blue/20 border border-holocron-neon-blue/20 hover:border-holocron-neon-blue/40 px-4 py-2 rounded-lg font-medium transition-colors text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                            stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Add Text Question
-                    </button>
                 </div>
-            </section>
+                }
+            </div>
+
+            <!-- Floating Action Bar (Inline for now) -->
+            <div
+                class="flex items-center justify-center gap-2 p-3 bg-[#131d30] border border-slate-700 rounded-xl shadow-lg w-fit mx-auto sticky bottom-6 z-10 transition-transform duration-300">
+                <button type="button" (click)="addQuestion()"
+                    class="p-2 text-slate-300 hover:text-holocron-neon-blue hover:bg-white/5 rounded-lg transition-colors"
+                    title="Add question">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </button>
+                <button type="button" (click)="addStructuralItem('TEXT')"
+                    class="p-2 text-slate-300 hover:text-holocron-neon-blue hover:bg-white/5 rounded-lg transition-colors"
+                    title="Add title and description">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.24.041 3.329.119M6 5.25v14.25m-3-14.25h12" />
+                    </svg>
+                </button>
+                <button type="button" (click)="addStructuralItem('IMAGE')"
+                    class="p-2 text-slate-300 hover:text-holocron-neon-blue hover:bg-white/5 rounded-lg transition-colors"
+                    title="Add image">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                </button>
+                <div class="w-px h-6 bg-slate-700 mx-1"></div>
+                <button type="button" (click)="addStructuralItem('SECTION')"
+                    class="p-2 text-slate-300 hover:text-holocron-neon-blue hover:bg-white/5 rounded-lg transition-colors"
+                    title="Add section">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                    </svg>
+                </button>
+            </div>
 
         </form>
     </div>
