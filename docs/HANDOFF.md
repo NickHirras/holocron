@@ -1,38 +1,27 @@
 # Project Holocron: Session Handoff
 
-## Current State: Ceremony Creator (Phase 2)
-We have successfully implemented the dynamic Ceremony Creator, achieving parity with the core capabilities of Google Forms. The complete "Golden Loop" has been executed: 
-1. `ceremony.proto` updated with complex question types, logic branching, and form-level settings.
-2. `make gen` synthesized the new model code.
-3. The Angular UI (using `@angular/cdk/drag-drop` and Reactive Forms) provides a polymorphic interface for selecting question types, designing nested choice options (with "Other"), and building structural blocks (Pages, Text, Images).
-4. The frontend serializes the dynamic form into Protobuf efficiently, sending it via ConnectRPC.
-5. Armeria/MongoDB persists the nested `CeremonyTemplate` perfectly.
+## Current State: Ceremony Responder (Phase 3)
+We have successfully implemented the dynamic Ceremony Responder (similar to filling out a Google Form) and the associated backend storage and routing. The complete "Golden Loop" has been executed via a Browser Subagent:
+1. **Frontend Responder Component**: A new route `/ceremony/:id` reads a serialized `CeremonyTemplate` from the backend and constructs an iterative UI for end-users to provide answers.
+2. **Dynamic Web Forms**: The component utilizes Angular Reactive Forms to collect data securely while providing form validation logic matching the template's required rules. Supports Text, Multiple Choice, Scale, Date, and Time.
+3. **Protobuf Mapping & Serialization**: Transformed the loosely-typed UI output into strictly-typed `CeremonyResponse` Protobuf arrays.
+4. **Backend Storage**: Created `CeremonyResponseRepository` (`Indexes + Opaque blobs`) and the corresponding Armeria `SubmitCeremonyResponse` RPC logic to ingest and save subagent answers into MongoDB.
+5. **Dashboard Updates**: Standard users can now view available forms via the `Your Ceremonies` list implemented alongside `ListCeremonyTemplates`.
 
-*Present Capabilities:*
-- Dynamic `FormArray` structure with Drag & Drop reordering.
-- Support for Text, Multiple Choice, Checkbox, Dropdown, Scale, File, Date, and Time questions.
-- Support for structural items (Section, Title, Image, Video).
-- Logic section branching data definitions (`next_section_id`).
-- Form-level settings (Emails, One Response Limit, Shuffle, Confirmation).
+## Objective for Next Session: Analytics & Real-time Dashboards (Phase 4)
+Now that we can *create* templates and *collect* responses, the core objective for the next session is to organize and interpret this data.
 
-## Objective for Next Session: Response Collection & Viewing
-Now that we can *create* robust, complex ceremony templates, the core objective for the next session is to allow users to *submit responses* and view the aggregated results.
+### 1. Backend Result Aggregation (`ListCeremonyResponses`)
+- Retrieve and deserialize the blob responses connected to a specific `template_id`.
+- Depending on performance and architectural choices, compile answers into statistical objects (Averages, Distributions) either on the Backend or Frontend.
 
-### 1. Angular UI: Ceremony Responder (`ceremony-responder.ts` / `.html`)
-- We need a new page routed dynamically (e.g., `/ceremony/:id`) that loads a `CeremonyTemplate` via `GetCeremonyTemplate`.
-- It must render a purely *fillable* version of the form (not the editor).
-- It must enforce validation (required fields) and handle logic branching (only show the next section based on `next_section_id` from the choice selected or the page break).
-
-### 2. Protobuf Serialization Logic
-- Upon submission, map the Reactive Form values into `CeremonyResponse` -> `Answer` oneofs (e.g., `TextAnswer`, `ChoiceAnswer`, `DateAnswer`).
-- Send the response via the `SubmitCeremonyResponse` RPC.
-
-### 3. Analytics & Results View (Optional Phase 3b)
-- A view for the ceremony creator to see a dashboard of responses.
-- Implement `ListCeremonyResponses` to aggregate data (e.g., pie charts for Multiple Choice, average scores for linear scales).
+### 2. Angular UI: Ceremony Results View
+- A dedicated analytics tab on the template editor (`/create/:id/results` or similar).
+- Need a visual dashboard corresponding to the question type (e.g., Pie charts or bar graphs for Multiple Choice, numerical range distributions for Linear Scale).
 
 ## Next Session "Golden Loop"
-1. Scaffold the `CeremonyResponderComponent`.
-2. Implement the read-only rendering of the `CeremonyTemplate` model.
-3. Hook up the submission serialization logic to `SubmitCeremonyResponse`.
-4. Test End-to-End via the browser subagent.
+1. Define the Response Aggregation patterns.
+2. Add `ListCeremonyResponses` to `ceremony.proto` if not already fully specced for the use case.
+3. Scaffold the `CeremonyResultsComponent` UI.
+4. Integrate a charting library or build custom pure CSS/SVG visualizers.
+5. Test end-to-end data vis fidelity by simulating numerous response submissions via script or agent.
