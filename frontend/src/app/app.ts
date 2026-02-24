@@ -1,8 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createClient } from '@connectrpc/connect';
-import { CeremonyService } from '../proto-gen/holocron/v1/ceremony_pb';
+import { CEREMONY_CLIENT, USER_CLIENT } from './app.config';
+import { User } from '../proto-gen/holocron/v1/ceremony_pb';
 
 @Component({
   selector: 'app-root',
@@ -10,18 +9,28 @@ import { CeremonyService } from '../proto-gen/holocron/v1/ceremony_pb';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('frontend');
 
-  private transport = createGrpcWebTransport({
-    baseUrl: 'http://localhost:8080',
-  });
+  // Strict typings using injection tokens connected to providers
+  private ceremonyClient = inject(CEREMONY_CLIENT);
+  private userClient = inject(USER_CLIENT);
 
-  private client = createClient(CeremonyService, this.transport);
+  userProfile = signal<User | undefined>(undefined);
+
+  async ngOnInit() {
+    try {
+      const resp = await this.userClient.getSelf({});
+      this.userProfile.set(resp.user);
+      console.log('✅ Authenticated as:', resp.user?.email);
+    } catch (e) {
+      console.error('❌ Failed to authenticate:', e);
+    }
+  }
 
   async pingBackend() {
     try {
-      const response = await this.client.ping({ message: "Hello from Angular via gRPC-Web!" });
+      const response = await this.ceremonyClient.ping({ message: "Hello from Angular via gRPC-Web!" });
       console.log('✅ Success! Backend says:', response.message);
       alert(`Success! 🚀 Backend returned: ${response.message}`);
     } catch (e) {

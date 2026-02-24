@@ -159,8 +159,32 @@ message FileUploadAnswer {
 }
 
 // ============================================================================
-// 3. RPC SERVICES (The API Contract)
+// 3. RPC SERVICES AND USER MESSAGES (The API Contract)
 // ============================================================================
+
+// -- User Management --
+
+message User {
+  string id = 1;
+  string email = 2; // Derived from x-mock-user-id header
+  
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
+
+service UserService {
+  rpc GetSelf(GetSelfRequest) returns (GetSelfResponse);
+}
+
+message GetSelfRequest {
+  // Empty, relies on headers
+}
+
+message GetSelfResponse {
+  User user = 1;
+}
+
+// -- Ceremony Service --
 
 service CeremonyService {
   // Testing

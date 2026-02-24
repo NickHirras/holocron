@@ -1,6 +1,18 @@
 <main
   style="padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; font-family: sans-serif;">
   <h1>Holocron Engineering Web GUI</h1>
+
+  @if (userProfile()) {
+    <div style="padding: 1rem; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9; text-align: center;">
+      <p style="margin: 0; font-weight: bold;">Authenticated as:</p>
+      <p style="margin: 0.5rem 0 0 0; color: #333;">{{ userProfile()?.email }}</p>
+    </div>
+  } @else {
+    <div style="padding: 1rem; border: 1px solid #ccc; border-radius: 8px; background-color: #fff3cd; color: #856404; text-align: center;">
+      <p style="margin: 0;">Loading profile...</p>
+    </div>
+  }
+
   <button (click)="pingBackend()"
     style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; color: white; background: blue; border: none; border-radius: 5px;">
     Ping Backend
