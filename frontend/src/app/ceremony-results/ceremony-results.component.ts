@@ -15,6 +15,12 @@ interface ChartData {
     textAnswers?: string[];
 }
 
+interface CrossTabData {
+    groupLabel: string;
+    groupCount: number;
+    distribution: { label: string, count: number }[];
+}
+
 @Component({
     selector: 'app-ceremony-results',
     standalone: true,
@@ -33,6 +39,10 @@ export class CeremonyResultsComponent implements OnInit {
 
     startDate = signal<string>('');
     endDate = signal<string>('');
+
+    // Cross-Tabulation State
+    crossTabGroupQuestionId = signal<string>('');
+    crossTabTargetQuestionId = signal<string>('');
 
     // Computed signal to aggregate and process data per question
     questionData = computed(() => {
@@ -100,6 +110,78 @@ export class CeremonyResultsComponent implements OnInit {
         }
 
         return data;
+    });
+
+    // Helper signal for dropdowns (only choices and scales)
+    selectableQuestions = computed(() => {
+        return this.questionData().filter(q => q.type === 'choiceQuestion' || q.type === 'scaleQuestion');
+    });
+
+    // Cross-tabulation compute logic
+    crossTabData = computed(() => {
+        const groupQId = this.crossTabGroupQuestionId();
+        const targetQId = this.crossTabTargetQuestionId();
+        const resps = this.responses();
+
+        if (!groupQId || !targetQId || !resps || resps.length === 0) return null;
+
+        const results = new Map<string, { count: number, dist: Map<string, number> }>();
+
+        for (const resp of resps) {
+            const groupAns = resp.answers[groupQId];
+            const targetAns = resp.answers[targetQId];
+
+            if (!groupAns || !targetAns) continue;
+
+            // Extract string value for grouping
+            let groupValue = 'Unknown';
+            if (groupAns.kind.case === 'choiceAnswer') {
+                groupValue = groupAns.kind.value.values.join(', ');
+            } else if (groupAns.kind.case === 'scaleAnswer') {
+                groupValue = groupAns.kind.value.value.toString();
+            }
+
+            // Extract string value(s) for target distribution targeting
+            let targetValues: string[] = [];
+            if (targetAns.kind.case === 'choiceAnswer') {
+                targetValues = targetAns.kind.value.values;
+            } else if (targetAns.kind.case === 'scaleAnswer') {
+                targetValues = [targetAns.kind.value.value.toString()];
+            }
+
+            if (targetValues.length === 0) continue;
+
+            // Initialize group if not exists
+            if (!results.has(groupValue)) {
+                results.set(groupValue, { count: 0, dist: new Map() });
+            }
+
+            const groupData = results.get(groupValue)!;
+            groupData.count++;
+
+            for (const val of targetValues) {
+                const currentCount = groupData.dist.get(val) || 0;
+                groupData.dist.set(val, currentCount + 1);
+            }
+        }
+
+        // Convert Maps to sorted Arrays for UI
+        const finalData: CrossTabData[] = [];
+        for (const [groupLabel, data] of results.entries()) {
+            const distribution = Array.from(data.dist.entries())
+                .map(([label, count]) => ({ label, count }))
+                // Basic sort for labels like '1', '2' or 'Yes', 'No'
+                .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+
+            finalData.push({
+                groupLabel,
+                groupCount: data.count,
+                distribution
+            });
+        }
+
+        // Sort groups alphabetically/numerically
+        return finalData.sort((a, b) => a.groupLabel.localeCompare(b.groupLabel, undefined, { numeric: true }));
     });
 
     ngOnInit() {
