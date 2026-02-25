@@ -22,7 +22,7 @@
 
             <div class="item-card image-item" *ngIf="item.kind.case === 'imageItem'">
                 <h3>{{ item.title }}</h3>
-                <img [src]="item.kind.value.imageUrl" [alt]="item.kind.value.altText" />
+                <img [src]="getImageDisplayUrl(item.kind.value.imageUrl)" [alt]="item.kind.value.altText" />
                 <p>{{ item.description }}</p>
             </div>
 

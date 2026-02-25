@@ -10,7 +10,7 @@ export class ImageUploadService {
 
     async uploadImage(file: File): Promise<string> {
         const response = await firstValueFrom(
-            this.http.post<{ url: string }>('/upload/image', file, {
+            this.http.post<{ url: string }>('http://localhost:8080/upload/image', file, {
                 headers: {
                     'Content-Type': file.type || 'application/octet-stream' // Binary upload
                 }

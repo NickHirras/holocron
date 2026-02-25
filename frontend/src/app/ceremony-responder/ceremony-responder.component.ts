@@ -302,4 +302,12 @@ export class CeremonyResponderComponent implements OnInit {
         }
         return null;
     }
+
+    getImageDisplayUrl(url?: string): string {
+        if (!url) return '';
+        if (url.startsWith('holocron://assets/')) {
+            return url.replace('holocron://assets/', 'http://localhost:8080/api/images/');
+        }
+        return url;
+    }
 }

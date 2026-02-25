@@ -3,6 +3,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ImageUploadService } from '../../services/image-upload.service';
 
 @Component({
+  selector: 'app-image-uploader',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -166,7 +167,7 @@ export class ImageUploaderComponent {
   displayUrl = computed(() => {
     const url = this.imageUrl();
     if (url?.startsWith('holocron://assets/')) {
-      return url.replace('holocron://assets/', '/api/images/');
+      return url.replace('holocron://assets/', 'http://localhost:8080/api/images/');
     }
     return url;
   });
