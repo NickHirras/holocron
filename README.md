@@ -124,4 +124,3 @@ You can test the backend API in three ways:
      holocron.v1.CeremonyService/GetCeremonyTemplate
    ```
 
-
