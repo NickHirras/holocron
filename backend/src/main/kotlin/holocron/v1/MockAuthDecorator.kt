@@ -1,5 +1,7 @@
 package holocron.v1
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.linecorp.armeria.common.HttpRequest
 import com.linecorp.armeria.common.HttpResponse
 import com.linecorp.armeria.server.DecoratingHttpServiceFunction
@@ -12,10 +14,29 @@ class MockAuthDecorator : DecoratingHttpServiceFunction {
         val USER_EMAIL_ATTR: AttributeKey<String> = AttributeKey.valueOf("USER_EMAIL")
     }
 
+    private val jwtAlgorithm: Algorithm
+
+    init {
+        val jwtSecret = System.getenv("JWT_SECRET") ?: "holocron-secret-key-development-only"
+        jwtAlgorithm = Algorithm.HMAC256(jwtSecret)
+    }
+
     override fun serve(delegate: HttpService, ctx: ServiceRequestContext, req: HttpRequest): HttpResponse {
-        val email = req.headers().get("x-mock-user-id")
-        if (email != null) {
-            ctx.setAttr(USER_EMAIL_ATTR, email)
+        val authHeader = req.headers().get("authorization") ?: req.headers().get("Authorization")
+        if (authHeader != null && authHeader.startsWith("Bearer ", ignoreCase = true)) {
+            val token = authHeader.substring(7)
+            try {
+                val verifier = JWT.require(jwtAlgorithm)
+                    .withIssuer("holocron")
+                    .build()
+                val decodedJWT = verifier.verify(token)
+                val email = decodedJWT.subject
+                if (email != null) {
+                    ctx.setAttr(USER_EMAIL_ATTR, email)
+                }
+            } catch (e: Exception) {
+                println("⚠️ JWT Verification failed: ${e.message}")
+            }
         }
         return delegate.serve(ctx, req)
     }

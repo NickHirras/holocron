@@ -246,10 +246,11 @@ fun main() {
         // Allow Angular (localhost:4200) to hit the server via browser preflight
         .decorator(
             CorsService.builderForAnyOrigin()
-                .allowRequestMethods(HttpMethod.POST, HttpMethod.OPTIONS)
+                .allowRequestMethods(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.GET)
                 .allowRequestHeaders(
                     "content-type", "x-grpc-web", "x-user-agent", "grpc-timeout", 
-                    "x-mock-user-id", "X-Mock-User-Id", "connect-protocol-version"
+                    "x-mock-user-id", "X-Mock-User-Id", "connect-protocol-version",
+                    "authorization", "Authorization"
                 )
                 .exposeHeaders("grpc-status", "grpc-message", "grpc-status-details-bin")
                 .newDecorator()
@@ -258,6 +259,8 @@ fun main() {
         .service(grpcService)
         // Mount REST Health Check
         .service("/healthz") { _, _ -> HttpResponse.of("Holocron Systems Operational.") }
+        // Mount REST Auth Service
+        .annotatedService(holocron.v1.auth.AuthRestService())
         // Mount REST Image Upload Service
         .annotatedService(ImageUploadService(storageProvider))
         // Mount the magical Web GUI

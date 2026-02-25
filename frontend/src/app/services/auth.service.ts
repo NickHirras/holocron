@@ -12,22 +12,36 @@ export class AuthService {
 
     // State
     private readonly _userProfile = signal<User | undefined>(undefined);
+    public readonly availableProviders = signal<string[]>([]);
 
     // Publicly exposed readonly state derived from the private signal
     public readonly userProfile = this._userProfile.asReadonly();
     public readonly isLoggedIn = computed(() => {
         if (this._userProfile() !== undefined) return true;
         if (typeof window !== 'undefined' && window.localStorage) {
-            return localStorage.getItem('mockLoggedIn') === 'true';
+            return !!localStorage.getItem('holocron_jwt');
         }
         return false;
     });
 
     constructor() {
         if (typeof window !== 'undefined' && window.localStorage) {
-            if (localStorage.getItem('mockLoggedIn') === 'true') {
+            if (localStorage.getItem('holocron_jwt')) {
                 this.refreshProfile();
             }
+        }
+        this.fetchProviders();
+    }
+
+    private async fetchProviders() {
+        try {
+            const res = await fetch('http://localhost:8080/api/auth/providers');
+            if (res.ok) {
+                const providers = await res.json();
+                this.availableProviders.set(providers);
+            }
+        } catch (e) {
+            console.error('❌ Failed to fetch auth providers:', e);
         }
     }
 
@@ -39,37 +53,30 @@ export class AuthService {
             console.error('❌ Failed to refresh profile:', e);
             this._userProfile.set(undefined);
             if (typeof window !== 'undefined' && window.localStorage) {
-                localStorage.removeItem('mockLoggedIn');
+                localStorage.removeItem('holocron_jwt');
             }
         }
     }
 
-    async login(email: string, redirectUrl: string = '/') {
-        try {
-            if (typeof window !== 'undefined' && window.localStorage) {
-                localStorage.setItem('mockUserEmail', email);
-                localStorage.setItem('mockLoggedIn', 'true');
-            }
-
-            // The interceptor automatically attaches the 'x-mock-user-id' header
-            const resp = await this.userClient.getSelf({});
-            this._userProfile.set(resp.user);
-            console.log('✅ Authenticated as:', resp.user?.email);
-            await this.router.navigateByUrl(redirectUrl);
-        } catch (e) {
-            console.error('❌ Failed to authenticate:', e);
-            this._userProfile.set(undefined);
-            if (typeof window !== 'undefined' && window.localStorage) {
-                localStorage.removeItem('mockLoggedIn');
-            }
+    async handleCallbackToken(token: string) {
+        if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('holocron_jwt', token);
         }
+        await this.refreshProfile();
+    }
+
+    loginWithProvider(provider: string, emailHint?: string) {
+        let url = `http://localhost:8080/api/auth/login/${provider}`;
+        if (emailHint) {
+            url += `?email=${encodeURIComponent(emailHint)}`;
+        }
+        window.location.href = url;
     }
 
     logout() {
         this._userProfile.set(undefined);
         if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.removeItem('mockLoggedIn');
-            localStorage.removeItem('mockUserEmail');
+            localStorage.removeItem('holocron_jwt');
         }
         this.router.navigate(['/login']);
     }

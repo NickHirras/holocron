@@ -33,38 +33,73 @@
                 Holocron</p>
         </div>
 
-        <div class="mb-6 text-left">
-            <label class="block text-slate-400 mb-2 text-sm font-medium">Mock User Email</label>
-            <input type="email" [ngModel]="email()" (ngModelChange)="email.set($event)"
-                class="w-full bg-slate-800/50 border border-slate-600 hover:border-slate-500 focus:border-holocron-neon-blue rounded-xl p-3 text-white focus:outline-none transition-colors placeholder:text-slate-600"
-                placeholder="developer@local" (keyup.enter)="handleLogin()">
+        @if (auth.availableProviders().length === 0) {
+        <div class="flex flex-col items-center justify-center py-8">
+            <svg class="animate-spin h-8 w-8 text-holocron-neon-blue mb-4" xmlns="http://www.w3.org/2000/svg"
+                fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <p class="text-slate-400 text-sm font-medium">Loading authentication...</p>
         </div>
+        } @else {
+        <div class="flex flex-col gap-4">
+            @for (provider of auth.availableProviders(); track provider) {
+            @if (provider === 'mock') {
+            <div class="text-left bg-slate-800/30 p-4 rounded-xl border border-slate-700/50 relative overflow-hidden">
+                <label class="block text-slate-400 mb-2 text-sm font-medium">Mock Developer Account</label>
+                <input type="email" [ngModel]="mockEmail()" (ngModelChange)="mockEmail.set($event)"
+                    class="w-full bg-slate-900 border border-slate-600 hover:border-slate-500 focus:border-holocron-neon-blue rounded-lg p-3 text-white focus:outline-none transition-colors mb-4 placeholder:text-slate-600"
+                    placeholder="developer@local" (keyup.enter)="handleLogin('mock')">
 
-        <button (click)="handleLogin()" [disabled]="isLoggingIn() || !email()"
-            class="relative w-full overflow-hidden py-4 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-holocron-base bg-holocron-neon-blue hover:bg-holocron-neon-blue-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-holocron-neon-blue focus:ring-offset-holocron-base disabled:opacity-50 transition-all transform hover:-translate-y-0.5">
-            <span class="relative z-10 flex items-center justify-center gap-2">
-                @if (isLoggingIn()) {
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-holocron-base" xmlns="http://www.w3.org/2000/svg"
-                    fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
-                Authenticating...
-                } @else {
-                Continue with Mock Account
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                    stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-                }
-            </span>
-            <!-- Button subtle gradient overlay -->
-            <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:animate-[shimmer_1.5s_infinite]">
+                <button (click)="handleLogin('mock')" [disabled]="isLoggingIn() || !mockEmail()"
+                    class="w-full relative overflow-hidden py-3 px-4 rounded-lg shadow-lg text-sm font-bold text-holocron-base bg-emerald-400 hover:bg-emerald-300 focus:outline-none disabled:opacity-50 transition-all transform hover:-translate-y-0.5">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        @if (isLoggingIn()) {
+                        <svg class="animate-spin h-4 w-4 text-holocron-base" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Authenticating...
+                        } @else {
+                        Continue with Mock Email
+                        }
+                    </span>
+                </button>
             </div>
-        </button>
+            } @else {
+            <button (click)="handleLogin(provider)" [disabled]="isLoggingIn()"
+                class="group relative w-full overflow-hidden py-4 px-4 border border-slate-600 rounded-xl shadow-lg text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 hover:border-slate-500 transition-all transform hover:-translate-y-0.5 focus:outline-none flex items-center justify-center gap-3">
+                <span class="relative z-10 flex items-center justify-center gap-2">
+                    @if (isLoggingIn()) {
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    Redirecting...
+                    } @else {
+                    Continue with {{ provider | titlecase }}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                    }
+                </span>
+            </button>
+            }
+            }
+        </div>
+        }
 
         <div class="mt-8 pt-6 border-t border-slate-700/50 text-xs text-slate-500 font-medium tracking-wide">
             <p>By signing in, you agree to our <a href="#"

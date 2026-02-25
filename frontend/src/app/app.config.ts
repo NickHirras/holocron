@@ -9,23 +9,21 @@ import { createClient, Client, Interceptor } from '@connectrpc/connect';
 // IMPORT DIRECTLY FROM _pb NOW
 import { CeremonyService, UserService } from '../proto-gen/holocron/v1/ceremony_pb';
 
-// Interceptor to inject the mock user ID
-const mockAuthInterceptor: Interceptor = (next) => async (req) => {
-  let email = 'testuser@example.com';
+// Interceptor to inject the JWT
+const authInterceptor: Interceptor = (next) => async (req) => {
   if (typeof window !== 'undefined' && window.localStorage) {
-    const stored = localStorage.getItem('mockUserEmail');
-    if (stored) {
-      email = stored;
+    const token = localStorage.getItem('holocron_jwt');
+    if (token) {
+      req.header.set('Authorization', `Bearer ${token}`);
     }
   }
-  req.header.set('x-mock-user-id', email);
   return await next(req);
 };
 
 // Set up the gRPC-Web transport to point to Armeria
 const transport = createGrpcWebTransport({
   baseUrl: 'http://localhost:8080',
-  interceptors: [mockAuthInterceptor]
+  interceptors: [authInterceptor]
 });
 
 // Create the v2 client

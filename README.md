@@ -68,10 +68,19 @@ npm start
 ```
 * The web app will be live on [http://localhost:4200](http://localhost:4200).
 
-### 6. Dynamic Mock Authentication (Local Dev)
-For local development, Holocron uses a "Mock Header" authentication pattern (`x-mock-user-id`). The Angular application provides a dynamic login screen where you can input any email address (e.g., `creator@local` or `responder@local`). This email is stored in `localStorage` and automatically injected into all outbound gRPC-Web requests by an interceptor, making it trivial to test multi-user sharing and permissions locally without a real IdP.
+### 6. 12-Factor Federated Authentication (Local Dev)
+Holocron uses a JWT-based internal Identity Broker embedded inside the Armeria backend. To boot fully, it relies on environment variables for Google and GitHub OAuth configs.
+For local development without an IDP, the broker exposes a **Mock Authentication Provider** natively by default. 
 
----
+When you navigate to `http://localhost:4200/login`, the Angular application will dynamically fetch the configured providers (`http://localhost:8080/api/auth/providers`) and display the corresponding options. Clicking on the "Mock" option immediately signs a JWT for `testuser@example.com` (or any custom email injected) and redirects you back into the app seamlessly.
+
+To enable Google/GitHub:
+```bash
+export AUTH_GOOGLE_CLIENT_ID="your_google_id"
+export AUTH_GOOGLE_CLIENT_SECRET="your_google_secret"
+export JWT_SECRET="super-secure-key"
+make run-backend
+```
 
 ## 🔄 The "Golden Loop" Workflow
 
