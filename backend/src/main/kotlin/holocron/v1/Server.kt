@@ -14,7 +14,8 @@ import io.grpc.Status
 import io.grpc.StatusException
 import holocron.v1.repository.UserRepository
 import holocron.v1.repository.CeremonyResponseRepository
-import holocron.v1.repository.ImageRepository
+import holocron.v1.storage.FileStorageProvider
+import holocron.v1.storage.StorageFactory
 import kotlinx.coroutines.launch
 import com.linecorp.armeria.server.annotation.Post
 import com.linecorp.armeria.server.annotation.Get
@@ -185,7 +186,7 @@ class CeremonyServiceImpl(
     }
 }
 
-class ImageUploadService(private val imageRepository: ImageRepository) {
+class ImageUploadService(private val storageProvider: FileStorageProvider) {
     @Post("/upload/image")
     suspend fun uploadImage(req: HttpRequest): HttpResponse {
         val contentType = req.contentType()?.toString() ?: "application/octet-stream"
@@ -201,18 +202,21 @@ class ImageUploadService(private val imageRepository: ImageRepository) {
             return HttpResponse.of(HttpStatus.REQUEST_ENTITY_TOO_LARGE, MediaType.PLAIN_TEXT_UTF_8, "File too large")
         }
 
-        val id = imageRepository.save(bytes, contentType)
-        val url = "/api/images/$id" // We prefix with /api to avoid frontend static conflicts if any, or just /images
-        return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, "{\"url\":\"$url\"}")
+        // Generate a random filename. We can parse extensions later if needed.
+        val filename = UUID.randomUUID().toString()
+        val uri = storageProvider.save(filename, bytes, contentType)
+        
+        return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, "{\"url\":\"$uri\"}")
     }
 
     @Get("/api/images/:id")
     suspend fun downloadImage(@Param("id") id: String): HttpResponse {
-        val image = imageRepository.findById(id)
-        if (image == null) {
-            return HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.PLAIN_TEXT_UTF_8, "Image not found")
+        val uri = "holocron://assets/$id"
+        val fileData = storageProvider.get(uri)
+        if (fileData == null) {
+            return HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.PLAIN_TEXT_UTF_8, "Image not found at $uri")
         }
-        val (bytes, contentType) = image
+        val (bytes, contentType) = fileData
         return HttpResponse.of(HttpStatus.OK, MediaType.parse(contentType), bytes)
     }
 }
@@ -222,7 +226,9 @@ fun main() {
     val templateRepository = CeremonyTemplateRepository(mongoClient)
     val responseRepository = CeremonyResponseRepository(mongoClient)
     val userRepository = UserRepository(mongoClient)
-    val imageRepository = ImageRepository(mongoClient)
+    
+    // Initialize standard storage adapter (Memory by default)
+    val storageProvider = StorageFactory.createActiveProvider()
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
@@ -253,7 +259,7 @@ fun main() {
         // Mount REST Health Check
         .service("/healthz") { _, _ -> HttpResponse.of("Holocron Systems Operational.") }
         // Mount REST Image Upload Service
-        .annotatedService(ImageUploadService(imageRepository))
+        .annotatedService(ImageUploadService(storageProvider))
         // Mount the magical Web GUI
         .serviceUnder("/docs", DocService())
         .build()

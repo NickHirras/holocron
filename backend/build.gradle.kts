@@ -23,7 +23,11 @@ dependencies {
     // The Armeria Engine
     implementation(platform("com.linecorp.armeria:armeria-bom:1.28.0"))
     implementation("com.linecorp.armeria:armeria-grpc")
+    implementation("com.linecorp.armeria:armeria-kotlin")
     implementation("ch.qos.logback:logback-classic:1.5.3") // Armeria requires a logger to boot
+
+    // Storage Adapters
+    implementation("aws.sdk.kotlin:s3:1.1.20")
 }
 
 application {
