@@ -12,19 +12,18 @@ We have successfully implemented Phase 8, tidying the UI and expanding data port
    - Upgraded generic empty text placeholders with premium, centralized indicator cards containing interactive CTAs (e.g., "Create Your First Ceremony" and "No responses found").
    - Implemented a functional "Recent Activity" slide-out drawer on the dashboard, complete with a backdrop blur and a simulated chronological feed of system events.
 
-## Objective for Next Session: Scalability & Review (Phase 9)
-Holocron is currently feature-complete and polished. The next logical phase is preparing the codebase for deployment, scale, and long-term maintainability.
+## Current State: Scalability & Review (Phase 9) Completed
+We have successfully implemented Phase 9, preparing Holocron for production deployment and improving maintainability.
 
-### 1. Code Review & Refactoring
-- Audit the Angular components for any remaining logic that could be extracted into dedicated Services.
-- Ensure all RxJS observable subscriptions (if any remain) are properly managed or converted entirely to Signals.
+1. **Angular Refactoring**: Extracted form-to-protobuf mapping logic from `CeremonyCreator` into `CeremonyMapperService`.
+2. **RxJS Management**: Added `takeUntilDestroyed` with `DestroyRef` to dangling subscriptions in `CeremonyCreator` and `CeremonyResultsComponent` to prevent memory leaks during navigation.
+3. **Production Dockerization**:
+   - Built a multi-stage `backend/Dockerfile` using Gradle `installDist` and a lightweight JRE 21 execution environment.
+   - Built a multi-stage `frontend/Dockerfile` wrapping the optimized standalone Angular build in Nginx (`nginx:alpine`) with SPA fallback routing.
+   - Tied it together with a complete `docker-compose.prod.yml` ready for deployment alongside MongoDB.
 
-### 2. Deployment Preparation
-- Finalize environment variables and configuration files for both the Armeria backend and Angular frontend.
-- Document the steps required to build and deploy the application (e.g., Dockerization, static asset hosting).
+Holocron is currently feature-complete and containerized. The repository is technically ready to be tagged for a `v1.0.0` release.
 
-## Next Session "Golden Loop"
-1. Run a comprehensive linting and formatting pass on the entire monorepo.
-2. Build the production bundles (`npm run build` for Angular, `./gradlew shadowJar` or similar for Kotlin).
-3. Test the built artifacts locally to ensure no production-only bugs exist (e.g., minification issues).
-4. Outline infrastructure requirements for a hypothetical deployment.
+## Objective for Next Session: Final Review & Release (Phase 10)
+- End-to-end audit of all features in the compiled production environment.
+- Prepare formal release notes or a presentation summarizing the project's capabilities.

@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -31,6 +32,7 @@ interface CrossTabData {
 export class CeremonyResultsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private ceremonyClient = inject(CeremonyClientService);
+    private destroyRef = inject(DestroyRef);
 
     template = signal<CeremonyTemplate | null>(null);
     responses = signal<CeremonyResponse[]>([]);
@@ -185,7 +187,7 @@ export class CeremonyResultsComponent implements OnInit {
     });
 
     ngOnInit() {
-        this.route.paramMap.subscribe(async params => {
+        this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async params => {
             const id = params.get('id');
             if (id) {
                 await this.loadData(id);
