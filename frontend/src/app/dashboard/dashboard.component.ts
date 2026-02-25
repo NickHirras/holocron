@@ -1,14 +1,16 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { CeremonyClientService } from '../services/ceremony-client';
+import { TeamService } from '../services/team.service';
 import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="h-full w-full bg-holocron-base text-holocron-text-primary p-6 md:p-10">
       <div class="max-w-6xl mx-auto">
@@ -18,12 +20,24 @@ import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
             <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-2 tracking-tight">
               Ceremony Dashboard
             </h1>
-            <p class="text-holocron-text-secondary text-lg">
-              Welcome back, <span class="text-white font-medium">{{ auth.userProfile()?.email }}</span>.
+            <p class="text-holocron-text-secondary text-lg mt-2 flex items-center gap-4">
+              <span>Welcome back, <span class="text-white font-medium">{{ auth.userProfile()?.email }}</span>.</span>
+              
+              <span class="w-px h-5 bg-slate-700"></span>
+
+              <ng-container *ngIf="teamService.teams().length > 0">
+                <select [ngModel]="teamService.activeTeamId()" (ngModelChange)="switchTeam($event)" class="bg-[#1a2332] border border-slate-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-indigo-500">
+                  <option *ngFor="let tm of teamService.teams()" [value]="tm.team.id">{{ tm.team.displayName }}</option>
+                </select>
+              </ng-container>
+              
+              <button *ngIf="teamService.teams().length > 0" (click)="isCreatingTeam.set(true)" class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">
+                + New Team
+              </button>
             </p>
           </div>
           
-          <button (click)="isActivityDrawerOpen.set(true)" class="flex items-center gap-2 bg-holocron-surface hover:bg-holocron-surface-hover border border-slate-600 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+          <button (click)="isActivityDrawerOpen.set(true)" class="flex items-center gap-2 bg-holocron-surface hover:bg-holocron-surface-hover border border-slate-600 rounded-lg px-4 py-2 text-sm font-medium transition-colors mt-4 md:mt-0">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-holocron-neon-blue">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535m0 0A23.74 23.74 0 0 0 18.795 3m.38 1.125a23.91 23.91 0 0 1 1.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 0 0 1.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 0 1 0 3.46" />
             </svg>
@@ -243,10 +257,12 @@ export class DashboardComponent implements OnInit {
   auth = inject(AuthService);
   router = inject(Router);
   ceremonyClient = inject(CeremonyClientService);
+  teamService = inject(TeamService);
 
   templates = signal<CeremonyTemplate[]>([]);
   loading = signal(true);
   isActivityDrawerOpen = signal(false);
+  isCreatingTeam = signal(false);
 
   myTemplates = computed(() => {
     const email = this.auth.userProfile()?.email;
@@ -258,13 +274,26 @@ export class DashboardComponent implements OnInit {
     return this.templates().filter(t => t.creatorId !== email);
   });
 
-  ngOnInit() {
-    this.loadTemplates();
+  constructor() {
+    effect(() => {
+      const activeTeamId = this.teamService.activeTeamId();
+      if (activeTeamId) {
+        this.loadTemplates(activeTeamId);
+      } else {
+        this.templates.set([]);
+      }
+    });
   }
 
-  async loadTemplates() {
+  async ngOnInit() {
+    await this.teamService.refreshTeams();
+    this.loading.set(false);
+  }
+
+  async loadTemplates(teamId: string) {
+    this.loading.set(true);
     try {
-      const response = await this.ceremonyClient.listTemplates();
+      const response = await this.ceremonyClient.listTemplates(teamId);
       this.templates.set(response.templates);
     } catch (e) {
       console.error("Failed to load templates", e);
@@ -273,8 +302,39 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  switchTeam(teamId: string) {
+    this.teamService.setActiveTeam(teamId);
+  }
+
+  async createTeam(name: string) {
+    if (!name.trim()) return;
+    this.loading.set(true);
+    try {
+      await this.teamService.createTeam(name);
+      this.isCreatingTeam.set(false);
+    } catch (e) {
+      console.error("Failed to create team", e);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async joinTeam(teamId: string) {
+    if (!teamId.trim()) return;
+    this.loading.set(true);
+    try {
+      await this.teamService.joinTeam(teamId);
+    } catch (e) {
+      console.error("Failed to join team", e);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   createTemplate(type: string) {
-    this.router.navigate(['/create'], { queryParams: { type } });
+    const activeTeam = this.teamService.activeTeamId();
+    if (!activeTeam) return;
+    this.router.navigate(['/create'], { queryParams: { type, teamId: activeTeam } });
   }
 
   respondToTemplate(id: string) {

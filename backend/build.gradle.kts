@@ -32,6 +32,16 @@ dependencies {
     // Auth
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
+
+    // Testing
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.22")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("io.mockk:mockk:1.13.10")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 application {

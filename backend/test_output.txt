@@ -1,0 +1,171 @@
+Initialized native services in: /home/nick/.gradle/native
+Initialized jansi services in: /home/nick/.gradle/native
+The client will now receive all logging from the daemon (pid: 1541066). The daemon log file: /home/nick/.gradle/daemon/9.3.1/daemon-1541066.out.log
+Starting 5th build in daemon [uptime: 2 mins 17.193 secs, performance: 100%, GC rate: 0.00/s, heap usage: 0% of 512 MiB, non-heap usage: 45% of 384 MiB]
+Using 16 worker leases.
+Operational build model parameters: {requiresToolingModels=false, parallelProjectExecution=false, configureOnDemand=false, configurationCache=false, configurationCacheParallelStore=false, configurationCacheParallelLoad=true, isolatedProjects=false, parallelProjectConfiguration=false, intermediateModelCache=false, parallelToolingApiActions=false, invalidateCoupledProjects=false, modelAsProjectDependency=false, resilientModelBuilding=false}
+Now considering [/home/nick/src/holocron/backend] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file '/home/nick/src/holocron/backend/settings.gradle.kts'.
+Projects loaded. Root project using build file '/home/nick/src/holocron/backend/build.gradle.kts'.
+Included projects: [root project 'holocron-backend']
+
+> Configure project :
+Evaluating root project 'holocron-backend' using build file '/home/nick/src/holocron/backend/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.jvm', version: '1.9.22']
+Resolved plugin [id: 'org.gradle.application']
+Using Kotlin Gradle Plugin gradle82 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Tasks to be executed: [task ':checkKotlinGradlePluginConfigurationErrors', task ':compileKotlin', task ':compileJava', task ':processResources', task ':classes', task ':compileTestKotlin', task ':compileTestJava', task ':processTestResources', task ':testClasses', task ':test']
+Tasks that were excluded: []
+Resolve mutations for :checkKotlinGradlePluginConfigurationErrors (Thread[#678,Execution worker,5,main]) started.
+:checkKotlinGradlePluginConfigurationErrors (Thread[#678,Execution worker,5,main]) started.
+
+> Task :checkKotlinGradlePluginConfigurationErrors
+Caching disabled for task ':checkKotlinGradlePluginConfigurationErrors' because:
+  Build cache is disabled
+Task ':checkKotlinGradlePluginConfigurationErrors' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Resolve mutations for :compileKotlin (Thread[#678,Execution worker,5,main]) started.
+:compileKotlin (Thread[#678,Execution worker,5,main]) started.
+
+> Task :compileKotlin UP-TO-DATE
+Caching disabled for task ':compileKotlin' because:
+  Build cache is disabled
+Skipping task ':compileKotlin' as it is up-to-date.
+Resolve mutations for :compileJava (Thread[#678,Execution worker,5,main]) started.
+:compileJava (Thread[#678,Execution worker,5,main]) started.
+
+> Task :compileJava UP-TO-DATE
+Caching disabled for task ':compileJava' because:
+  Build cache is disabled
+Skipping task ':compileJava' as it is up-to-date.
+No compile result for :compileJava
+Resolve mutations for :processResources (Thread[#678,Execution worker,5,main]) started.
+:processResources (Thread[#678,Execution worker,5,main]) started.
+
+> Task :processResources NO-SOURCE
+Skipping task ':processResources' as it has no source files and no previous output files.
+Resolve mutations for :classes (Thread[#678,Execution worker,5,main]) started.
+:classes (Thread[#678,Execution worker,5,main]) started.
+
+> Task :classes UP-TO-DATE
+Skipping task ':classes' as it has no actions.
+Resolve mutations for :compileTestKotlin (Thread[#678,Execution worker,5,main]) started.
+:compileTestKotlin (Thread[#678,Execution worker,5,main]) started.
+
+> Task :compileTestKotlin UP-TO-DATE
+Caching disabled for task ':compileTestKotlin' because:
+  Build cache is disabled
+Skipping task ':compileTestKotlin' as it is up-to-date.
+Resolve mutations for :compileTestJava (Thread[#678,Execution worker,5,main]) started.
+:compileTestJava (Thread[#678,Execution worker,5,main]) started.
+
+> Task :compileTestJava NO-SOURCE
+Skipping task ':compileTestJava' as it has no source files and no previous output files.
+Resolve mutations for :processTestResources (Thread[#678,Execution worker,5,main]) started.
+:processTestResources (Thread[#678,Execution worker,5,main]) started.
+
+> Task :processTestResources NO-SOURCE
+Skipping task ':processTestResources' as it has no source files and no previous output files.
+Resolve mutations for :testClasses (Thread[#678,Execution worker,5,main]) started.
+:testClasses (Thread[#678,Execution worker,5,main]) started.
+
+> Task :testClasses UP-TO-DATE
+Skipping task ':testClasses' as it has no actions.
+Resolve mutations for :test (Thread[#678,Execution worker,5,main]) started.
+:test (Thread[#678,Execution worker,5,main]) started.
+Gradle Test Executor 4 started executing tests.
+
+> Task :test
+Caching disabled for task ':test' because:
+  Build cache is disabled
+Task ':test' is not up-to-date because:
+  Task has failed previously.
+file or directory '/home/nick/src/holocron/backend/build/classes/java/test', not found
+Starting process 'Gradle Test Executor 4'. Working directory: /home/nick/src/holocron/backend Command: /home/nick/.local/share/mise/installs/java/temurin-21.0.10+7.0.LTS/bin/java -Dorg.gradle.internal.worker.tmpdir=/home/nick/src/holocron/backend/build/tmp/test/work @/home/nick/.gradle/.tmp/gradle-worker-classpath6329479026827891604txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 4'
+Successfully started process 'Gradle Test Executor 4'
+
+TeamRepositoryTest > test createTeam() STANDARD_ERROR
+    WARNING: A Java agent has been loaded dynamically (/home/nick/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.14.6/46e2545d7a97b6ccb195621650c5957279eb4812/byte-buddy-agent-1.14.6.jar)
+    WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+    WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+    WARNING: Dynamic loading of agents will be disallowed by default in a future release
+
+TeamRepositoryTest > test createTeam() STANDARD_OUT
+    16:11:47.791 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoClient name=#1
+    16:11:48.554 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoDatabase name=#2
+    16:11:48.703 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoCollection name=#3
+    16:11:48.915 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoCollection name=#4
+    16:11:49.230 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoDatabase name=child of #1#5
+    16:11:49.278 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoCollection name=child of #2#6
+    16:11:49.280 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for MongoCollection name=child of #2#7
+    16:11:49.582 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for InsertOneResult name=child of #3#8
+    16:11:49.584 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for InsertOneResult name=#9
+    16:11:49.586 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for InsertOneResult name=child of #4#10
+    16:11:49.587 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.instantiation.AbstractMockFactory -- Creating mockk for InsertOneResult name=#11
+    16:11:49.590 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.recording.states.AnsweringState -- Answering MongoDatabase(#2) on MongoClient(#1).getDatabase(holocron)
+    16:11:49.591 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.recording.states.AnsweringState -- Answering MongoCollection(#3) on MongoDatabase(#2).getCollection(teams, class org.bson.Document)
+    16:11:49.592 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.recording.states.AnsweringState -- Answering MongoCollection(#4) on MongoDatabase(#2).getCollection(team_memberships, class org.bson.Document)
+    16:11:49.630 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.recording.states.AnsweringState -- Answering MongoCollection(#3) on MongoCollection(#3).toString()
+    16:11:49.633 [Test worker @kotlinx.coroutines.test runner#2] DEBUG io.mockk.impl.recording.states.AnsweringState -- Throwing io.mockk.MockKException: no answer found for MongoCollection(#3).insertOne(Document{{_id=f1c7811e-03be-480c-8fdd-09d6258e9303, blob=[B@3afca2c}}, InsertOneOptions{bypassDocumentValidation=null, comment=null}, continuation {}) among the configured answers: (MongoCollection(#3).insertOne(any(), eq(InsertOneOptions{bypassDocumentValidation=null, comment=null}), any()))) on MongoCollection(#3).insertOne(Document{{_id=f1c7811e-03be-480c-8fdd-09d6258e9303, blob=[B@3afca2c}}, InsertOneOptions{bypassDocumentValidation=null, comment=null}, continuation {})
+
+Gradle Test Executor 4 finished executing tests.
+
+> Task :test FAILED
+
+TeamRepositoryTest > test createTeam() FAILED
+    io.mockk.MockKException: no answer found for MongoCollection(#3).insertOne(Document{{_id=f1c7811e-03be-480c-8fdd-09d6258e9303, blob=[B@3afca2c}}, InsertOneOptions{bypassDocumentValidation=null, comment=null}, continuation {}) among the configured answers: (MongoCollection(#3).insertOne(any(), eq(InsertOneOptions{bypassDocumentValidation=null, comment=null}), any())))
+        at app//io.mockk.impl.stub.MockKStub.defaultAnswer(MockKStub.kt:91)
+        at app//io.mockk.impl.stub.MockKStub.answer(MockKStub.kt:42)
+        at app//io.mockk.impl.recording.states.AnsweringState.call(AnsweringState.kt:16)
+        at app//io.mockk.impl.recording.CommonCallRecorder.call(CommonCallRecorder.kt:53)
+        at app//io.mockk.impl.stub.MockKStub.handleInvocation(MockKStub.kt:269)
+        at app//io.mockk.impl.instantiation.JvmMockFactoryHelper$mockHandler$1.invocation(JvmMockFactoryHelper.kt:24)
+        at app//io.mockk.proxy.jvm.advice.Interceptor.call(Interceptor.kt:21)
+        at app//com.mongodb.kotlin.client.coroutine.MongoCollection.insertOne(MongoCollection.kt:626)
+        at app//com.mongodb.kotlin.client.coroutine.MongoCollection.insertOne$default(MongoCollection.kt:626)
+        at app//holocron.v1.repository.TeamRepository.createTeam(TeamRepository.kt:32)
+        at app//holocron.v1.repository.TeamRepositoryTest$test createTeam$1.invokeSuspend(TeamRepositoryTest.kt:40)
+        at app//holocron.v1.repository.TeamRepositoryTest$test createTeam$1.invoke(TeamRepositoryTest.kt)
+        at app//holocron.v1.repository.TeamRepositoryTest$test createTeam$1.invoke(TeamRepositoryTest.kt)
+        at app//kotlinx.coroutines.test.TestBuildersKt__TestBuildersKt$runTest$2$1$1.invokeSuspend(TestBuilders.kt:316)
+        at app//kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at app//kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:104)
+        at app//kotlinx.coroutines.test.TestDispatcher.processEvent$kotlinx_coroutines_test(TestDispatcher.kt:24)
+        at app//kotlinx.coroutines.test.TestCoroutineScheduler.tryRunNextTaskUnless$kotlinx_coroutines_test(TestCoroutineScheduler.kt:99)
+        at app//kotlinx.coroutines.test.TestBuildersKt__TestBuildersKt$runTest$2$1$workRunner$1.invokeSuspend(TestBuilders.kt:322)
+        at app//kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at app//kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:104)
+        at app//kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:277)
+        at app//kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:95)
+        at app//kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:69)
+        at app//kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at app//kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:48)
+        at app//kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source)
+        at app//kotlinx.coroutines.test.TestBuildersJvmKt.createTestResult(TestBuildersJvm.kt:10)
+        at app//kotlinx.coroutines.test.TestBuildersKt__TestBuildersKt.runTest-8Mi8wO0(TestBuilders.kt:310)
+        at app//kotlinx.coroutines.test.TestBuildersKt.runTest-8Mi8wO0(Unknown Source)
+        at app//kotlinx.coroutines.test.TestBuildersKt__TestBuildersKt.runTest-8Mi8wO0(TestBuilders.kt:168)
+        at app//kotlinx.coroutines.test.TestBuildersKt.runTest-8Mi8wO0(Unknown Source)
+        at app//kotlinx.coroutines.test.TestBuildersKt__TestBuildersKt.runTest-8Mi8wO0$default(TestBuilders.kt:160)
+        at app//kotlinx.coroutines.test.TestBuildersKt.runTest-8Mi8wO0$default(Unknown Source)
+        at app//holocron.v1.repository.TeamRepositoryTest.test createTeam(TeamRepositoryTest.kt:22)
+Generating HTML test report...
+Finished generating test html results (0.004 secs) into: /home/nick/src/holocron/backend/build/reports/tests/test
+Finished generating test XML results (0.001 secs) into: /home/nick/src/holocron/backend/build/test-results/test
+
+[Incubating] Problems report is available at: file:///home/nick/src/holocron/backend/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+5 actionable tasks: 2 executed, 3 up-to-date

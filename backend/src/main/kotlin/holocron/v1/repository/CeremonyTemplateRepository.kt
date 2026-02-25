@@ -40,4 +40,11 @@ class CeremonyTemplateRepository(mongoClient: MongoClient) {
             CeremonyTemplate.parseFrom(payload.data)
         }
     }
+
+    suspend fun findByTeamId(teamId: String): List<CeremonyTemplate> {
+        return collection.find(eq("teamId", teamId)).toList().mapNotNull { doc ->
+            val payload = doc.get("payload", Binary::class.java) ?: return@mapNotNull null
+            CeremonyTemplate.parseFrom(payload.data)
+        }
+    }
 }

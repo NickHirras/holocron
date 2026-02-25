@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CeremonyClient } from './ceremony-client';
+import { CeremonyClientService } from './ceremony-client';
 
 describe('CeremonyClient', () => {
-  let service: CeremonyClient;
+  let service: CeremonyClientService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(CeremonyClient);
+    service = TestBed.inject(CeremonyClientService);
   });
 
   it('should be created', () => {

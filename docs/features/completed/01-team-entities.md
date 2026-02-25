@@ -53,12 +53,6 @@ Transition Project Holocron from a generic "personal form" tool to a team-centri
 3. **Guards:** Ensure users cannot navigate to a ceremony response page if they are not members of the owning team.
 
 ## Success Criteria
-Running `make gen` produces the new Team-related classes without errors.
-
-A user can create a "Team" and appear as its `LEADER`.
-
-A user can only see ceremonies that were created under their specific `team_id`.
-
-
-### Why this is the first step:
-Current files like `ceremony.proto` already have a placeholder `string team_id = 2;` in the `CeremonyTemplate`, but there is no actual `Team` entity or service to support it. By defining this now, you provide the "Agent" with the necessary context to implement the "Users<->Teams" relationship you envisioned.
+- Running `make gen` produces the new Team-related classes without errors.
+- A user can create a "Team" and appear as its `LEADER`.
+- A user can only see ceremonies that were created under their specific `team_id`.

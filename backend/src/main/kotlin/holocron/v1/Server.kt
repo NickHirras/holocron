@@ -16,6 +16,7 @@ import holocron.v1.repository.UserRepository
 import holocron.v1.repository.CeremonyResponseRepository
 import holocron.v1.storage.FileStorageProvider
 import holocron.v1.storage.StorageFactory
+import holocron.v1.repository.TeamRepository
 import kotlinx.coroutines.launch
 import com.linecorp.armeria.server.annotation.Post
 import com.linecorp.armeria.server.annotation.Get
@@ -27,7 +28,8 @@ import kotlinx.coroutines.future.await
 
 class CeremonyServiceImpl(
     private val templateRepository: CeremonyTemplateRepository,
-    private val responseRepository: CeremonyResponseRepository
+    private val responseRepository: CeremonyResponseRepository,
+    private val teamRepository: TeamRepository
 ) : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
 
     override suspend fun createCeremonyTemplate(request: CreateCeremonyTemplateRequest): CreateCeremonyTemplateResponse {
@@ -36,6 +38,16 @@ class CeremonyServiceImpl(
             ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
 
         val templateBuilder = request.template.toBuilder()
+        val teamId = templateBuilder.teamId
+        
+        if (teamId.isEmpty()) {
+            throw StatusException(Status.INVALID_ARGUMENT.withDescription("team_id is required"))
+        }
+
+        val membership = teamRepository.getMembership(teamId, userEmail!!)
+        if (membership == null || membership.role != TeamMembership.Role.ROLE_LEADER) {
+            throw StatusException(Status.PERMISSION_DENIED.withDescription("Only team leaders can create templates"))
+        }
         
         if (templateBuilder.id.isEmpty()) {
             templateBuilder.id = UUID.randomUUID().toString()
@@ -67,8 +79,14 @@ class CeremonyServiceImpl(
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
 
-        if (!template.isPublic && userEmail == null) {
-            throw StatusException(Status.UNAUTHENTICATED.withDescription("Authentication required for private templates"))
+        if (!template.isPublic) {
+            if (userEmail == null) {
+                throw StatusException(Status.UNAUTHENTICATED.withDescription("Authentication required for private templates"))
+            }
+            val membership = teamRepository.getMembership(template.teamId, userEmail)
+            if (membership == null && !template.sharedWithEmailsList.contains(userEmail)) {
+                 throw StatusException(Status.PERMISSION_DENIED.withDescription("You are not a member of this team"))
+            }
         }
             
         return GetCeremonyTemplateResponse.newBuilder()
@@ -81,9 +99,19 @@ class CeremonyServiceImpl(
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
             ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
 
-        // For now, filter in memory. In a real app, this should be a DB query.
-        val templates = templateRepository.findAll().filter { 
-            it.creatorId == userEmail || it.sharedWithEmailsList.contains(userEmail) 
+        val teamId = request.teamId
+        if (teamId.isEmpty()) {
+            throw StatusException(Status.INVALID_ARGUMENT.withDescription("team_id is required"))
+        }
+
+        val membership = teamRepository.getMembership(teamId, userEmail)
+        if (membership == null) {
+            throw StatusException(Status.PERMISSION_DENIED.withDescription("You are not a member of this team"))
+        }
+
+        // Fetch using DB query instead of findall
+        val templates = templateRepository.findByTeamId(teamId).filter { 
+            it.creatorId == userEmail || it.sharedWithEmailsList.contains(userEmail) || it.teamId == teamId
         }
         return ListCeremonyTemplatesResponse.newBuilder()
             .addAllTemplates(templates)
@@ -97,8 +125,14 @@ class CeremonyServiceImpl(
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
 
-        if (!template.isPublic && userEmail == null) {
-            throw StatusException(Status.UNAUTHENTICATED.withDescription("Authentication required for private templates"))
+        if (!template.isPublic) {
+            if (userEmail == null) {
+                throw StatusException(Status.UNAUTHENTICATED.withDescription("Authentication required for private templates"))
+            }
+            val membership = teamRepository.getMembership(template.teamId, userEmail)
+            if (membership == null && !template.sharedWithEmailsList.contains(userEmail)) {
+                 throw StatusException(Status.PERMISSION_DENIED.withDescription("You are not a member of this team"))
+            }
         }
 
         val responseBuilder = request.response.toBuilder()
@@ -228,14 +262,16 @@ fun main() {
     val templateRepository = CeremonyTemplateRepository(mongoClient)
     val responseRepository = CeremonyResponseRepository(mongoClient)
     val userRepository = UserRepository(mongoClient)
+    val teamRepository = TeamRepository(mongoClient)
     
     // Initialize standard storage adapter (Memory by default)
     val storageProvider = StorageFactory.createActiveProvider()
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
-        .addService(CeremonyServiceImpl(templateRepository, responseRepository))
+        .addService(CeremonyServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(UserServiceImpl(userRepository))
+        .addService(TeamServiceImpl(teamRepository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!
         .build()

@@ -212,6 +212,26 @@ message TimeAnswer {
 // 3. RPC SERVICES AND USER MESSAGES (The API Contract)
 // ============================================================================
 
+// -- Team Management --
+
+message Team {
+  string id = 1;
+  string display_name = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message TeamMembership {
+  string team_id = 1;
+  string user_id = 2;
+  Role role = 3;
+
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    ROLE_MEMBER = 1;
+    ROLE_LEADER = 2;
+  }
+}
+
 // -- User Management --
 
 message User {
@@ -220,6 +240,7 @@ message User {
   
   google.protobuf.Timestamp created_at = 3;
   google.protobuf.Timestamp updated_at = 4;
+  repeated string team_ids = 5;
 }
 
 service UserService {
@@ -232,6 +253,41 @@ message GetSelfRequest {
 
 message GetSelfResponse {
   User user = 1;
+}
+
+// -- Team Service --
+
+service TeamService {
+  rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse);
+  rpc JoinTeam(JoinTeamRequest) returns (JoinTeamResponse);
+  rpc ListMyTeams(ListMyTeamsRequest) returns (ListMyTeamsResponse);
+}
+
+message CreateTeamRequest {
+  string display_name = 1;
+}
+
+message CreateTeamResponse {
+  Team team = 1;
+  TeamMembership membership = 2;
+}
+
+message JoinTeamRequest {
+  string team_id = 1;
+}
+
+message JoinTeamResponse {
+  TeamMembership membership = 1;
+}
+
+message ListMyTeamsRequest {
+  // Empty, relies on headers
+}
+
+message ListMyTeamsResponse {
+  repeated Team teams = 1;
+  // include memberships so the frontend knows the role for each team
+  repeated TeamMembership memberships = 2;
 }
 
 // -- Ceremony Service --

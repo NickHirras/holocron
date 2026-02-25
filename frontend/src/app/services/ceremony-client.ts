@@ -14,8 +14,8 @@ export class CeremonyClientService {
     return await this.client.createCeremonyTemplate(request);
   }
 
-  async listTemplates(): Promise<ListCeremonyTemplatesResponse> {
-    const request = create(ListCeremonyTemplatesRequestSchema, {});
+  async listTemplates(teamId: string): Promise<ListCeremonyTemplatesResponse> {
+    const request = create(ListCeremonyTemplatesRequestSchema, { teamId });
     return await this.client.listCeremonyTemplates(request);
   }
 
