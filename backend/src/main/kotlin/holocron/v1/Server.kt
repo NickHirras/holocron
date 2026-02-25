@@ -146,7 +146,9 @@ class CeremonyServiceImpl(
                             response.aggregate().join()
                             println("✅ Webhook to $url dispatched successfully.")
                         } catch (e: Exception) {
+                            if (e is kotlinx.coroutines.CancellationException) throw e
                             println("❌ Failed to dispatch webhook to $url: ${e.message}")
+                            e.printStackTrace()
                         }
                     }
                 }

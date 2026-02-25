@@ -113,11 +113,11 @@ import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!loading() && myTemplates().length > 0">
           <div *ngFor="let tmpl of myTemplates()" (click)="respondToTemplate(tmpl.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-slate-500 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1">
-              <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                {{ tmpl.title || 'Untitled Ceremony' }}
-                <span *ngIf="tmpl.isPublic" class="text-xs px-2 py-0.5 rounded bg-holocron-neon-blue/20 text-holocron-neon-blue border border-holocron-neon-blue/30 leading-none">Public</span>
+              <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2 overflow-hidden">
+                <span class="truncate" title="{{ tmpl.title || 'Untitled Ceremony' }}">{{ tmpl.title || 'Untitled Ceremony' }}</span>
+                <span *ngIf="tmpl.isPublic" class="text-xs px-2 py-0.5 rounded bg-holocron-neon-blue/20 text-holocron-neon-blue border border-holocron-neon-blue/30 leading-none shrink-0 mt-1">Public</span>
               </h3>
-              <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4">{{ tmpl.description || 'No description provided.' }}</p>
+              <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4 break-all">{{ tmpl.description || 'No description provided.' }}</p>
               <div class="flex items-center justify-between text-xs text-slate-500">
                   <span>{{ tmpl.items.length }} Questions</span>
                   <div class="flex gap-3">
@@ -138,11 +138,11 @@ import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div *ngFor="let tmpl of sharedTemplates()" (click)="respondToTemplate(tmpl.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-slate-500 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1">
-                  <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                    {{ tmpl.title || 'Untitled Ceremony' }}
-                    <span *ngIf="tmpl.isPublic" class="text-xs px-2 py-0.5 rounded bg-holocron-neon-blue/20 text-holocron-neon-blue border border-holocron-neon-blue/30 leading-none">Public</span>
+                  <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2 overflow-hidden">
+                    <span class="truncate" title="{{ tmpl.title || 'Untitled Ceremony' }}">{{ tmpl.title || 'Untitled Ceremony' }}</span>
+                    <span *ngIf="tmpl.isPublic" class="text-xs px-2 py-0.5 rounded bg-holocron-neon-blue/20 text-holocron-neon-blue border border-holocron-neon-blue/30 leading-none shrink-0 mt-1">Public</span>
                   </h3>
-                  <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4">{{ tmpl.description || 'No description provided.' }}</p>
+                  <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4 break-all">{{ tmpl.description || 'No description provided.' }}</p>
                   <div class="flex items-center justify-between text-xs text-slate-500">
                       <span>By {{ tmpl.creatorId }}</span>
                       <div class="flex gap-3">

@@ -36,6 +36,7 @@ class MockAuthDecorator : DecoratingHttpServiceFunction {
                 }
             } catch (e: Exception) {
                 println("⚠️ JWT Verification failed: ${e.message}")
+                e.printStackTrace()
             }
         }
         return delegate.serve(ctx, req)

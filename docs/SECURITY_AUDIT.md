@@ -63,5 +63,19 @@ This document provides a high-level security audit of the Holocron application (
 *   **Mitigation:**
     *   Holocron currently does not feature any functionality where a user can dictate an outbound HTTP request from the backend to an arbitrary URL. The only outbound requests are strictly defined configurations linking to trusted Identity Providers for token exchange.
 
+## 11. Custom Audit & Dynamic Analysis (Added Post-Deployment)
+As part of an active security review and fuzzing cycle:
+
+### Exception Handling & Information Disclosure
+*   **Finding:** The Kotlin backend contained instances where generic `Exception` types were caught and swallowed (printing only a basic `e.message`). This masked the underlying stack traces, making debugging difficult, and also inadvertently caught Kotlin coroutine `CancellationException`s, interfering with structured concurrency.
+*   **Mitigation:** `Server.kt`, `MockAuthDecorator.kt`, and `S3StorageProvider.kt` were patched to properly re-throw `CancellationException`s and execute `e.printStackTrace()` to ensure errors are not silently masked.
+
+### UI Fuzz Testing & Injection
+*   **Methodology:** An automated browser agent was used to fuzz the Ceremony Creator and Responder UIs with excessively long strings, emojis, missing data, and common XSS payloads (`<script>alert(1)</script>`, etc.).
+*   **Findings:**
+    *   **XSS:** The Angular frontend strictly escaped all injected HTML payload strings. The backend correctly persisted and returned them without executing them. **Safe.**
+    *   **Data Integrity:** The storage layer correctly persisted emojis, special characters, and fuzzed form schemas. Rapid UI interactions (drag and drop) did not corrupt data.
+    *   **UI Stability (Patched):** The fuzz test discovered that excessively long strings with no spaces caused a horizontal overflow on the Dashboard ceremony cards, breaking the grid layout. This visual bug was **fixed** by adding text truncation and word-wrapping (`truncate` and `break-all` Tailwind utilities) to the template in `dashboard.component.ts`.
+
 ---
-**Conclusion:** Holocron's foundational choices—Angular 19, Kotlin/Armeria, MongoDB, and Protobuf—provide a highly resilient baseline against the OWASP Top 10 vulnerabilities.
+**Conclusion:** Holocron's foundational choices—Angular 19, Kotlin/Armeria, MongoDB, and Protobuf—provide a highly resilient baseline against the OWASP Top 10 vulnerabilities. The recent audit successfully closed application edge cases and hardened the platform further.

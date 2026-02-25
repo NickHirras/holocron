@@ -51,7 +51,9 @@ class S3StorageProvider(
                 bytes to contentType
             }
         } catch (e: Exception) {
+            if (e is kotlinx.coroutines.CancellationException) throw e
             println("❌ [S3Storage] Failed to get $uri: ${e.message}")
+            e.printStackTrace()
             null
         }
     }
