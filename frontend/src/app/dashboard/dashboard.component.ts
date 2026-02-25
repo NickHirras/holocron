@@ -90,8 +90,26 @@ import { CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
           Your Ceremonies
         </h2>
 
-        <div *ngIf="loading()" class="text-slate-400">Loading templates...</div>
-        <div *ngIf="!loading() && myTemplates().length === 0" class="text-slate-500 italic border border-slate-700/50 rounded p-6 bg-[#131d30]">You haven't created any ceremonies yet. Get started above.</div>
+        <div *ngIf="loading()" class="flex flex-col items-center justify-center p-12 space-y-4">
+          <div class="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+          <p class="text-slate-400 font-medium animate-pulse">Loading your ceremonies...</p>
+        </div>
+        
+        <div *ngIf="!loading() && myTemplates().length === 0" class="flex flex-col items-center justify-center p-12 text-center bg-gradient-to-b from-[#131d30] to-transparent border border-slate-700/50 rounded-2xl">
+          <div class="bg-indigo-500/10 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-indigo-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-2">No Ceremonies Yet</h3>
+          <p class="text-slate-400 max-w-md mb-8">You haven't created any ceremonies. Start by creating a daily standup, sprint retrospective, or build your own custom template from scratch above.</p>
+          <button (click)="createTemplate('custom')" class="btn-primary group relative overflow-hidden bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-300 flex items-center gap-2">
+            <span class="relative z-10">Create Your First Ceremony</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!loading() && myTemplates().length > 0">
           <div *ngFor="let tmpl of myTemplates()" (click)="respondToTemplate(tmpl.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-slate-500 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1">

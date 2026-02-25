@@ -298,4 +298,66 @@ export class CeremonyResultsComponent implements OnInit {
         link.click();
         document.body.removeChild(link);
     }
+
+    downloadCrossTabCsv() {
+        const tpl = this.template();
+        const data = this.crossTabData();
+        const groupQId = this.crossTabGroupQuestionId();
+        const targetQId = this.crossTabTargetQuestionId();
+
+        if (!tpl || !data || !groupQId || !targetQId) return;
+
+        // Find titles for headers
+        let groupTitle = 'Group';
+        let targetTitle = 'Target';
+        for (const item of tpl.items) {
+            if (item.kind.case === 'questionItem' && item.kind.value.question) {
+                if (item.kind.value.question.questionId === groupQId) groupTitle = item.title;
+                if (item.kind.value.question.questionId === targetQId) targetTitle = item.title;
+            }
+        }
+
+        // We need all possible target distribution labels to create columns
+        const allTargetLabels = new Set<string>();
+        data.forEach(group => {
+            group.distribution.forEach(d => allTargetLabels.add(d.label));
+        });
+
+        // Sort labels
+        const sortedTargetLabels = Array.from(allTargetLabels).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+        const headers = [`"${groupTitle.replace(/"/g, '""')}"`, 'Total Responses', ...sortedTargetLabels.map(l => `"${l.replace(/"/g, '""')}"`)];
+        const rows: string[][] = [headers];
+
+        data.forEach(group => {
+            const row = [
+                `"${group.groupLabel.replace(/"/g, '""')}"`,
+                group.groupCount.toString()
+            ];
+
+            // Map distribution to sorted target labels
+            const distMap = new Map(group.distribution.map(d => [d.label, d.count]));
+            for (const label of sortedTargetLabels) {
+                row.push((distMap.get(label) || 0).toString());
+            }
+
+            rows.push(row);
+        });
+
+        // 3. Generate and Download
+        const csvContent = rows.map(e => e.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        // Replace spaces with underscores for filename safely
+        const safeGroupTitle = groupTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        const safeTargetTitle = targetTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+        link.setAttribute('download', `${tpl.title}_crosstab_${safeGroupTitle}_vs_${safeTargetTitle}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }

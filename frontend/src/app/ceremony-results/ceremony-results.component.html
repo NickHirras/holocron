@@ -41,9 +41,16 @@
         </div>
 
         <ng-container *ngIf="!isLoading() && !error()">
-            <div *ngIf="responses().length === 0" class="empty-state">
-                <span class="material-symbols-outlined">inbox</span>
-                <p>No responses yet.</p>
+            <div *ngIf="responses().length === 0" class="empty-state"
+                style="text-align: center; padding: 4rem 2rem; background: linear-gradient(180deg, rgba(15,23,42,0.8) 0%, rgba(15,23,42,0.4) 100%); border-radius: 16px; border: 1px dashed #334155; margin-top: 2rem;">
+                <div
+                    style="background: rgba(99,102,241,0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                    <span class="material-symbols-outlined" style="font-size: 40px; color: #818cf8;">auto_awesome</span>
+                </div>
+                <h2 style="color: #f1f5f9; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">No responses
+                    found</h2>
+                <p style="color: #94a3b8; max-width: 400px; margin: 0 auto; line-height: 1.5;">Wait for your team to
+                    submit their answers, or try adjusting the date filters above.</p>
             </div>
 
             <div class="cards-container" *ngIf="responses().length > 0">
@@ -148,6 +155,13 @@
 
                     <div *ngIf="crossTabData()" class="cross-tab-results"
                         style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
+                            <button (click)="downloadCrossTabCsv()"
+                                style="display: flex; align-items: center; gap: 0.5rem; background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; font-weight: 500;">
+                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">download</span>
+                                Export Summary CSV
+                            </button>
+                        </div>
                         <div *ngFor="let group of crossTabData()" class="cross-tab-group"
                             style="background: rgba(255,255,255,0.02); border: 1px solid #1e293b; border-radius: 8px; padding: 1.5rem;">
                             <div
