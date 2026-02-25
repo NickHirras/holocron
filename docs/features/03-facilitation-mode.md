@@ -43,6 +43,9 @@ The UI can hide the identities of participants to facilitate unbiased retrospect
 
 The "Focus View" allows the team to walk through questions one by one during a sync.
 
+## Validating Your Work
+Please run through the application using the web browser and validate all your changes are successful.
+
 
 ---
 

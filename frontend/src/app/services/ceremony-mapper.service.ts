@@ -138,6 +138,7 @@ export class CeremonyMapperService {
         return create(CeremonyTemplateSchema, {
             title: formVal.title,
             description: formVal.description,
+            teamId: formVal.teamId || '',
             collectEmails: formVal.collectEmails,
             limitOneResponse: formVal.limitOneResponse,
             shuffleQuestionOrder: formVal.shuffleQuestionOrder,

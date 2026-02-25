@@ -42,6 +42,9 @@ Add fields to assist in filtering and status tracking:
 - Once a ceremony is submitted, it moves from the "Pending" section to a "Recent Activity" or "Completed" section.
 - Users can toggle between multiple teams to see different ritual inboxes.
 
+## Validating Your Work
+Please run through the application using the web browser and validate all your changes are successful.
+
 ---
 
 **Next Step:** Once you've added this to your `docs/features/` folder, I can provide the final spec for the **Facilitation (Live Meeting) Mode**, which handles how teams actually review the data they've collected during their meetings. Would you like that now?

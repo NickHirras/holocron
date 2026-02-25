@@ -41,6 +41,7 @@ export class CeremonyCreator implements OnInit {
     this.templateForm = this.fb.group({
       title: ['', Validators.required],
       description: [''],
+      teamId: [''],
       // Form Settings
       collectEmails: [false],
       limitOneResponse: [false],
@@ -56,6 +57,12 @@ export class CeremonyCreator implements OnInit {
 
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const type = params['type'];
+      const teamId = params['teamId'];
+
+      if (teamId) {
+        this.templateForm.patchValue({ teamId });
+      }
+
       if (type === 'standup') {
         this.prefillStandup();
       } else if (type === 'retro') {

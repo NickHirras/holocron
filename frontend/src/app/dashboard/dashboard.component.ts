@@ -171,6 +171,54 @@ import { FormsModule } from '@angular/forms';
       </div>
     </div>
 
+    <!-- Create Team Modal -->
+    <div *ngIf="isCreatingTeam()" class="fixed inset-0 bg-[#0f172a]/90 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
+      <div class="bg-[#1a2332] border border-slate-700/50 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+        <div class="p-6 border-b border-slate-700/50 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-white">Create New Team</h2>
+          <button (click)="isCreatingTeam.set(false)" class="text-slate-400 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <label class="block text-sm font-medium text-slate-400 mb-2">Team Name</label>
+          <input #teamNameInput type="text" placeholder="e.g. Mobile Engineering" class="w-full bg-[#131d30] border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 mb-6" (keyup.enter)="createTeam(teamNameInput.value)">
+          <div class="flex justify-end gap-3">
+            <button (click)="isCreatingTeam.set(false)" class="px-4 py-2 text-slate-300 hover:text-white font-medium transition-colors">Cancel</button>
+            <button (click)="createTeam(teamNameInput.value)" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Teams State (forces user to create a team if they have none after loading) -->
+    <div *ngIf="!loading() && teamService.teams().length === 0" class="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-md z-[130] flex items-center justify-center p-4">
+      <div class="bg-[#1a2332] border border-indigo-500/30 rounded-2xl w-full max-w-lg p-8 shadow-[0_0_50px_rgba(99,102,241,0.15)] text-center">
+        <div class="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-indigo-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-3">Welcome to Holocron Teams</h2>
+        <p class="text-slate-400 mb-8">Before you can create ceremonies, you need to join or create a team.</p>
+        <div class="space-y-4">
+          <div>
+            <input #firstTeamInput type="text" placeholder="Enter a team name to create..." class="w-full bg-[#131d30] border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 mb-3" (keyup.enter)="createTeam(firstTeamInput.value)">
+            <button (click)="createTeam(firstTeamInput.value)" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-bold shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all">Create First Team</button>
+          </div>
+          <div class="relative flex py-2 items-center">
+             <div class="flex-grow border-t border-slate-700/80"></div>
+             <span class="flex-shrink-0 mx-4 text-slate-500 text-sm">or</span>
+             <div class="flex-grow border-t border-slate-700/80"></div>
+          </div>
+          <div class="flex gap-2">
+            <input #joinTeamInput type="text" placeholder="Paste existing Team ID..." class="flex-1 bg-[#131d30] border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" (keyup.enter)="joinTeam(joinTeamInput.value)">
+             <button (click)="joinTeam(joinTeamInput.value)" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all">Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Recent Activity Drawer Backdrop -->
     <div *ngIf="isActivityDrawerOpen()" (click)="isActivityDrawerOpen.set(false)" class="fixed inset-0 bg-[#0f172a]/80 backdrop-blur-sm z-[100] transition-opacity"></div>
     

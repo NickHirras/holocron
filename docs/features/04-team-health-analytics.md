@@ -65,4 +65,6 @@ With these 4 files, you have a complete roadmap for an agent to follow:
 3.  **03-facilitation-mode.md**: The meeting "Value" (Collaborative Review).
 4.  **04-team-health-analytics.md**: The long-term "Why" (Leadership Insights).
 
-**Final TPM Tip:** When you start prompting the agent, tell it to focus on **01-team-entities** first. Do not let it try to build all four at once, or the code changes will become too large and prone to errors. Finish the "Golden Loop" for each file before moving to the next.
+## Validating Your Work
+Please run through the application using the web browser and validate all your changes are successful.
+
