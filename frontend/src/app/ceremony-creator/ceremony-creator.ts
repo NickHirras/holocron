@@ -6,10 +6,11 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CeremonyClientService } from '../services/ceremony-client';
 import { CeremonyMapperService } from '../services/ceremony-mapper.service';
+import { ImageUploaderComponent } from '../components/image-uploader/image-uploader.component';
 
 @Component({
   selector: 'app-ceremony-creator',
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, DragDropModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, DragDropModule, ImageUploaderComponent],
   templateUrl: './ceremony-creator.html',
   styleUrl: './ceremony-creator.scss',
 })
@@ -136,7 +137,7 @@ export class CeremonyCreator implements OnInit {
 
   addStructuralItem(kind: string) { // TEXT, SECTION, IMAGE, VIDEO
     const group = this.createQuestionGroup('TEXT_SHORT');
-    group.patchValue({ kind: kind, title: `New ${kind}` });
+    group.patchValue({ kind: kind, title: `New ${kind}`, url: '' });
     this.items.push(group);
   }
 

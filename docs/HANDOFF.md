@@ -22,8 +22,13 @@ We have successfully implemented Phase 9, preparing Holocron for production depl
    - Built a multi-stage `frontend/Dockerfile` wrapping the optimized standalone Angular build in Nginx (`nginx:alpine`) with SPA fallback routing.
    - Tied it together with a complete `docker-compose.prod.yml` ready for deployment alongside MongoDB.
 
+## Phase 10: Image Uploads Completed
+We implemented native drag-and-drop image uploading for the Ceremony Creator's `IMAGE` block.
+- **Backend Storage**: Created `ImageRepository.kt` to store file chunks directly in MongoDB (capped at 10MB per image). Native Armeria `@Post` and `@Get` annotations are used on `ImageUploadService` to accept raw `application/octet-stream` byte payloads and serve them back blazingly fast without gRPC overhead.
+- **Frontend Component**: Built a reusable, standalone `<app-image-uploader>` component using Angular Signals and strict native DOM drag-and-drop events (no `NgxDropzone` dependencies). It seamlessly uploads via `ImageUploadService` and patches the returned URL straight into the Reactive Form.
+
 Holocron is currently feature-complete and containerized. The repository is technically ready to be tagged for a `v1.0.0` release.
 
-## Objective for Next Session: Final Review & Release (Phase 10)
+## Objective for Next Session: Final Review & Release (Phase 11)
 - End-to-end audit of all features in the compiled production environment.
 - Prepare formal release notes or a presentation summarizing the project's capabilities.

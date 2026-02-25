@@ -14,7 +14,15 @@ import io.grpc.Status
 import io.grpc.StatusException
 import holocron.v1.repository.UserRepository
 import holocron.v1.repository.CeremonyResponseRepository
+import holocron.v1.repository.ImageRepository
 import kotlinx.coroutines.launch
+import com.linecorp.armeria.server.annotation.Post
+import com.linecorp.armeria.server.annotation.Get
+import com.linecorp.armeria.server.annotation.Param
+import com.linecorp.armeria.common.HttpRequest
+import com.linecorp.armeria.common.HttpStatus
+import com.linecorp.armeria.common.MediaType
+import kotlinx.coroutines.future.await
 
 class CeremonyServiceImpl(
     private val templateRepository: CeremonyTemplateRepository,
@@ -177,11 +185,44 @@ class CeremonyServiceImpl(
     }
 }
 
+class ImageUploadService(private val imageRepository: ImageRepository) {
+    @Post("/upload/image")
+    suspend fun uploadImage(req: HttpRequest): HttpResponse {
+        val contentType = req.contentType()?.toString() ?: "application/octet-stream"
+        
+        val aggregated = req.aggregate().await()
+        val bytes = aggregated.content().array()
+        
+        if (bytes.isEmpty()) {
+            return HttpResponse.of(HttpStatus.BAD_REQUEST, MediaType.PLAIN_TEXT_UTF_8, "Empty body")
+        }
+        
+        if (bytes.size > 10 * 1024 * 1024) { // 10MB limit
+            return HttpResponse.of(HttpStatus.REQUEST_ENTITY_TOO_LARGE, MediaType.PLAIN_TEXT_UTF_8, "File too large")
+        }
+
+        val id = imageRepository.save(bytes, contentType)
+        val url = "/api/images/$id" // We prefix with /api to avoid frontend static conflicts if any, or just /images
+        return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, "{\"url\":\"$url\"}")
+    }
+
+    @Get("/api/images/:id")
+    suspend fun downloadImage(@Param("id") id: String): HttpResponse {
+        val image = imageRepository.findById(id)
+        if (image == null) {
+            return HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.PLAIN_TEXT_UTF_8, "Image not found")
+        }
+        val (bytes, contentType) = image
+        return HttpResponse.of(HttpStatus.OK, MediaType.parse(contentType), bytes)
+    }
+}
+
 fun main() {
     val mongoClient = MongoClient.create("mongodb://localhost:27017")
     val templateRepository = CeremonyTemplateRepository(mongoClient)
     val responseRepository = CeremonyResponseRepository(mongoClient)
     val userRepository = UserRepository(mongoClient)
+    val imageRepository = ImageRepository(mongoClient)
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
@@ -211,6 +252,8 @@ fun main() {
         .service(grpcService)
         // Mount REST Health Check
         .service("/healthz") { _, _ -> HttpResponse.of("Holocron Systems Operational.") }
+        // Mount REST Image Upload Service
+        .annotatedService(ImageUploadService(imageRepository))
         // Mount the magical Web GUI
         .serviceUnder("/docs", DocService())
         .build()
