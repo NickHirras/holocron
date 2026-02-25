@@ -1,6 +1,6 @@
 # 🌌 Project Holocron
 
-Holocron is a "Google Forms" style ceremony tool built specifically for software engineering teams. It allows teams to define, distribute, and track agile ceremonies like Daily Standups, Sprint Retrospectives, and Incident Post-Mortems.
+Holocron is a ceremony tool built specifically for software engineering teams. It allows teams to define, distribute, and track agile ceremonies like Daily Standups, Sprint Retrospectives, and Incident Post-Mortems.
 
 This project is built using a **Contract-First Monorepo Architecture**, heavily inspired by internal Google engineering standards.
 
