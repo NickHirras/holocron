@@ -21,10 +21,11 @@ class AuthRestService {
 
         providers["mock"] = MockAuthProvider()
         
-        val googleClientId = System.getenv("AUTH_GOOGLE_CLIENT_ID")
-        val googleClientSecret = System.getenv("AUTH_GOOGLE_CLIENT_SECRET")
+        val googleClientId = System.getenv("AUTH_GOOGLE_CLIENT_ID") ?: System.getenv("GOOGLE_CLIENT_ID")
+        val googleClientSecret = System.getenv("AUTH_GOOGLE_CLIENT_SECRET") ?: System.getenv("GOOGLE_CLIENT_SECRET") ?: "mock-secret"
+        val oidcIssuer = System.getenv("OIDC_ISSUER")
         if (!googleClientId.isNullOrBlank() && !googleClientSecret.isNullOrBlank()) {
-            providers["google"] = GoogleAuthProvider(googleClientId, googleClientSecret)
+            providers["google"] = GoogleAuthProvider(googleClientId, googleClientSecret, oidcIssuer)
         }
 
         val githubClientId = System.getenv("AUTH_GITHUB_CLIENT_ID")

@@ -29,14 +29,20 @@ class MockAuthProvider : AuthProvider {
 
 class GoogleAuthProvider(
     private val clientId: String,
-    private val clientSecret: String
+    private val clientSecret: String,
+    private val issuer: String? = null
 ) : AuthProvider {
     override val id = "google"
     private val redirectUri = "http://localhost:8080/api/auth/callback/google"
     private val mapper = jacksonObjectMapper()
 
+    private val cleanIssuer = issuer?.removeSuffix("/")
+    private val authUrl = cleanIssuer?.let { "$it/authorize" } ?: "https://accounts.google.com/o/oauth2/v2/auth"
+    private val tokenUrl = cleanIssuer?.let { "$it/oauth/token" } ?: "https://oauth2.googleapis.com/token"
+    private val userInfoUrl = cleanIssuer?.let { "$it/userinfo" } ?: "https://www.googleapis.com/oauth2/v2/userinfo"
+
     override fun getLoginUrl(emailHint: String?): String {
-        return "https://accounts.google.com/o/oauth2/v2/auth?" +
+        return "$authUrl?" +
                 "client_id=$clientId&" +
                 "redirect_uri=$redirectUri&" +
                 "response_type=code&" +
@@ -48,7 +54,7 @@ class GoogleAuthProvider(
         val client = WebClient.of()
         
         val tokenReq = HttpRequest.builder()
-            .post("https://oauth2.googleapis.com/token")
+            .post(tokenUrl)
             .content(
                 MediaType.FORM_DATA,
                 "client_id=$clientId&client_secret=$clientSecret&code=$code&grant_type=authorization_code&redirect_uri=$redirectUri"
@@ -63,7 +69,7 @@ class GoogleAuthProvider(
             ?: throw RuntimeException("Failed to get Google access token: $tokenResponseBody")
 
         val userReq = HttpRequest.builder()
-            .get("https://www.googleapis.com/oauth2/v2/userinfo")
+            .get(userInfoUrl)
             .header("Authorization", "Bearer $accessToken")
             .build()
 

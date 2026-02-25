@@ -82,6 +82,14 @@ export JWT_SECRET="super-secure-key"
 make run-backend
 ```
 
+To test external federated login locally, you can spin up a mock OIDC provider and override the Google provider's endpoints using the `OIDC_ISSUER` environment variable:
+```bash
+# E.g. using ghcr.io/bluecatengineering/mock-oidc-provider on port 9999
+export GOOGLE_CLIENT_ID="any-id"
+export OIDC_ISSUER="http://localhost:9999"
+make run-backend
+```
+
 ## 🔄 The "Golden Loop" Workflow
 
 We practice **Contract-Driven Development**. If you need to add a new feature (e.g., adding a "Confidence Score" to a Daily Standup), you never edit the Kotlin or TypeScript code first.
