@@ -12,6 +12,7 @@ import io.netty.util.AttributeKey
 class MockAuthDecorator : DecoratingHttpServiceFunction {
     companion object {
         val USER_EMAIL_ATTR: AttributeKey<String> = AttributeKey.valueOf("USER_EMAIL")
+        val FRONTEND_URL_ATTR: AttributeKey<String> = AttributeKey.valueOf("FRONTEND_URL")
     }
 
     private val jwtAlgorithm: Algorithm
@@ -39,6 +40,21 @@ class MockAuthDecorator : DecoratingHttpServiceFunction {
                 e.printStackTrace()
             }
         }
+        
+        // Derive Frontend URL from request, fallback to Env, fallback to localhost
+        var frontendUrl = req.headers().get("origin")
+        if (frontendUrl == null) {
+            val host = req.headers().get("host")
+            if (host != null) {
+                val scheme = req.scheme() ?: "http"
+                frontendUrl = "$scheme://$host"
+            }
+        }
+        if (frontendUrl == null) {
+            frontendUrl = System.getenv("FRONTEND_URL") ?: "http://localhost:4200"
+        }
+        ctx.setAttr(FRONTEND_URL_ATTR, frontendUrl)
+
         return delegate.serve(ctx, req)
     }
 }

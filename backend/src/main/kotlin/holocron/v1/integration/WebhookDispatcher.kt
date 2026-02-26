@@ -23,7 +23,8 @@ object WebhookDispatcher {
         val teamName: String,
         val userEmail: String? = null,
         val totalResponses: Int = 0,
-        val totalMembers: Int = 0
+        val totalMembers: Int = 0,
+        val frontendUrl: String = "http://localhost:4200"
     )
 
     private val client = WebClient.of()
@@ -70,15 +71,15 @@ object WebhookDispatcher {
     }
 
     private fun buildPayload(platform: Platform, event: EventType, context: WebhookContext): String {
-        val (title, text) = when (event) {
+        val (title, text, buttonUrl, buttonText) = when (event) {
             EventType.CEREMONY_STARTED -> 
-                Pair("Ceremony Ready", "The ceremony **${context.templateTitle}** for team **${context.teamName}** is now ready for your input!")
+                listOf("Ceremony Ready", "The ceremony **${context.templateTitle}** for team **${context.teamName}** is now ready for your input!", "${context.frontendUrl}/ceremony/${context.templateId}", "Respond Now")
             EventType.RESPONSE_SUBMITTED -> {
                 val userStr = if (context.userEmail != null && context.userEmail != "anonymous") " by ${context.userEmail}" else ""
-                Pair("New Response", "A new response was submitted for **${context.templateTitle}**$userStr. (${context.totalResponses}/${context.totalMembers} completed)")
+                listOf("New Response", "A new response was submitted for **${context.templateTitle}**$userStr. (${context.totalResponses}/${context.totalMembers} completed)", "${context.frontendUrl}/dashboard", "View Dashboard")
             }
             EventType.CEREMONY_COMPLETED -> 
-                Pair("Ceremony Complete! \uD83C\uDF89", "All ${context.totalMembers} members of **${context.teamName}** have submitted their responses for **${context.templateTitle}**.")
+                listOf("Ceremony Complete! \uD83C\uDF89", "All ${context.totalMembers} members of **${context.teamName}** have submitted their responses for **${context.templateTitle}**.", "${context.frontendUrl}/dashboard", "View Results")
         }
 
         return when (platform) {
@@ -98,6 +99,20 @@ object WebhookDispatcher {
                               {
                                 "textParagraph": {
                                   "text": "$text"
+                                }
+                              },
+                              {
+                                "buttonList": {
+                                  "buttons": [
+                                    {
+                                      "text": "$buttonText",
+                                      "onClick": {
+                                        "openLink": {
+                                          "url": "$buttonUrl"
+                                        }
+                                      }
+                                    }
+                                  ]
                                 }
                               }
                             ]
@@ -125,6 +140,17 @@ object WebhookDispatcher {
                             "text": {
                                 "type": "mrkdwn",
                                 "text": "$text"
+                            },
+                            "accessory": {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "$buttonText",
+                                    "emoji": true
+                                },
+                                "value": "click_me_123",
+                                "url": "$buttonUrl",
+                                "action_id": "button-action"
                             }
                         }
                     ]
@@ -154,6 +180,13 @@ object WebhookDispatcher {
                                         "text": "$text",
                                         "wrap": true
                                     }
+                                ],
+                                "actions": [
+                                    {
+                                        "type": "Action.OpenUrl",
+                                        "title": "$buttonText",
+                                        "url": "$buttonUrl"
+                                    }
                                 ]
                             }
                         }
@@ -166,7 +199,8 @@ object WebhookDispatcher {
                     "event": "${event.name.lowercase()}",
                     "title": "$title",
                     "text": "$text",
-                    "template_id": "${context.templateId}"
+                    "template_id": "${context.templateId}",
+                    "url": "$buttonUrl"
                 }
             """.trimIndent()
         }

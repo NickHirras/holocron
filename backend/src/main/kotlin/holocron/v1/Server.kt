@@ -70,13 +70,16 @@ class CeremonyServiceImpl(
             val team = teamRepository.getTeams(listOf(finalTemplate.teamId)).firstOrNull()
             val teamName = team?.displayName ?: "Your Team"
             
+            val frontendUrl = ctx.attr(MockAuthDecorator.FRONTEND_URL_ATTR) ?: "http://localhost:4200"
+            
             holocron.v1.integration.WebhookDispatcher.dispatch(
                 finalTemplate.notificationSettings.webhookUrlsList,
                 holocron.v1.integration.WebhookDispatcher.EventType.CEREMONY_STARTED,
                 holocron.v1.integration.WebhookDispatcher.WebhookContext(
                     templateId = finalTemplate.id,
                     templateTitle = finalTemplate.title,
-                    teamName = teamName
+                    teamName = teamName,
+                    frontendUrl = frontendUrl
                 )
             )
         }
@@ -85,10 +88,12 @@ class CeremonyServiceImpl(
             val team = teamRepository.getTeams(listOf(finalTemplate.teamId)).firstOrNull()
             val teamName = team?.displayName ?: "Your Team"
             
+            val frontendUrl = ctx.attr(MockAuthDecorator.FRONTEND_URL_ATTR) ?: "http://localhost:4200"
+            
             holocron.v1.integration.EmailDispatcher.dispatch(
                 finalTemplate.notificationSettings.emailAddressesList,
                 "Ceremony Ready: ${finalTemplate.title}",
-                "The ceremony ${finalTemplate.title} for team $teamName is now ready for your input!"
+                "The ceremony ${finalTemplate.title} for team $teamName is now ready for your input!\nRespond here: $frontendUrl/ceremony/${finalTemplate.id}"
             )
         }
         
@@ -268,10 +273,11 @@ class CeremonyServiceImpl(
             
             // 1. Email Notifications (Mock/Log)
             if (settings.emailAddressesCount > 0) {
+                val frontendUrl = ctx.attr(MockAuthDecorator.FRONTEND_URL_ATTR) ?: "http://localhost:4200"
                 holocron.v1.integration.EmailDispatcher.dispatch(
                     settings.emailAddressesList,
                     "New Response for ${template.title}",
-                    "A new response was submitted for ${template.title} by ${userEmail ?: "anonymous"}."
+                    "A new response was submitted for ${template.title} by ${userEmail ?: "anonymous"}.\nView results: $frontendUrl/dashboard"
                 )
             }
             
@@ -287,6 +293,7 @@ class CeremonyServiceImpl(
                 
                 val team = teamRepository.getTeams(listOf(template.teamId)).firstOrNull()
                 val teamName = team?.displayName ?: "Your Team"
+                val frontendUrl = ctx.attr(MockAuthDecorator.FRONTEND_URL_ATTR) ?: "http://localhost:4200"
 
                 // Send individual response notification
                 holocron.v1.integration.WebhookDispatcher.dispatch(
@@ -298,7 +305,8 @@ class CeremonyServiceImpl(
                         teamName = teamName,
                         userEmail = userEmail,
                         totalResponses = totalResponses,
-                        totalMembers = totalMembers
+                        totalMembers = totalMembers,
+                        frontendUrl = frontendUrl
                     )
                 )
                 
@@ -312,7 +320,8 @@ class CeremonyServiceImpl(
                             templateTitle = template.title,
                             teamName = teamName,
                             totalResponses = totalResponses,
-                            totalMembers = totalMembers
+                            totalMembers = totalMembers,
+                            frontendUrl = frontendUrl
                         )
                     )
                 }
