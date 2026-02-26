@@ -83,6 +83,15 @@ class TeamRepository(mongoClient: MongoClient) {
             }
     }
 
+    suspend fun getTeamMemberships(teamId: String): List<TeamMembership> {
+        return membershipCollection.find(eq("teamId", teamId))
+            .toList()
+            .mapNotNull { doc ->
+                val blob = doc.get("blob", org.bson.types.Binary::class.java)?.data ?: return@mapNotNull null
+                TeamMembership.parseFrom(blob)
+            }
+    }
+
     suspend fun getTeams(teamIds: List<String>): List<Team> {
         if (teamIds.isEmpty()) return emptyList()
         return teamCollection.find(com.mongodb.client.model.Filters.`in`("_id", teamIds))

@@ -7,7 +7,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createClient, Client, Interceptor } from '@connectrpc/connect';
 // IMPORT DIRECTLY FROM _pb NOW
-import { CeremonyService, UserService, TeamService } from '../proto-gen/holocron/v1/ceremony_pb';
+import { CeremonyService, UserService, TeamService, AnalyticsService } from '../proto-gen/holocron/v1/ceremony_pb';
 
 // Interceptor to inject the JWT
 const authInterceptor: Interceptor = (next) => async (req) => {
@@ -30,11 +30,13 @@ const transport = createGrpcWebTransport({
 const ceremonyClient = createClient(CeremonyService, transport);
 const userClient = createClient(UserService, transport);
 const teamClient = createClient(TeamService, transport);
+const analyticsClient = createClient(AnalyticsService, transport);
 
 // Create an Angular Injection Token for strict typing in your components
 export const CEREMONY_CLIENT = new InjectionToken<Client<typeof CeremonyService>>('CeremonyClient');
 export const USER_CLIENT = new InjectionToken<Client<typeof UserService>>('UserClient');
 export const TEAM_CLIENT = new InjectionToken<Client<typeof TeamService>>('TeamClient');
+export const ANALYTICS_CLIENT = new InjectionToken<Client<typeof AnalyticsService>>('AnalyticsClient');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -45,7 +47,8 @@ export const appConfig: ApplicationConfig = {
     // Provide the client globally using the token
     { provide: CEREMONY_CLIENT, useValue: ceremonyClient },
     { provide: USER_CLIENT, useValue: userClient },
-    { provide: TEAM_CLIENT, useValue: teamClient }
+    { provide: TEAM_CLIENT, useValue: teamClient },
+    { provide: ANALYTICS_CLIENT, useValue: analyticsClient }
   ]
 };
 

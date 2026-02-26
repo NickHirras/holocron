@@ -365,6 +365,7 @@ fun main() {
         .addService(CeremonyServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(UserServiceImpl(userRepository))
         .addService(TeamServiceImpl(teamRepository))
+        .addService(AnalyticsServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!
         .build()

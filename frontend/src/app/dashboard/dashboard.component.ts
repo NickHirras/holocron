@@ -6,11 +6,12 @@ import { CeremonyClientService } from '../services/ceremony-client';
 import { TeamService } from '../services/team.service';
 import { ActiveCeremony, ResponseStatus, TeamMembership_Role } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { FormsModule } from '@angular/forms';
+import { TeamAnalyticsComponent } from './team-analytics/team-analytics.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TeamAnalyticsComponent],
   template: `
     <div class="h-full w-full bg-holocron-base text-holocron-text-primary p-6 md:p-10">
       <div class="max-w-6xl mx-auto">
@@ -27,7 +28,7 @@ import { FormsModule } from '@angular/forms';
 
               <ng-container *ngIf="teamService.teams().length > 0">
                 <select [ngModel]="teamService.activeTeamId()" (ngModelChange)="switchTeam($event)" class="bg-[#1a2332] border border-slate-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-indigo-500">
-                  <option *ngFor="let tm of teamService.teams()" [value]="tm.team?.id">{{ tm.team?.displayName }}</option>
+                  <option *ngFor="let tm of teamService.teams()" [value]="tm.team.id">{{ tm.team.displayName }}</option>
                 </select>
               </ng-container>
               
@@ -94,6 +95,10 @@ import { FormsModule } from '@angular/forms';
               <p class="text-slate-500 text-sm mt-1">Start from scratch</p>
             </div>
           </div>
+
+          <!-- Team Analytics -->
+          <app-team-analytics *ngIf="teamService.activeTeamId()" [teamId]="teamService.activeTeamId()!"></app-team-analytics>
+
         </ng-container>
 
         <!-- Your Daily Rituals List (PENDING) -->

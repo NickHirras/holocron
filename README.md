@@ -8,6 +8,7 @@
 - **Action-Oriented Dashboard:** An inbox-style dashboard that prioritizes pending "Tasks for You" based on team assignments and distinguishes completed ceremonies into a "Team Pulse" view.
 - **Engaging Responder Experience:** A clean, accessible presentation form for team members to fill out their ceremony updates quickly and efficiently.
 - **Visual Insights Dashboard:** Instantly view aggregated results and cross-tabulate responses (e.g., comparing "Blockers" against "Confidence Levels").
+- **Team Health Analytics:** Long-term insights aggregated over time to visualize trends in team sentiment, velocity, and blocker frequency.
 - **12-Factor Federated Authentication:** Comprehensive security out-of-the-box. Includes a robust Identity Broker with native support for Mock (local development), Google, and GitHub logins, using JWT-based sessions.
 - **Contract-First Monorepo Architecture:** Built for scale, consistency, and a delightful developer experience using Protobufs defining the boundary between a Kotlin/Armeria backend and an Angular 19 frontend.
 

@@ -318,6 +318,12 @@ service CeremonyService {
   rpc ListCeremonyResponses(ListCeremonyResponsesRequest) returns (ListCeremonyResponsesResponse);
 }
 
+// -- Analytics Service --
+
+service AnalyticsService {
+  rpc GetTeamHealth(GetTeamHealthRequest) returns (GetTeamHealthResponse);
+}
+
 // -- Service Messages --
 
 message PingRequest {
@@ -407,5 +413,21 @@ message GetCeremonyTemplateResponse {
 
 message SubmitCeremonyResponseResponse {
   CeremonyResponse response = 1;
+}
+
+message TeamMetric {
+  string metric_name = 1;
+  float value = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message GetTeamHealthRequest {
+  string team_id = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message GetTeamHealthResponse {
+  repeated TeamMetric metrics = 1;
 }
 

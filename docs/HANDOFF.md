@@ -30,6 +30,13 @@
   - Created Focus View & Grid View visualization modes.
   - Validated flow from template creation to response iteration via browser subagent.
 
+- **Phase X: Team Health Analytics (Completed)**
+  - Updated `ceremony.proto` with `TeamMetric`, `GetTeamHealthRequest/Response` and `AnalyticsService`.
+  - Implemented `AnalyticsServiceImpl` in Kotlin to aggregate sentiment, participation rates, and blockers.
+  - Built `TeamAnalyticsComponent` in Angular to visualize team trends (Sentiment Sparkline, Participation %, Recurring Blockers).
+  - Integrated the analytics dashboard within the Team Leader's dashboard view.
+  - Covered aggregation logic and components with comprehensive unit tests.
+
 ## Next Features to Implement
 (Please refer to `docs/features` for upcoming feature definitions).
 
