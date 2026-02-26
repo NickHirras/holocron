@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -21,6 +21,8 @@ export class CeremonyCreator implements OnInit {
   private ceremonyClient = inject(CeremonyClientService);
   private ceremonyMapper = inject(CeremonyMapperService);
   private destroyRef = inject(DestroyRef);
+
+  teamId = input<string>();
 
   templateForm!: FormGroup;
   isSubmitting = false;
@@ -57,10 +59,10 @@ export class CeremonyCreator implements OnInit {
 
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const type = params['type'];
-      const teamId = params['teamId'];
+      const routeTeamId = this.teamId() || params['teamId'];
 
-      if (teamId) {
-        this.templateForm.patchValue({ teamId });
+      if (routeTeamId) {
+        this.templateForm.patchValue({ teamId: routeTeamId });
       }
 
       if (type === 'standup') {
@@ -213,7 +215,12 @@ export class CeremonyCreator implements OnInit {
       const resp = await this.ceremonyClient.createTemplate(template);
       console.log('Successfully saved template:', resp.template);
 
-      this.router.navigate(['/dashboard']);
+      const activeTeamId = this.teamId() || this.templateForm.value.teamId;
+      if (activeTeamId) {
+        this.router.navigate(['/', activeTeamId, 'dashboard']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
     } catch (err: any) {
       console.error('Failed to save template:', err);
       alert('Failed to save template. See console for details.');

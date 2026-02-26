@@ -21,6 +21,7 @@ export class CeremonyResponderComponent implements OnInit {
 
     template = signal<CeremonyTemplate | null>(null);
     formGroup: FormGroup = this.fb.group({});
+    teamId = inject(ActivatedRoute).parent?.snapshot.paramMap.get('teamId') || '';
 
     loading = signal<boolean>(true);
     error = signal<string | null>(null);

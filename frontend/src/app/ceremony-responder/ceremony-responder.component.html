@@ -192,5 +192,5 @@
     <div class="success-icon">✅</div>
     <h2>{{ template()!.title }}</h2>
     <p>{{ template()!.confirmationMessage || 'Your response has been recorded.' }}</p>
-    <a routerLink="/dashboard" class="btn btn-secondary">Return to Dashboard</a>
+    <a [routerLink]="['/', teamId, 'dashboard']" class="btn btn-secondary">Return to Dashboard</a>
 </div>

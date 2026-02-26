@@ -18,24 +18,33 @@ export const routes: Routes = [
         component: LoginComponent,
         canActivate: [guestGuard]
     },
+    // The "no team yet" dashboard or redirector
     {
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [authGuard]
     },
+    // Team-specific routes
     {
-        path: 'create',
-        component: CeremonyCreator,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'ceremony/:id',
-        component: CeremonyResponderComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'create/:id/results',
-        loadComponent: () => import('./ceremony-results/ceremony-results.component').then(m => m.CeremonyResultsComponent),
-        canActivate: [authGuard]
+        path: ':teamId',
+        canActivate: [authGuard],
+        children: [
+            {
+                path: 'dashboard',
+                component: DashboardComponent
+            },
+            {
+                path: 'create',
+                component: CeremonyCreator
+            },
+            {
+                path: 'ceremony/:id',
+                component: CeremonyResponderComponent
+            },
+            {
+                path: 'create/:id/results',
+                loadComponent: () => import('./ceremony-results/ceremony-results.component').then(m => m.CeremonyResultsComponent)
+            }
+        ]
     }
 ];

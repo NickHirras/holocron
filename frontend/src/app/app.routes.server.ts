@@ -2,11 +2,11 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    path: 'ceremony/:id',
+    path: ':teamId/ceremony/:id',
     renderMode: RenderMode.Server
   },
   {
-    path: 'create/:id/results',
+    path: ':teamId/create/:id/results',
     renderMode: RenderMode.Server
   },
   {

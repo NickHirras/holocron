@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -7,11 +7,12 @@ import { TeamService } from '../services/team.service';
 import { ActiveCeremony, ResponseStatus, TeamMembership_Role } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { FormsModule } from '@angular/forms';
 import { TeamAnalyticsComponent } from './team-analytics/team-analytics.component';
+import { TeamSelectorComponent } from '../components/team-selector/team-selector.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamAnalyticsComponent],
+  imports: [CommonModule, FormsModule, TeamAnalyticsComponent, TeamSelectorComponent],
   template: `
     <div class="h-full w-full bg-holocron-base text-holocron-text-primary p-6 md:p-10">
       <div class="max-w-6xl mx-auto">
@@ -26,11 +27,7 @@ import { TeamAnalyticsComponent } from './team-analytics/team-analytics.componen
               
               <span class="w-px h-5 bg-slate-700"></span>
 
-              <ng-container *ngIf="teamService.teams().length > 0">
-                <select [ngModel]="teamService.activeTeamId()" (ngModelChange)="switchTeam($event)" class="bg-[#1a2332] border border-slate-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-indigo-500">
-                  <option *ngFor="let tm of teamService.teams()" [value]="tm.team.id">{{ tm.team.displayName }}</option>
-                </select>
-              </ng-container>
+              <app-team-selector *ngIf="teamService.teams().length > 0 && (teamId() || teamService.activeTeamId())" [teamId]="(teamId() || teamService.activeTeamId())!"></app-team-selector>
               
               <button *ngIf="teamService.activeTeamRole() === 2" (click)="isCreatingTeam.set(true)" class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">
                 + New Team
@@ -275,6 +272,7 @@ export class DashboardComponent implements OnInit {
   loading = signal(true);
   isActivityDrawerOpen = signal(false);
   isCreatingTeam = signal(false);
+  teamId = input<string>(); // Might be undefined if they hit /dashboard directly
 
   pendingCeremonies = computed(() => {
     return this.activeCeremonies().filter(ac => ac.responseStatus === ResponseStatus.PENDING);
@@ -290,12 +288,24 @@ export class DashboardComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const activeTeamId = this.teamService.activeTeamId();
-      if (activeTeamId) {
-        this.loadTemplates(activeTeamId);
-      } else {
-        this.activeCeremonies.set([]);
+      const routeTeamId = this.teamId();
+
+      // If we landed on /dashboard with no team ID, and we have teams, redirect to the active team
+      if (!routeTeamId) {
+        if (this.teamService.teams().length > 0) {
+          const active = this.teamService.activeTeamId() || this.teamService.teams()[0].team!.id;
+          this.teamService.setActiveTeam(active);
+          this.router.navigate(['/', active, 'dashboard'], { replaceUrl: true });
+        }
+        return;
       }
+
+      // We have a teamId from URL
+      if (routeTeamId !== this.teamService.activeTeamId()) {
+        this.teamService.setActiveTeam(routeTeamId);
+      }
+
+      this.loadTemplates(routeTeamId);
     });
   }
 
@@ -317,7 +327,9 @@ export class DashboardComponent implements OnInit {
   }
 
   switchTeam(teamId: string) {
-    this.teamService.setActiveTeam(teamId);
+    // If they were to use a `<select>` it would land here, but we use router now.
+    // Keeping for backwards compatibility hook if needed.
+    this.router.navigate(['/', teamId, 'dashboard']);
   }
 
   async createTeam(name: string) {
@@ -326,6 +338,10 @@ export class DashboardComponent implements OnInit {
     try {
       await this.teamService.createTeam(name);
       this.isCreatingTeam.set(false);
+      const newActive = this.teamService.activeTeamId();
+      if (newActive) {
+        this.router.navigate(['/', newActive, 'dashboard']);
+      }
     } catch (e) {
       console.error("Failed to create team", e);
     } finally {
@@ -338,6 +354,7 @@ export class DashboardComponent implements OnInit {
     this.loading.set(true);
     try {
       await this.teamService.joinTeam(teamId);
+      this.router.navigate(['/', teamId, 'dashboard']);
     } catch (e) {
       console.error("Failed to join team", e);
     } finally {
@@ -346,16 +363,18 @@ export class DashboardComponent implements OnInit {
   }
 
   createTemplate(type: string) {
-    const activeTeam = this.teamService.activeTeamId();
+    const activeTeam = this.teamId() || this.teamService.activeTeamId();
     if (!activeTeam) return;
-    this.router.navigate(['/create'], { queryParams: { type, teamId: activeTeam } });
+    this.router.navigate(['/', activeTeam, 'create'], { queryParams: { type } });
   }
 
   respondToTemplate(id: string) {
-    this.router.navigate(['/ceremony', id]);
+    const activeTeam = this.teamId() || this.teamService.activeTeamId();
+    this.router.navigate(['/', activeTeam, 'ceremony', id]);
   }
 
   viewResults(id: string) {
-    this.router.navigate(['/create', id, 'results']);
+    const activeTeam = this.teamId() || this.teamService.activeTeamId();
+    this.router.navigate(['/', activeTeam, 'create', id, 'results']);
   }
 }

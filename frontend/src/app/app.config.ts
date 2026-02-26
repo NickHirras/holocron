@@ -1,5 +1,5 @@
 import { ApplicationConfig, InjectionToken, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
+import { provideRouter, withViewTransitions, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
@@ -41,7 +41,7 @@ export const ANALYTICS_CLIENT = new InjectionToken<Client<typeof AnalyticsServic
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withViewTransitions()),
+    provideRouter(routes, withViewTransitions(), withComponentInputBinding()),
     provideClientHydration(withEventReplay()),
 
     // Provide the client globally using the token

@@ -41,6 +41,7 @@ export class CeremonyResultsComponent implements OnInit {
     responses = signal<CeremonyResponse[]>([]);
     isLoading = signal(true);
     error = signal<string | null>(null);
+    teamId = inject(ActivatedRoute).parent?.snapshot.paramMap.get('teamId') || ''; // Better to get from parent route if input doesn't work, but actually we can just use input binding. Let's use input.
 
     startDate = signal<string>('');
     endDate = signal<string>('');
