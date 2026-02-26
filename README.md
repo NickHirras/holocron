@@ -5,6 +5,7 @@
 ## ✨ Key Features
 
 - **Dynamic Ceremony Creator:** A flexible, intuitive interface allowing you to build ceremonies with multiple question types (Text, Multiple Choice, Grid, Linear Scale, Date/Time). Customize questions, specify requirements, and reorder them with drag-and-drop ease.
+- **Action-Oriented Dashboard:** An inbox-style dashboard that prioritizes pending "Tasks for You" based on team assignments and distinguishes completed ceremonies into a "Team Pulse" view.
 - **Engaging Responder Experience:** A clean, accessible presentation form for team members to fill out their ceremony updates quickly and efficiently.
 - **Visual Insights Dashboard:** Instantly view aggregated results and cross-tabulate responses (e.g., comparing "Blockers" against "Confidence Levels").
 - **12-Factor Federated Authentication:** Comprehensive security out-of-the-box. Includes a robust Identity Broker with native support for Mock (local development), Google, and GitHub logins, using JWT-based sessions.

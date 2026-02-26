@@ -118,6 +118,52 @@ class CeremonyServiceImpl(
             .build()
     }
 
+    override suspend fun listActiveCeremonies(request: ListActiveCeremoniesRequest): ListActiveCeremoniesResponse {
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
+        val teamId = request.teamId
+        if (teamId.isEmpty()) {
+            throw StatusException(Status.INVALID_ARGUMENT.withDescription("team_id is required"))
+        }
+
+        val membership = teamRepository.getMembership(teamId, userEmail)
+        if (membership == null) {
+            throw StatusException(Status.PERMISSION_DENIED.withDescription("You are not a member of this team"))
+        }
+
+        val templates = templateRepository.findByTeamId(teamId).filter { 
+            it.creatorId == userEmail || it.sharedWithEmailsList.contains(userEmail) || it.teamId == teamId
+        }
+
+        val now = System.currentTimeMillis() / 1000
+        val activeCeremonies = mutableListOf<ActiveCeremony>()
+
+        for (template in templates) {
+            val isStandup = template.title.contains("Standup", ignoreCase = true) || template.title.contains("Daily", ignoreCase = true)
+            val activeWindowSecs = if (isStandup) 24 * 60 * 60 else 7 * 24 * 60 * 60
+
+            val updatedOrCreatedAt = if (template.hasUpdatedAt()) template.updatedAt.seconds else template.createdAt.seconds
+            val isActive = (now - updatedOrCreatedAt) <= activeWindowSecs
+
+            if (isActive) {
+                val hasResponded = responseRepository.hasResponded(userEmail, template.id)
+                val status = if (hasResponded) ResponseStatus.RESPONSE_STATUS_COMPLETED else ResponseStatus.RESPONSE_STATUS_PENDING
+                activeCeremonies.add(
+                    ActiveCeremony.newBuilder()
+                        .setTemplate(template)
+                        .setResponseStatus(status)
+                        .build()
+                )
+            }
+        }
+
+        return ListActiveCeremoniesResponse.newBuilder()
+            .addAllActiveCeremonies(activeCeremonies)
+            .build()
+    }
+
     override suspend fun submitCeremonyResponse(request: SubmitCeremonyResponseRequest): SubmitCeremonyResponseResponse {
         val template = templateRepository.findById(request.response.ceremonyTemplateId)
             ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))

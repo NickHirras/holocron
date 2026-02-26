@@ -8,6 +8,7 @@ import org.bson.Document
 import org.bson.types.Binary
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.firstOrNull
 
 class CeremonyResponseRepository(mongoClient: MongoClient) {
     private val database = mongoClient.getDatabase("holocron")
@@ -46,5 +47,13 @@ class CeremonyResponseRepository(mongoClient: MongoClient) {
             val payload = doc.get("payload", Binary::class.java)
             CeremonyResponse.parseFrom(payload.data)
         }
+    }
+
+    suspend fun hasResponded(userId: String, templateId: String): Boolean {
+        val filters = com.mongodb.client.model.Filters.and(
+            eq("userId", userId),
+            eq("templateId", templateId)
+        )
+        return collection.find(filters).firstOrNull() != null
     }
 }

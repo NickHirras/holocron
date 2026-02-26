@@ -13,6 +13,14 @@
   - Added Angular test coverage for the `TeamService`.
   - Verified compilation and passing tests across the stack.
 
+- **Phase 2: Ritual Inbox Dashboard (Completed)**
+  - Updated `ceremony.proto` to include `ResponseStatus` and `ActiveCeremony`.
+  - Implemented `ListActiveCeremonies` RPC in `CeremonyServiceImpl` using 24-hr and 7-day active windows.
+  - Added repository methods to query user response existence.
+  - Revamped the Angular `DashboardComponent` to separate ceremonies into "Tasks for You" and "Completed / Team Pulse" sections.
+  - Secured "Manage Ceremonies" creation templates strictly to users with the `LEADER` role.
+  - Verified end-to-end functionality of standup creation and inbox resolution via browser automation.
+
 ## Next Features to Implement
 (Please refer to `docs/features` for upcoming feature definitions).
 

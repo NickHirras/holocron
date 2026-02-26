@@ -59,6 +59,7 @@ describe('TeamService', () => {
         expect(service.teams().length).toBe(2);
         expect(service.activeTeamId()).toBe('team1');
         expect(service.activeTeam()?.team.displayName).toBe('Mobile Engineering');
+        expect(service.activeTeamRole()).toBe(TeamMembership_Role.LEADER);
     });
 
     it('should allow switching the active team', async () => {

@@ -300,6 +300,7 @@ service CeremonyService {
   rpc CreateCeremonyTemplate(CreateCeremonyTemplateRequest) returns (CreateCeremonyTemplateResponse);
   rpc GetCeremonyTemplate(GetCeremonyTemplateRequest) returns (GetCeremonyTemplateResponse);
   rpc ListCeremonyTemplates(ListCeremonyTemplatesRequest) returns (ListCeremonyTemplatesResponse);
+  rpc ListActiveCeremonies(ListActiveCeremoniesRequest) returns (ListActiveCeremoniesResponse);
 
   // Response Management
   rpc SubmitCeremonyResponse(SubmitCeremonyResponseRequest) returns (SubmitCeremonyResponseResponse);
@@ -335,6 +336,28 @@ message ListCeremonyTemplatesRequest {
 message ListCeremonyTemplatesResponse {
   repeated CeremonyTemplate templates = 1;
   string next_page_token = 2;
+}
+
+message ListActiveCeremoniesRequest {
+  string team_id = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListActiveCeremoniesResponse {
+  repeated ActiveCeremony active_ceremonies = 1;
+  string next_page_token = 2;
+}
+
+message ActiveCeremony {
+  CeremonyTemplate template = 1;
+  ResponseStatus response_status = 2;
+}
+
+enum ResponseStatus {
+  RESPONSE_STATUS_UNSPECIFIED = 0;
+  RESPONSE_STATUS_PENDING = 1;
+  RESPONSE_STATUS_COMPLETED = 2;
 }
 
 message SubmitCeremonyResponseRequest {

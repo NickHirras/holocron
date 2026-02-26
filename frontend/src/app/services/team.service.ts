@@ -24,6 +24,10 @@ export class TeamService {
         if (!tId) return undefined;
         return this._teams().find(t => t.team?.id === tId);
     });
+    public readonly activeTeamRole = computed(() => {
+        const active = this.activeTeam();
+        return active?.membership?.role;
+    });
 
     constructor() {
         // Will be called when user logs in, or we explicitly initialize it 
