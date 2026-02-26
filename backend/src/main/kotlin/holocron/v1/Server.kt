@@ -66,6 +66,32 @@ class CeremonyServiceImpl(
         val finalTemplate = templateBuilder.build()
         templateRepository.save(finalTemplate)
         
+        if (finalTemplate.hasNotificationSettings() && finalTemplate.notificationSettings.webhookUrlsCount > 0) {
+            val team = teamRepository.getTeams(listOf(finalTemplate.teamId)).firstOrNull()
+            val teamName = team?.displayName ?: "Your Team"
+            
+            holocron.v1.integration.WebhookDispatcher.dispatch(
+                finalTemplate.notificationSettings.webhookUrlsList,
+                holocron.v1.integration.WebhookDispatcher.EventType.CEREMONY_STARTED,
+                holocron.v1.integration.WebhookDispatcher.WebhookContext(
+                    templateId = finalTemplate.id,
+                    templateTitle = finalTemplate.title,
+                    teamName = teamName
+                )
+            )
+        }
+        
+        if (finalTemplate.hasNotificationSettings() && finalTemplate.notificationSettings.emailAddressesCount > 0) {
+            val team = teamRepository.getTeams(listOf(finalTemplate.teamId)).firstOrNull()
+            val teamName = team?.displayName ?: "Your Team"
+            
+            holocron.v1.integration.EmailDispatcher.dispatch(
+                finalTemplate.notificationSettings.emailAddressesList,
+                "Ceremony Ready: ${finalTemplate.title}",
+                "The ceremony ${finalTemplate.title} for team $teamName is now ready for your input!"
+            )
+        }
+        
         return CreateCeremonyTemplateResponse.newBuilder()
             .setTemplate(finalTemplate)
             .build()
@@ -241,32 +267,54 @@ class CeremonyServiceImpl(
             val settings = template.notificationSettings
             
             // 1. Email Notifications (Mock/Log)
-            settings.emailAddressesList.forEach { email ->
-                println("📧 [EMAIL NOTIFICATION] To: $email - Subject: New Response for ${template.title}")
+            if (settings.emailAddressesCount > 0) {
+                holocron.v1.integration.EmailDispatcher.dispatch(
+                    settings.emailAddressesList,
+                    "New Response for ${template.title}",
+                    "A new response was submitted for ${template.title} by ${userEmail ?: "anonymous"}."
+                )
             }
             
             // 2. Webhook Dispatch
             if (settings.webhookUrlsCount > 0) {
-                val jsonPayload = """{"event": "response_submitted", "ceremony_template_id": "${template.id}", "user_id": "$userEmail"}"""
-                @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
-                kotlinx.coroutines.GlobalScope.launch {
-                    val client = com.linecorp.armeria.client.WebClient.of()
-                    settings.webhookUrlsList.forEach { url ->
-                        try {
-                            println("🌐 Dispatching webhook to $url")
-                            val req = com.linecorp.armeria.common.HttpRequest.builder()
-                                .post(url)
-                                .content(com.linecorp.armeria.common.MediaType.JSON_UTF_8, jsonPayload)
-                                .build()
-                            val response = client.execute(req)
-                            response.aggregate().join()
-                            println("✅ Webhook to $url dispatched successfully.")
-                        } catch (e: Exception) {
-                            if (e is kotlinx.coroutines.CancellationException) throw e
-                            println("❌ Failed to dispatch webhook to $url: ${e.message}")
-                            e.printStackTrace()
-                        }
-                    }
+                // Determine completion status
+                val memberships = teamRepository.getTeamMemberships(template.teamId)
+                val totalMembers = memberships.size
+                
+                // Get total responses so far
+                val allResponses = responseRepository.findByTemplateId(template.id, null, null)
+                val totalResponses = allResponses.size
+                
+                val team = teamRepository.getTeams(listOf(template.teamId)).firstOrNull()
+                val teamName = team?.displayName ?: "Your Team"
+
+                // Send individual response notification
+                holocron.v1.integration.WebhookDispatcher.dispatch(
+                    settings.webhookUrlsList,
+                    holocron.v1.integration.WebhookDispatcher.EventType.RESPONSE_SUBMITTED,
+                    holocron.v1.integration.WebhookDispatcher.WebhookContext(
+                        templateId = template.id,
+                        templateTitle = template.title,
+                        teamName = teamName,
+                        userEmail = userEmail,
+                        totalResponses = totalResponses,
+                        totalMembers = totalMembers
+                    )
+                )
+                
+                // If all members have responded, send completion notification
+                if (totalMembers > 0 && totalResponses >= totalMembers) {
+                    holocron.v1.integration.WebhookDispatcher.dispatch(
+                        settings.webhookUrlsList,
+                        holocron.v1.integration.WebhookDispatcher.EventType.CEREMONY_COMPLETED,
+                        holocron.v1.integration.WebhookDispatcher.WebhookContext(
+                            templateId = template.id,
+                            templateTitle = template.title,
+                            teamName = teamName,
+                            totalResponses = totalResponses,
+                            totalMembers = totalMembers
+                        )
+                    )
                 }
             }
         }
