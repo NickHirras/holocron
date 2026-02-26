@@ -9,7 +9,7 @@ import com.linecorp.armeria.server.grpc.GrpcService
 import io.grpc.protobuf.services.ProtoReflectionService
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import holocron.v1.repository.CeremonyTemplateRepository
-import java.util.UUID
+import io.viascom.nanoid.NanoId
 import io.grpc.Status
 import io.grpc.StatusException
 import holocron.v1.repository.UserRepository
@@ -50,7 +50,7 @@ class CeremonyServiceImpl(
         }
         
         if (templateBuilder.id.isEmpty()) {
-            templateBuilder.id = UUID.randomUUID().toString()
+            templateBuilder.id = NanoId.generate(12, "23456789abcdefghjkmnpqrstuvwxyz")
         }
         
         val now = com.google.protobuf.Timestamp.newBuilder()
@@ -251,7 +251,7 @@ class CeremonyServiceImpl(
         val responseBuilder = request.response.toBuilder()
         
         if (responseBuilder.responseId.isEmpty()) {
-            responseBuilder.responseId = UUID.randomUUID().toString()
+            responseBuilder.responseId = NanoId.generate(12, "23456789abcdefghjkmnpqrstuvwxyz")
         }
         
         val now = com.google.protobuf.Timestamp.newBuilder()
@@ -389,7 +389,7 @@ class ImageUploadService(private val storageProvider: FileStorageProvider) {
         }
 
         // Generate a random filename. We can parse extensions later if needed.
-        val filename = UUID.randomUUID().toString()
+        val filename = NanoId.generate(12, "23456789abcdefghjkmnpqrstuvwxyz")
         val uri = storageProvider.save(filename, bytes, contentType)
         
         return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, "{\"url\":\"$uri\"}")

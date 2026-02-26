@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { customAlphabet } from 'nanoid';
+const nanoidGenerator = customAlphabet('23456789abcdefghjkmnpqrstuvwxyz', 12);
 import { create } from '@bufbuild/protobuf';
 import {
     CeremonyTemplateSchema,
@@ -26,7 +28,7 @@ import {
 export class CeremonyMapperService {
 
     private generateId(): string {
-        return Math.random().toString(36).substring(2, 10);
+        return nanoidGenerator();
     }
 
     mapFormToTemplate(formVal: any) {

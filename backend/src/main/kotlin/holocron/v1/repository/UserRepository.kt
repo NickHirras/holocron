@@ -5,7 +5,7 @@ import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import holocron.v1.User
 import kotlinx.coroutines.flow.firstOrNull
-import java.util.UUID
+import io.viascom.nanoid.NanoId
 
 import org.bson.Document
 
@@ -25,7 +25,7 @@ class UserRepository(private val mongoClient: MongoClient) {
             .build()
             
         val newUser = User.newBuilder()
-            .setId(UUID.randomUUID().toString())
+            .setId(NanoId.generate(12, "23456789abcdefghjkmnpqrstuvwxyz"))
             .setEmail(email)
             .setCreatedAt(now)
             .setUpdatedAt(now)

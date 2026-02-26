@@ -217,7 +217,7 @@ export class CeremonyCreator implements OnInit {
 
       const activeTeamId = this.teamId() || this.templateForm.value.teamId;
       if (activeTeamId) {
-        this.router.navigate(['/', activeTeamId, 'dashboard']);
+        this.router.navigate(['/team', activeTeamId, 'dashboard']);
       } else {
         this.router.navigate(['/dashboard']);
       }

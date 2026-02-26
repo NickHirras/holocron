@@ -26,7 +26,7 @@ export const routes: Routes = [
     },
     // Team-specific routes
     {
-        path: ':teamId',
+        path: 'team/:teamId',
         canActivate: [authGuard],
         children: [
             {
@@ -42,7 +42,7 @@ export const routes: Routes = [
                 component: CeremonyResponderComponent
             },
             {
-                path: 'create/:id/results',
+                path: 'ceremony/:id/results',
                 loadComponent: () => import('./ceremony-results/ceremony-results.component').then(m => m.CeremonyResultsComponent)
             }
         ]

@@ -1,18 +1,18 @@
 package holocron.v1.repository
 
 import com.mongodb.client.model.Filters.eq
+import io.viascom.nanoid.NanoId
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import org.bson.Document
 import org.bson.types.Binary
 import kotlinx.coroutines.flow.firstOrNull
-import java.util.UUID
 
 class ImageRepository(mongoClient: MongoClient) {
     private val database = mongoClient.getDatabase("holocron")
     private val collection = database.getCollection<Document>("images")
 
     suspend fun save(bytes: ByteArray, contentType: String): String {
-        val id = UUID.randomUUID().toString()
+        val id = NanoId.generate(12, "23456789abcdefghjkmnpqrstuvwxyz")
         val doc = Document("_id", id)
             .append("contentType", contentType)
             .append("data", Binary(bytes))

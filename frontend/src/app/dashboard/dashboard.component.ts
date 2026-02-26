@@ -43,122 +43,165 @@ import { TeamSelectorComponent } from '../components/team-selector/team-selector
           </button>
         </header>
 
-        <!-- Quick Actions (Only for Leaders) -->
-        <ng-container *ngIf="isLeader()">
-          <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Manage Ceremonies
-          </h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <!-- Create Standup Card -->
-            <div (click)="createTemplate('standup')" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div class="relative z-10 flex flex-col h-full">
-                <div class="bg-indigo-500/10 w-12 h-12 rounded-xl flex items-center justify-center border border-indigo-500/20 mb-4 group-hover:bg-indigo-500/20 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-indigo-400">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                  </svg>
+        <!-- Generic User Landing Page (No Team Selected) -->
+        <ng-container *ngIf="!teamId()">
+          <div class="mb-12">
+             <h2 class="text-xl font-bold text-white mb-6">Your Teams</h2>
+             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- List Teams -->
+                <div *ngFor="let tm of teamService.teams()" (click)="switchTeam(tm.team!.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] overflow-hidden">
+                  <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div class="relative z-10 flex flex-col h-full items-center text-center">
+                    <div class="bg-indigo-500/10 w-12 h-12 rounded-xl flex items-center justify-center border border-indigo-500/20 mb-4 group-hover:bg-indigo-500/20 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-indigo-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{{ tm.team!.displayName }}</h3>
+                    <p class="text-holocron-text-secondary text-sm">View Dashboard</p>
+                  </div>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">Daily Standup</h3>
-                <p class="text-holocron-text-secondary text-sm flex-grow">A quick, focused template for daily alignment.</p>
-              </div>
-            </div>
 
-            <!-- Create Retro Card -->
-            <div (click)="createTemplate('retro')" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-holocron-neon-blue/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-holocron-neon-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div class="relative z-10 flex flex-col h-full">
-                <div class="bg-holocron-neon-blue/10 w-12 h-12 rounded-xl flex items-center justify-center border border-holocron-neon-blue/20 mb-4 group-hover:bg-holocron-neon-blue/20 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-holocron-neon-blue">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                  </svg>
+                <!-- Create Team Card -->
+                <div (click)="isCreatingTeam.set(true)" class="group relative bg-[#131d30] border border-dashed border-slate-600 hover:border-slate-400 rounded-2xl p-6 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center">
+                  <div class="bg-slate-800 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-slate-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-slate-300">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-bold text-slate-300 group-hover:text-white transition-colors">Create New Team</h3>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-holocron-neon-blue transition-colors">Sprint Retrospective</h3>
-                <p class="text-holocron-text-secondary text-sm flex-grow">Reflect on the past sprint with custom categories.</p>
-              </div>
-            </div>
-            
-            <!-- Blank/Custom Card -->
-            <div (click)="createTemplate('custom')" class="group relative bg-[#131d30] border border-dashed border-slate-600 hover:border-slate-400 rounded-2xl p-6 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center">
-              <div class="bg-slate-800 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-slate-700 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-slate-300">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+             </div>
+             
+             <!-- Future aggregate section -->
+             <div class="mt-12 bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-8 text-center text-indigo-200/60">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mx-auto mb-3 opacity-50">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                 </svg>
-              </div>
-              <h3 class="text-lg font-bold text-slate-300 group-hover:text-white transition-colors">Custom Ceremony</h3>
-              <p class="text-slate-500 text-sm mt-1">Start from scratch</p>
-            </div>
+                <p class="italic">Cross-team aggregate metrics and reporting will eventually appear here.</p>
+             </div>
           </div>
-
-          <!-- Team Analytics -->
-          <app-team-analytics *ngIf="teamService.activeTeamId()" [teamId]="teamService.activeTeamId()!"></app-team-analytics>
-
         </ng-container>
 
-        <!-- Your Daily Rituals List (PENDING) -->
-        <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-12">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-          </svg>
-          Tasks for You
-        </h2>
-
-        <div *ngIf="loading()" class="flex flex-col items-center justify-center p-12 space-y-4">
-          <div class="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
-          <p class="text-slate-400 font-medium animate-pulse">Loading inbox...</p>
-        </div>
-        
-        <div *ngIf="!loading() && pendingCeremonies().length === 0" class="flex flex-col items-center justify-center p-12 text-center bg-gradient-to-b from-[#131d30] to-transparent border border-slate-700/50 rounded-2xl">
-          <div class="bg-indigo-500/10 w-20 h-20 rounded-full flex items-center justify-center mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-indigo-400">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-          </div>
-          <h3 class="text-2xl font-bold text-white mb-2">You're all caught up!</h3>
-          <p class="text-slate-400 max-w-md mb-8">No pending rituals require your attention. Have a great day!</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!loading() && pendingCeremonies().length > 0">
-          <div *ngFor="let ceremony of pendingCeremonies()" (click)="respondToTemplate(ceremony.template!.id)" class="group relative bg-[#131d30] border-2 border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-              <h3 class="text-xl font-bold text-white mb-2 flex items-start gap-2 overflow-hidden">
-                <span class="truncate" title="{{ ceremony.template?.title || 'Untitled Ceremony' }}">{{ ceremony.template?.title || 'Untitled Ceremony' }}</span>
-              </h3>
-              <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4 break-all">{{ ceremony.template?.description || 'No description provided.' }}</p>
-              <div class="flex items-center justify-between mt-4">
-                  <span class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-medium">Needs Response</span>
-                  <span class="text-indigo-400 font-bold group-hover:underline flex items-center gap-1">
-                    Start <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                  </span>
-              </div>
-          </div>
-        </div>
-
-        <!-- Completed / Team Pulse section -->
-        <ng-container *ngIf="!loading() && completedCeremonies().length > 0">
-            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-12">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-400">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        <!-- Team Specific Views -->
+        <ng-container *ngIf="teamId()">
+          <!-- Quick Actions (Only for Leaders) -->
+          <ng-container *ngIf="isLeader()">
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Completed / Team Pulse
+              Manage Ceremonies
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div *ngFor="let ceremony of completedCeremonies()" (click)="viewResults(ceremony.template!.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-slate-500 opacity-80 hover:opacity-100 rounded-2xl p-6 cursor-pointer transition-all duration-300">
-                  <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2 overflow-hidden">
-                    <span class="truncate" title="{{ ceremony.template?.title || 'Untitled Ceremony' }}">{{ ceremony.template?.title || 'Untitled Ceremony' }}</span>
-                  </h3>
-                  <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4 break-all">{{ ceremony.template?.description || 'No description provided.' }}</p>
-                  <div class="flex items-center justify-between mt-4">
-                      <span class="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Completed</span>
-                      <span class="text-slate-400 group-hover:text-emerald-400 group-hover:underline flex items-center gap-1">
-                        View Results <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                      </span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              <!-- Create Standup Card -->
+              <div (click)="createTemplate('standup')" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="relative z-10 flex flex-col h-full">
+                  <div class="bg-indigo-500/10 w-12 h-12 rounded-xl flex items-center justify-center border border-indigo-500/20 mb-4 group-hover:bg-indigo-500/20 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-indigo-400">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                    </svg>
                   </div>
+                  <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">Daily Standup</h3>
+                  <p class="text-holocron-text-secondary text-sm flex-grow">A quick, focused template for daily alignment.</p>
+                </div>
+              </div>
+
+              <!-- Create Retro Card -->
+              <div (click)="createTemplate('retro')" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-holocron-neon-blue/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-holocron-neon-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="relative z-10 flex flex-col h-full">
+                  <div class="bg-holocron-neon-blue/10 w-12 h-12 rounded-xl flex items-center justify-center border border-holocron-neon-blue/20 mb-4 group-hover:bg-holocron-neon-blue/20 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-holocron-neon-blue">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-white mb-2 group-hover:text-holocron-neon-blue transition-colors">Sprint Retrospective</h3>
+                  <p class="text-holocron-text-secondary text-sm flex-grow">Reflect on the past sprint with custom categories.</p>
+                </div>
+              </div>
+              
+              <!-- Blank/Custom Card -->
+              <div (click)="createTemplate('custom')" class="group relative bg-[#131d30] border border-dashed border-slate-600 hover:border-slate-400 rounded-2xl p-6 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center">
+                <div class="bg-slate-800 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-slate-700 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-slate-300">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-300 group-hover:text-white transition-colors">Custom Ceremony</h3>
+                <p class="text-slate-500 text-sm mt-1">Start from scratch</p>
               </div>
             </div>
+
+            <!-- Team Analytics -->
+            <app-team-analytics *ngIf="teamService.activeTeamId()" [teamId]="teamService.activeTeamId()!"></app-team-analytics>
+
+          </ng-container>
+
+          <!-- Your Daily Rituals List (PENDING) -->
+          <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-12">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+            </svg>
+            Tasks for You
+          </h2>
+
+          <div *ngIf="loading()" class="flex flex-col items-center justify-center p-12 space-y-4">
+            <div class="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+            <p class="text-slate-400 font-medium animate-pulse">Loading inbox...</p>
+          </div>
+          
+          <div *ngIf="!loading() && pendingCeremonies().length === 0" class="flex flex-col items-center justify-center p-12 text-center bg-gradient-to-b from-[#131d30] to-transparent border border-slate-700/50 rounded-2xl">
+            <div class="bg-indigo-500/10 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-indigo-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">You're all caught up!</h3>
+            <p class="text-slate-400 max-w-md mb-8">No pending rituals require your attention. Have a great day!</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!loading() && pendingCeremonies().length > 0">
+            <div *ngFor="let ceremony of pendingCeremonies()" (click)="respondToTemplate(ceremony.template!.id)" class="group relative bg-[#131d30] border-2 border-indigo-500/50 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                <h3 class="text-xl font-bold text-white mb-2 flex items-start gap-2 overflow-hidden">
+                  <span class="truncate" title="{{ ceremony.template?.title || 'Untitled Ceremony' }}">{{ ceremony.template?.title || 'Untitled Ceremony' }}</span>
+                </h3>
+                <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4 break-all">{{ ceremony.template?.description || 'No description provided.' }}</p>
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-medium">Needs Response</span>
+                    <span class="text-indigo-400 font-bold group-hover:underline flex items-center gap-1">
+                      Start <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </span>
+                </div>
+            </div>
+          </div>
+
+          <!-- Completed / Team Pulse section -->
+          <ng-container *ngIf="!loading() && completedCeremonies().length > 0">
+              <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-12">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-400">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                Completed / Team Pulse
+              </h2>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div *ngFor="let ceremony of completedCeremonies()" (click)="viewResults(ceremony.template!.id)" class="group relative bg-[#131d30] border border-slate-700/50 hover:border-slate-500 opacity-80 hover:opacity-100 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2 overflow-hidden">
+                      <span class="truncate" title="{{ ceremony.template?.title || 'Untitled Ceremony' }}">{{ ceremony.template?.title || 'Untitled Ceremony' }}</span>
+                    </h3>
+                    <p class="text-holocron-text-secondary text-sm line-clamp-2 mb-4 break-all">{{ ceremony.template?.description || 'No description provided.' }}</p>
+                    <div class="flex items-center justify-between mt-4">
+                        <span class="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Completed</span>
+                        <span class="text-slate-400 group-hover:text-emerald-400 group-hover:underline flex items-center gap-1">
+                          View Results <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                        </span>
+                    </div>
+                </div>
+              </div>
+          </ng-container>
         </ng-container>
 
       </div>
@@ -292,11 +335,7 @@ export class DashboardComponent implements OnInit {
 
       // If we landed on /dashboard with no team ID, and we have teams, redirect to the active team
       if (!routeTeamId) {
-        if (this.teamService.teams().length > 0) {
-          const active = this.teamService.activeTeamId() || this.teamService.teams()[0].team!.id;
-          this.teamService.setActiveTeam(active);
-          this.router.navigate(['/', active, 'dashboard'], { replaceUrl: true });
-        }
+        // Render generic dashboard instead of redirecting
         return;
       }
 
@@ -329,7 +368,7 @@ export class DashboardComponent implements OnInit {
   switchTeam(teamId: string) {
     // If they were to use a `<select>` it would land here, but we use router now.
     // Keeping for backwards compatibility hook if needed.
-    this.router.navigate(['/', teamId, 'dashboard']);
+    this.router.navigate(['/team', teamId, 'dashboard']);
   }
 
   async createTeam(name: string) {
@@ -340,7 +379,7 @@ export class DashboardComponent implements OnInit {
       this.isCreatingTeam.set(false);
       const newActive = this.teamService.activeTeamId();
       if (newActive) {
-        this.router.navigate(['/', newActive, 'dashboard']);
+        this.router.navigate(['/team', newActive, 'dashboard']);
       }
     } catch (e) {
       console.error("Failed to create team", e);
@@ -354,7 +393,7 @@ export class DashboardComponent implements OnInit {
     this.loading.set(true);
     try {
       await this.teamService.joinTeam(teamId);
-      this.router.navigate(['/', teamId, 'dashboard']);
+      this.router.navigate(['/team', teamId, 'dashboard']);
     } catch (e) {
       console.error("Failed to join team", e);
     } finally {
@@ -365,16 +404,16 @@ export class DashboardComponent implements OnInit {
   createTemplate(type: string) {
     const activeTeam = this.teamId() || this.teamService.activeTeamId();
     if (!activeTeam) return;
-    this.router.navigate(['/', activeTeam, 'create'], { queryParams: { type } });
+    this.router.navigate(['/team', activeTeam, 'create'], { queryParams: { type } });
   }
 
   respondToTemplate(id: string) {
     const activeTeam = this.teamId() || this.teamService.activeTeamId();
-    this.router.navigate(['/', activeTeam, 'ceremony', id]);
+    this.router.navigate(['/team', activeTeam, 'ceremony', id]);
   }
 
   viewResults(id: string) {
     const activeTeam = this.teamId() || this.teamService.activeTeamId();
-    this.router.navigate(['/', activeTeam, 'create', id, 'results']);
+    this.router.navigate(['/team', activeTeam, 'ceremony', id, 'results']);
   }
 }

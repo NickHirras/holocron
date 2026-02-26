@@ -9,7 +9,7 @@ import holocron.v1.TeamMembership
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
-import java.util.UUID
+import io.viascom.nanoid.NanoId
 
 class TeamRepository(mongoClient: MongoClient) {
     private val database = mongoClient.getDatabase("holocron")
@@ -22,7 +22,7 @@ class TeamRepository(mongoClient: MongoClient) {
             .build()
             
         val team = Team.newBuilder()
-            .setId(UUID.randomUUID().toString())
+            .setId(NanoId.generate(12, "23456789abcdefghjkmnpqrstuvwxyz"))
             .setDisplayName(displayName)
             .setCreatedAt(now)
             .build()

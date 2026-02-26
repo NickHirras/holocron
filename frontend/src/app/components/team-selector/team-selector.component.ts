@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { TeamService } from '../../services/team.service';
 
 @Component({
-    selector: 'app-team-selector',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-team-selector',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="relative inline-block text-left">
       <div>
         <button type="button" (click)="isOpen.set(!isOpen())" class="flex items-center gap-2 bg-[#1a2332] hover:bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 relative z-50">
@@ -38,22 +38,22 @@ import { TeamService } from '../../services/team.service';
   `
 })
 export class TeamSelectorComponent {
-    teamService = inject(TeamService);
-    router = inject(Router);
+  teamService = inject(TeamService);
+  router = inject(Router);
 
-    teamId = input.required<string>();
-    isOpen = signal(false);
+  teamId = input.required<string>();
+  isOpen = signal(false);
 
-    activeTeamName = computed(() => {
-        const tm = this.teamService.teams().find(t => t.team?.id === this.teamId());
-        return tm?.team?.displayName || 'Select Team';
-    });
+  activeTeamName = computed(() => {
+    const tm = this.teamService.teams().find(t => t.team?.id === this.teamId());
+    return tm?.team?.displayName || 'Select Team';
+  });
 
-    selectTeam(newTeamId: string) {
-        this.isOpen.set(false);
-        if (newTeamId !== this.teamId()) {
-            // Pushing the user to the dashboard of the newly selected team
-            this.router.navigate(['/', newTeamId, 'dashboard']);
-        }
+  selectTeam(newTeamId: string) {
+    this.isOpen.set(false);
+    if (newTeamId !== this.teamId()) {
+      // Pushing the user to the dashboard of the newly selected team
+      this.router.navigate(['/team', newTeamId, 'dashboard']);
     }
+  }
 }
