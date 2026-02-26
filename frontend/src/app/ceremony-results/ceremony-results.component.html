@@ -29,6 +29,41 @@
         </div>
     </header>
 
+    <!-- Facilitator Toolbar -->
+    <div *ngIf="isLeader()" class="facilitator-toolbar"
+        style="background: rgba(168, 85, 247, 0.1); border-bottom: 1px solid rgba(168, 85, 247, 0.3); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;">
+        <div class="toolbar-left" style="display: flex; align-items: center; gap: 1rem;">
+            <span class="material-symbols-outlined" style="color: #c084fc;">admin_panel_settings</span>
+            <span style="color: #e2e8f0; font-weight: 600; font-size: 1.1rem;">Facilitator Controls</span>
+        </div>
+        <div class="toolbar-right" style="display: flex; gap: 1.5rem; align-items: center;">
+            <label class="toggle-control" style="display: flex; gap: 0.5rem; color: #cbd5e1; cursor: pointer;">
+                <input type="checkbox" [checked]="isAnonymized()" (change)="toggleAnonymization()">
+                Anonymize Responses
+            </label>
+            <!-- Revealing answers not fully implemented yet, but keeping toggle for future -->
+            <label class="toggle-control" style="display: flex; gap: 0.5rem; color: #cbd5e1; cursor: pointer;">
+                <input type="checkbox" [checked]="responsesVisible()" (change)="toggleResponsesVisible()">
+                Reveal Answers
+            </label>
+            <div class="view-toggles"
+                style="display: flex; gap: 0.25rem; background: rgba(0,0,0,0.2); padding: 0.25rem; border-radius: 8px;">
+                <button (click)="setDisplayMode('grid')" [class.active]="displayMode() === 'grid'"
+                    style="padding: 0.5rem; border-radius: 4px; display: flex; color: #94a3b8; transition: all 0.2s;"
+                    [style.background]="displayMode() === 'grid' ? 'rgba(255,255,255,0.1)' : 'transparent'"
+                    [style.color]="displayMode() === 'grid' ? '#fff' : '#94a3b8'">
+                    <span class="material-symbols-outlined">grid_view</span>
+                </button>
+                <button (click)="setDisplayMode('focus')" [class.active]="displayMode() === 'focus'"
+                    style="padding: 0.5rem; border-radius: 4px; display: flex; color: #94a3b8; transition: all 0.2s;"
+                    [style.background]="displayMode() === 'focus' ? 'rgba(255,255,255,0.1)' : 'transparent'"
+                    [style.color]="displayMode() === 'focus' ? '#fff' : '#94a3b8'">
+                    <span class="material-symbols-outlined">splitscreen</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <main class="results-content">
         <div *ngIf="isLoading()" class="loading-state">
             <div class="spinner"></div>
@@ -53,13 +88,15 @@
                     submit their answers, or try adjusting the date filters above.</p>
             </div>
 
-            <div class="cards-container" *ngIf="responses().length > 0">
+            <!-- Grid View (Default) -->
+            <div class="cards-container" *ngIf="responses().length > 0 && displayMode() === 'grid'">
                 <div class="result-card" *ngFor="let q of questionData(); let i = index">
                     <h3 class="question-title">{{ q.title }}</h3>
                     <p class="question-meta">{{ responses().length }} responses</p>
 
                     <!-- Choice Question Visualization (Bar chart simulation) -->
-                    <div *ngIf="q.type === 'choiceQuestion'" class="chart-container">
+                    <div *ngIf="q.type === 'choiceQuestion'" class="chart-container"
+                        [style.filter]="!responsesVisible() ? 'blur(6px)' : 'none'">
                         <div class="bar-chart">
                             <div class="bar-row" *ngFor="let item of q.distribution">
                                 <div class="bar-label">{{ item.label }}</div>
@@ -73,7 +110,8 @@
                     </div>
 
                     <!-- Linear Scale Visualization (Histogram simulation) -->
-                    <div *ngIf="q.type === 'scaleQuestion'" class="chart-container">
+                    <div *ngIf="q.type === 'scaleQuestion'" class="chart-container"
+                        [style.filter]="!responsesVisible() ? 'blur(6px)' : 'none'">
                         <div class="histogram-chart">
                             <div class="hist-col" *ngFor="let item of q.distribution">
                                 <div class="hist-value">{{ item.count }}</div>
@@ -88,8 +126,13 @@
 
                     <!-- Text Answer Visualization -->
                     <div *ngIf="q.type === 'textQuestion' || q.type === 'textItem'" class="text-answers-container">
-                        <div class="text-answer" *ngFor="let text of q.textAnswers">
-                            {{ text }}
+                        <div class="text-answer" *ngFor="let item of q.textAnswers"
+                            style="margin-bottom: 1rem; padding: 1rem; background: rgba(15, 23, 42, 0.4); border-radius: 8px;">
+                            <div class="user-id"
+                                style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                {{ isAnonymized() ? 'Anonymous' : item.userId }}</div>
+                            <div class="text-content" style="color: #e2e8f0; line-height: 1.5;"
+                                [style.filter]="!responsesVisible() ? 'blur(5px)' : 'none'">{{ item.text }}</div>
                         </div>
                         <div *ngIf="!q.textAnswers?.length" class="no-answers">
                             No answers provided.
@@ -100,6 +143,85 @@
                     <div *ngIf="q.type !== 'choiceQuestion' && q.type !== 'scaleQuestion' && q.type !== 'textQuestion'"
                         class="fallback-answers">
                         <p><i>Visualization not supported for this question type.</i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focus View -->
+            <div class="focus-container" *ngIf="responses().length > 0 && displayMode() === 'focus'"
+                style="display: flex; gap: 2rem; align-items: flex-start; margin-top: 2rem; max-width: 1200px; margin-left: auto; margin-right: auto;">
+                <!-- Sidebar Navigation -->
+                <div class="focus-nav"
+                    style="width: 300px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); padding: 1rem; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.5rem; max-height: calc(100vh - 200px); overflow-y: auto;">
+                    <button *ngFor="let q of questionData(); let i = index" (click)="setActiveItem(q.questionId)"
+                        [class.active]="q.questionId === activeItemId()"
+                        style="text-align: left; padding: 1rem; background: transparent; border: 1px solid transparent; border-radius: 8px; color: #cbd5e1; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; line-height: 1.4; opacity: 0.7;"
+                        [style.background]="q.questionId === activeItemId() ? 'rgba(79, 70, 229, 0.15)' : 'transparent'"
+                        [style.borderColor]="q.questionId === activeItemId() ? 'rgba(99, 102, 241, 0.5)' : 'transparent'"
+                        [style.color]="q.questionId === activeItemId() ? '#fff' : '#cbd5e1'"
+                        [style.opacity]="q.questionId === activeItemId() ? '1' : '0.7'">
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.25rem;">Question {{ i + 1 }}
+                        </div>
+                        {{ q.title }}
+                    </button>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="focus-content" style="flex: 1; min-width: 0;">
+                    <div class="result-card" *ngFor="let q of questionData()" [hidden]="q.questionId !== activeItemId()"
+                        style="margin: 0;">
+                        <h2 class="question-title" style="font-size: 1.75rem; margin-bottom: 1.5rem;">{{ q.title }}</h2>
+                        <div
+                            style="background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 99px; display: inline-block; margin-bottom: 2rem; color: #94a3b8; font-size: 0.9rem;">
+                            {{ responses().length }} responses
+                        </div>
+
+                        <!-- Content rendering is same as grid view just styled larger -->
+                        <div *ngIf="q.type === 'choiceQuestion'" class="chart-container" style="max-width: 600px;"
+                            [style.filter]="!responsesVisible() ? 'blur(6px)' : 'none'">
+                            <div class="bar-chart">
+                                <div class="bar-row" *ngFor="let item of q.distribution">
+                                    <div class="bar-label" style="font-size: 1.1rem; width: 150px;">{{ item.label }}
+                                    </div>
+                                    <div class="bar-track" style="height: 16px;">
+                                        <div class="bar-fill" [style.width.%]="(item.count / responses().length) * 100">
+                                        </div>
+                                    </div>
+                                    <div class="bar-value" style="font-size: 1.1rem;">{{ item.count }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="q.type === 'scaleQuestion'" class="chart-container"
+                            [style.filter]="!responsesVisible() ? 'blur(6px)' : 'none'">
+                            <div class="histogram-chart" style="height: 300px;">
+                                <div class="hist-col" *ngFor="let item of q.distribution" style="flex: 1;">
+                                    <div class="hist-value" style="font-size: 1.2rem; margin-bottom: 0.5rem;">{{
+                                        item.count }}</div>
+                                    <div class="hist-track">
+                                        <div class="hist-fill"
+                                            [style.height.%]="(item.count / responses().length) * 100"></div>
+                                    </div>
+                                    <div class="hist-label" style="font-size: 1.2rem; margin-top: 1rem;">{{ item.label
+                                        }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="q.type === 'textQuestion' || q.type === 'textItem'" class="text-answers-container"
+                            style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="text-answer" *ngFor="let item of q.textAnswers"
+                                style="font-size: 1.1rem; padding: 1.5rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                                <div class="user-id"
+                                    style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                    {{ isAnonymized() ? 'Anonymous' : item.userId }}</div>
+                                <div class="text-content" style="color: #e2e8f0; line-height: 1.6;"
+                                    [style.filter]="!responsesVisible() ? 'blur(6px)' : 'none'">{{ item.text }}</div>
+                            </div>
+                            <div *ngIf="!q.textAnswers?.length" class="no-answers" style="font-size: 1.1rem;">
+                                No answers provided.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

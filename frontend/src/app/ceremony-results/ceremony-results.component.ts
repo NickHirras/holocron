@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CeremonyClientService } from '../services/ceremony-client';
-import { CeremonyResponse, CeremonyTemplate } from '../../proto-gen/holocron/v1/ceremony_pb';
+import { CeremonyResponse, CeremonyTemplate, TeamMembership, FacilitationSettings, TeamMembership_Role, FacilitationSettingsSchema, CeremonyTemplateSchema } from '../../proto-gen/holocron/v1/ceremony_pb';
+import { create } from '@bufbuild/protobuf';
+import { TeamService } from '../services/team.service';
 
 interface ChartData {
     questionId: string;
@@ -13,7 +15,7 @@ interface ChartData {
     answers: any[];
     // Processed data for visualization
     distribution?: { label: string, count: number }[];
-    textAnswers?: string[];
+    textAnswers?: { userId: string, text: string }[];
 }
 
 interface CrossTabData {
@@ -32,6 +34,7 @@ interface CrossTabData {
 export class CeremonyResultsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private ceremonyClient = inject(CeremonyClientService);
+    public teamService = inject(TeamService);
     private destroyRef = inject(DestroyRef);
 
     template = signal<CeremonyTemplate | null>(null);
@@ -45,6 +48,22 @@ export class CeremonyResultsComponent implements OnInit {
     // Cross-Tabulation State
     crossTabGroupQuestionId = signal<string>('');
     crossTabTargetQuestionId = signal<string>('');
+
+    // Facilitation Mode State
+    // We compute this from the loaded template's settings
+    isAnonymized = computed(() => this.template()?.facilitationSettings?.isAnonymized ?? false);
+    responsesVisible = computed(() => this.template()?.facilitationSettings?.responsesVisible ?? false);
+    activeItemId = computed(() => this.template()?.facilitationSettings?.activeItemId ?? '');
+
+    // UI State for Display Mode
+    displayMode = signal<'grid' | 'focus'>('grid');
+
+    isLeader = computed(() => {
+        const tpl = this.template();
+        if (!tpl) return false;
+        const teamWithMem = this.teamService.teams().find(t => t.team?.id === tpl.teamId);
+        return teamWithMem?.membership?.role === TeamMembership_Role.LEADER;
+    });
 
     // Computed signal to aggregate and process data per question
     questionData = computed(() => {
@@ -99,12 +118,16 @@ export class CeremonyResultsComponent implements OnInit {
                     });
                     qData.distribution = Object.keys(counts).map(k => ({ label: k, count: counts[k] })).sort((a, b) => parseInt(a.label) - parseInt(b.label));
                 } else if (qType === 'textQuestion') {
-                    qData.textAnswers = qData.answers.map(ans => {
-                        if (ans.kind.case === 'textAnswer') {
-                            return ans.kind.value.value;
+                    qData.textAnswers = [];
+                    for (const resp of resps) {
+                        const answer = resp.answers[qId];
+                        if (answer && answer.kind.case === 'textAnswer') {
+                            qData.textAnswers.push({
+                                userId: resp.userId,
+                                text: answer.kind.value.value
+                            });
                         }
-                        return '';
-                    }).filter(Boolean);
+                    }
                 }
 
                 data.push(qData);
@@ -187,6 +210,9 @@ export class CeremonyResultsComponent implements OnInit {
     });
 
     ngOnInit() {
+        if (this.teamService.teams().length === 0) {
+            this.teamService.refreshTeams();
+        }
         this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async params => {
             const id = params.get('id');
             if (id) {
@@ -236,6 +262,91 @@ export class CeremonyResultsComponent implements OnInit {
             this.loadData(id);
         }
     }
+
+    refreshData() {
+        this.applyDateFilter();
+    }
+
+    async toggleAnonymization() {
+        const tpl = this.template();
+        if (!tpl || !this.isLeader()) return;
+
+        const currentSettings = tpl.facilitationSettings;
+        const newSettings = create(FacilitationSettingsSchema, {
+            isAnonymized: !(currentSettings?.isAnonymized ?? false),
+            responsesVisible: currentSettings?.responsesVisible ?? false,
+            activeItemId: currentSettings?.activeItemId ?? ''
+        });
+
+        const updatedTpl: CeremonyTemplate = {
+            ...tpl,
+            facilitationSettings: newSettings
+        };
+
+        try {
+            await this.ceremonyClient.updateTemplate(updatedTpl);
+            await this.refreshData();
+        } catch (e) {
+            console.error('Failed to update template', e);
+        }
+    }
+
+    async toggleResponsesVisible() {
+        const tpl = this.template();
+        if (!tpl || !this.isLeader()) return;
+
+        const currentSettings = tpl.facilitationSettings;
+        const newSettings = create(FacilitationSettingsSchema, {
+            isAnonymized: currentSettings?.isAnonymized ?? false,
+            responsesVisible: !(currentSettings?.responsesVisible ?? false),
+            activeItemId: currentSettings?.activeItemId ?? ''
+        });
+
+        const updatedTpl: CeremonyTemplate = {
+            ...tpl,
+            facilitationSettings: newSettings
+        };
+
+        try {
+            await this.ceremonyClient.updateTemplate(updatedTpl);
+            await this.refreshData();
+        } catch (e) {
+            console.error('Failed to update template', e);
+        }
+    }
+
+    async setActiveItem(itemId: string) {
+        const tpl = this.template();
+        if (!tpl || !this.isLeader()) return;
+
+        const currentSettings = tpl.facilitationSettings;
+        const newSettings = create(FacilitationSettingsSchema, {
+            isAnonymized: currentSettings?.isAnonymized ?? false,
+            responsesVisible: currentSettings?.responsesVisible ?? false,
+            activeItemId: itemId
+        });
+
+        const updatedTpl = create(CeremonyTemplateSchema, {
+            ...tpl,
+            facilitationSettings: newSettings
+        });
+
+        try {
+            await this.ceremonyClient.updateTemplate(updatedTpl);
+            await this.refreshData();
+        } catch (e) {
+            console.error('Failed to update template', e);
+        }
+    }
+
+    setDisplayMode(mode: 'grid' | 'focus') {
+        this.displayMode.set(mode);
+        // Automatically set active item if entering focus mode
+        if (mode === 'focus' && !this.activeItemId() && this.questionData().length > 0) {
+            this.setActiveItem(this.questionData()[0].questionId);
+        }
+    }
+
 
     downloadCsv() {
         const tpl = this.template();

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CEREMONY_CLIENT } from '../app.config';
-import { CeremonyTemplate, CreateCeremonyTemplateRequestSchema, CreateCeremonyTemplateResponse, GetCeremonyTemplateRequestSchema, GetCeremonyTemplateResponse, SubmitCeremonyResponseRequestSchema, SubmitCeremonyResponseResponse, CeremonyResponse, ListCeremonyTemplatesRequestSchema, ListCeremonyTemplatesResponse, ListCeremonyResponsesRequestSchema, ListCeremonyResponsesResponse, ListActiveCeremoniesRequestSchema, ListActiveCeremoniesResponse } from '../../proto-gen/holocron/v1/ceremony_pb';
+import { CeremonyTemplate, CreateCeremonyTemplateRequestSchema, CreateCeremonyTemplateResponse, UpdateCeremonyTemplateRequestSchema, UpdateCeremonyTemplateResponse, GetCeremonyTemplateRequestSchema, GetCeremonyTemplateResponse, SubmitCeremonyResponseRequestSchema, SubmitCeremonyResponseResponse, CeremonyResponse, ListCeremonyTemplatesRequestSchema, ListCeremonyTemplatesResponse, ListCeremonyResponsesRequestSchema, ListCeremonyResponsesResponse, ListActiveCeremoniesRequestSchema, ListActiveCeremoniesResponse } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { create } from '@bufbuild/protobuf';
 
 @Injectable({
@@ -12,6 +12,11 @@ export class CeremonyClientService {
   async createTemplate(template: CeremonyTemplate): Promise<CreateCeremonyTemplateResponse> {
     const request = create(CreateCeremonyTemplateRequestSchema, { template });
     return await this.client.createCeremonyTemplate(request);
+  }
+
+  async updateTemplate(template: CeremonyTemplate): Promise<UpdateCeremonyTemplateResponse> {
+    const request = create(UpdateCeremonyTemplateRequestSchema, { template });
+    return await this.client.updateCeremonyTemplate(request);
   }
 
   async listTemplates(teamId: string): Promise<ListCeremonyTemplatesResponse> {

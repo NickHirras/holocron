@@ -71,6 +71,42 @@ class CeremonyServiceImpl(
             .build()
     }
 
+    override suspend fun updateCeremonyTemplate(request: UpdateCeremonyTemplateRequest): UpdateCeremonyTemplateResponse {
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
+        val templateId = request.template.id
+        if (templateId.isEmpty()) {
+            throw StatusException(Status.INVALID_ARGUMENT.withDescription("template id is required"))
+        }
+
+        val existingTemplate = templateRepository.findById(templateId)
+            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+
+        val membership = teamRepository.getMembership(existingTemplate.teamId, userEmail)
+        if (membership == null || membership.role != TeamMembership.Role.ROLE_LEADER) {
+            throw StatusException(Status.PERMISSION_DENIED.withDescription("Only team leaders can update templates"))
+        }
+
+        val templateBuilder = request.template.toBuilder()
+            .setTeamId(existingTemplate.teamId) // Keep original team
+            .setCreatorId(existingTemplate.creatorId) // Keep original creator
+            .setCreatedAt(existingTemplate.createdAt) // Keep original creation time
+
+        val now = com.google.protobuf.Timestamp.newBuilder()
+            .setSeconds(System.currentTimeMillis() / 1000)
+            .build()
+        templateBuilder.updatedAt = now
+
+        val finalTemplate = templateBuilder.build()
+        templateRepository.save(finalTemplate)
+
+        return UpdateCeremonyTemplateResponse.newBuilder()
+            .setTemplate(finalTemplate)
+            .build()
+    }
+
     override suspend fun getCeremonyTemplate(request: GetCeremonyTemplateRequest): GetCeremonyTemplateResponse {
         println("Received request for Template ID: ${request.templateId}")
         val template = templateRepository.findById(request.templateId)
@@ -252,11 +288,22 @@ class CeremonyServiceImpl(
             throw StatusException(Status.PERMISSION_DENIED.withDescription("You do not have permission to view these responses"))
         }
 
-        val responses = responseRepository.findByTemplateId(
+        var responses = responseRepository.findByTemplateId(
             request.ceremonyTemplateId,
             if (request.hasFilterStartDate()) request.filterStartDate else null,
             if (request.hasFilterEndDate()) request.filterEndDate else null
         )
+
+        // Facilitation Mode Anonymization
+        if (template.hasFacilitationSettings() && template.facilitationSettings.isAnonymized) {
+            val isLeader = teamRepository.getMembership(template.teamId, userEmail)?.role == TeamMembership.Role.ROLE_LEADER
+            if (!isLeader) {
+                responses = responses.map { response ->
+                    response.toBuilder().setUserId("anonymous").build()
+                }
+            }
+        }
+
         return ListCeremonyResponsesResponse.newBuilder()
             .addAllResponses(responses)
             .build()

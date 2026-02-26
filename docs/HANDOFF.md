@@ -21,6 +21,15 @@
   - Secured "Manage Ceremonies" creation templates strictly to users with the `LEADER` role.
   - Verified end-to-end functionality of standup creation and inbox resolution via browser automation.
 
+- **Phase X: Facilitation Mode (Completed)**
+  - Updated `ceremony.proto` to include `FacilitationSettings`.
+  - Implemented `UpdateCeremonyTemplate` RPC to enforce leader-only updates.
+  - Anonymized responses dynamically for non-leaders via backend filtering.
+  - Added a "Facilitator Toolbar" in `CeremonyResultsComponent` for Leaders to toggle anonymity and reveal answers.
+  - Implemented real-time Blur filtering and Identity Masking for secure presentation sharing.
+  - Created Focus View & Grid View visualization modes.
+  - Validated flow from template creation to response iteration via browser subagent.
+
 ## Next Features to Implement
 (Please refer to `docs/features` for upcoming feature definitions).
 
