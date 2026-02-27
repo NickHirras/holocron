@@ -27,6 +27,8 @@ import com.linecorp.armeria.common.MediaType
 import kotlinx.coroutines.future.await
 import holocron.v1.util.DatabaseSeeder
 import kotlinx.coroutines.runBlocking
+import holocron.v1.cache.CacheFactory
+import holocron.v1.cache.CachePort
 
 class CeremonyServiceImpl(
     private val templateRepository: CeremonyTemplateRepository,
@@ -425,10 +427,13 @@ fun main() {
         seeder.seedIfEmpty()
     }
 
+    // Initialize Caches
+    val userCache: CachePort<String, User> = CacheFactory.createCache()
+
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
         .addService(CeremonyServiceImpl(templateRepository, responseRepository, teamRepository))
-        .addService(UserServiceImpl(userRepository))
+        .addService(UserServiceImpl(userRepository, userCache))
         .addService(TeamServiceImpl(teamRepository, userRepository))
         .addService(AnalyticsServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(ProtoReflectionService.newInstance())

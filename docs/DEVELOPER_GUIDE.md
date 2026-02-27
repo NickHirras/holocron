@@ -85,11 +85,34 @@ make run-backend
 
 To test external federated login locally, you can spin up a mock OIDC provider and override the Google provider's endpoints using the `OIDC_ISSUER` environment variable:
 ```bash
+```bash
 # E.g. using ghcr.io/bluecatengineering/mock-oidc-provider on port 9999
 export GOOGLE_CLIENT_ID="any-id"
 export OIDC_ISSUER="http://localhost:9999"
 make run-backend
 ```
+
+---
+
+## 💾 Unified Cache Infrastructure
+
+Holocron implements a caching abstraction using the Ports and Adapters (Hexagonal) pattern. All backend business logic relies on a single generic `CachePort<K, V>` interface, completely agnostic of the underlying caching mechanism.
+
+By default, the application runs with an **In-Process Cache** (`Caffeine`) for a frictionless, zero-configuration local development experience.
+
+To enable horizontal scaling in production, you can switch to a **Distributed Cache** (`Redis`) by simply setting environment variables:
+
+```bash
+# Available types: "local" (default) or "distributed"
+export CACHE_TYPE="distributed"
+
+# Required if CACHE_TYPE is distributed
+export REDIS_URI="redis://your-redis-server:6379"
+
+make run-backend
+```
+
+Under the hood, the `CacheFactory` automatically provisions either a `CaffeineCacheAdapter` or a `RedisCacheAdapter` (using Lettuce and Jackson serialization).
 
 ---
 

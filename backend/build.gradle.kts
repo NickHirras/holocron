@@ -36,6 +36,10 @@ dependencies {
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
 
+    // Caching
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
+
     // Testing
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.22")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
