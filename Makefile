@@ -35,8 +35,12 @@ run:
 
 stop:
 	@echo "Stopping backend (port 8080) and frontend (port 4200)..."
+	-fuser -k 8080/tcp 2>/dev/null || true
+	-fuser -k 4200/tcp 2>/dev/null || true
 	-lsof -t -i:8080 | xargs kill -9 2>/dev/null || true
 	-lsof -t -i:4200 | xargs kill -9 2>/dev/null || true
+	-pkill -f "ng serve" 2>/dev/null || true
+	-pkill -f "gradlew run" 2>/dev/null || true
 	@echo "Services stopped."
 
 restart: stop run
