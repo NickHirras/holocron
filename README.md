@@ -37,3 +37,48 @@ Holocron uses Protocol Buffers (`proto3`) as its ultimate source of truth, dicta
 - **Backend:** Kotlin + Coroutines over **Armeria**, serving gRPC, gRPC-Web, and REST natively on a single port.
 - **Frontend:** Angular 19 using strictly Standalone Components and Signals, leveraging **Connect-RPC** to speak gRPC-Web natively.
 - **Database:** MongoDB configured with coroutine drivers utilizing an "Indexed Metadata + Opaque Blob" storage pattern.
+
+---
+
+## 🐳 Deployment & Containerization
+
+Holocron is distributed as a single comprehensive Docker image containing the Angular frontend, Kotlin backend, and an internalized autostart MongoDB instance (for zero-configuration starts). 
+
+### Single Instance (Zero-Config)
+The easiest way to get started. Just map a volume to persist the internal MongoDB data, and map port `8080`.
+
+```bash
+docker run -d \
+  -p 8080:8080 \
+  -v holocron_data:/data/db \
+  --name holocron \
+  ghcr.io/nickhirras/holocron:latest
+```
+
+### Horizontally Scaled Multi-Instance
+For enterprise deployments, you can spin up multiple instances of `holocron:latest` and configure them to bypass the internal DB/Cache by injecting environment variables pointing to external services.
+
+```bash
+docker run -d \
+  -p 8080:8080 \
+  -e "MONGODB_URI=mongodb://user:pass@external.mongo.host:27017/holocron?authSource=admin" \
+  -e "CACHE_TYPE=distributed" \
+  -e "REDIS_URI=redis://external.redis.host:6379" \
+  -e "STORAGE_DRIVER=s3" \
+  -e "S3_ENDPOINT=https://your-s3-endpoint.com" \
+  -e "S3_BUCKET=holocron-assets" \
+  # ... Add AWS credentials to your environment ...
+  --name holocron \
+  ghcr.io/nickhirras/holocron:latest
+```
+
+### 🧪 Local Test User Accounts
+When running Holocron for the first time on a fresh database, a Database Seeder automatically runs to populate dummy history and user accounts. To test the mock Identity Broker in local development, use any of these emails in the login screen:
+- `nick@nebula.io` (Admin / Original Template Creator)
+- `maria@nebula.io` (Team Leader)
+- `elena@nebula.io`
+- `david@nebula.io`
+- `sarah@nebula.io`
+- `marcus@nebula.io`
+- `jordan@nebula.io`
+- `sam@nebula.io`
