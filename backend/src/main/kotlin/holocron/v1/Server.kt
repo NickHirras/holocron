@@ -30,10 +30,13 @@ import kotlinx.coroutines.runBlocking
 import holocron.v1.cache.CacheFactory
 import holocron.v1.cache.CachePort
 
+import java.time.Duration
+
 class CeremonyServiceImpl(
     private val templateRepository: CeremonyTemplateRepository,
     private val responseRepository: CeremonyResponseRepository,
-    private val teamRepository: TeamRepository
+    private val teamRepository: TeamRepository,
+    private val templateCache: CachePort<String, CeremonyTemplate>
 ) : CeremonyServiceGrpcKt.CeremonyServiceCoroutineImplBase() {
 
     override suspend fun createCeremonyTemplate(request: CreateCeremonyTemplateRequest): CreateCeremonyTemplateResponse {
@@ -69,6 +72,7 @@ class CeremonyServiceImpl(
         
         val finalTemplate = templateBuilder.build()
         templateRepository.save(finalTemplate)
+        templateCache.put(finalTemplate.id, finalTemplate, Duration.ofMinutes(30))
         
         if (finalTemplate.hasNotificationSettings() && finalTemplate.notificationSettings.webhookUrlsCount > 0) {
             val team = teamRepository.getTeams(listOf(finalTemplate.teamId)).firstOrNull()
@@ -136,6 +140,7 @@ class CeremonyServiceImpl(
 
         val finalTemplate = templateBuilder.build()
         templateRepository.save(finalTemplate)
+        templateCache.put(finalTemplate.id, finalTemplate, Duration.ofMinutes(30))
 
         return UpdateCeremonyTemplateResponse.newBuilder()
             .setTemplate(finalTemplate)
@@ -143,9 +148,12 @@ class CeremonyServiceImpl(
     }
 
     override suspend fun getCeremonyTemplate(request: GetCeremonyTemplateRequest): GetCeremonyTemplateResponse {
-        println("Received request for Template ID: ${request.templateId}")
-        val template = templateRepository.findById(request.templateId)
-            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+        var template = templateCache.get(request.templateId)
+        if (template == null) {
+            template = templateRepository.findById(request.templateId)
+                ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+            templateCache.put(template.id, template, Duration.ofMinutes(30))
+        }
             
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
@@ -184,6 +192,8 @@ class CeremonyServiceImpl(
         val templates = templateRepository.findByTeamId(teamId).filter { 
             it.creatorId == userEmail || it.sharedWithEmailsList.contains(userEmail) || it.teamId == teamId
         }
+        templates.forEach { templateCache.put(it.id, it, Duration.ofMinutes(30)) }
+        
         return ListCeremonyTemplatesResponse.newBuilder()
             .addAllTemplates(templates)
             .build()
@@ -207,6 +217,7 @@ class CeremonyServiceImpl(
         val templates = templateRepository.findByTeamId(teamId).filter { 
             it.creatorId == userEmail || it.sharedWithEmailsList.contains(userEmail) || it.teamId == teamId
         }
+        templates.forEach { templateCache.put(it.id, it, Duration.ofMinutes(30)) }
 
         val now = System.currentTimeMillis() / 1000
         val activeCeremonies = mutableListOf<ActiveCeremony>()
@@ -236,8 +247,12 @@ class CeremonyServiceImpl(
     }
 
     override suspend fun submitCeremonyResponse(request: SubmitCeremonyResponseRequest): SubmitCeremonyResponseResponse {
-        val template = templateRepository.findById(request.response.ceremonyTemplateId)
-            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+        var template = templateCache.get(request.response.ceremonyTemplateId)
+        if (template == null) {
+            template = templateRepository.findById(request.response.ceremonyTemplateId)
+                ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+            templateCache.put(template.id, template, Duration.ofMinutes(30))
+        }
 
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
@@ -342,8 +357,12 @@ class CeremonyServiceImpl(
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
             ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
 
-        val template = templateRepository.findById(request.ceremonyTemplateId)
-            ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+        var template = templateCache.get(request.ceremonyTemplateId)
+        if (template == null) {
+            template = templateRepository.findById(request.ceremonyTemplateId)
+                ?: throw StatusException(Status.NOT_FOUND.withDescription("Template not found"))
+            templateCache.put(template.id, template, Duration.ofMinutes(30))
+        }
             
         if (template.creatorId != userEmail && !template.sharedWithEmailsList.contains(userEmail)) {
             throw StatusException(Status.PERMISSION_DENIED.withDescription("You do not have permission to view these responses"))
@@ -429,12 +448,14 @@ fun main() {
 
     // Initialize Caches
     val userCache: CachePort<String, User> = CacheFactory.createCache()
+    val teamCache: CachePort<String, Team> = CacheFactory.createCache()
+    val templateCache: CachePort<String, CeremonyTemplate> = CacheFactory.createCache()
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()
-        .addService(CeremonyServiceImpl(templateRepository, responseRepository, teamRepository))
+        .addService(CeremonyServiceImpl(templateRepository, responseRepository, teamRepository, templateCache))
         .addService(UserServiceImpl(userRepository, userCache))
-        .addService(TeamServiceImpl(teamRepository, userRepository))
+        .addService(TeamServiceImpl(teamRepository, userRepository, teamCache))
         .addService(AnalyticsServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!

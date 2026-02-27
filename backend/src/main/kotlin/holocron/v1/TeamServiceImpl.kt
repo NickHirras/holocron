@@ -5,9 +5,13 @@ import holocron.v1.repository.UserRepository
 import io.grpc.Status
 import io.grpc.StatusException
 
+import holocron.v1.cache.CachePort
+import java.time.Duration
+
 class TeamServiceImpl(
     private val teamRepository: TeamRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val teamCache: CachePort<String, Team>
 ) : TeamServiceGrpcKt.TeamServiceCoroutineImplBase() {
     override suspend fun createTeam(request: CreateTeamRequest): CreateTeamResponse {
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
@@ -15,6 +19,9 @@ class TeamServiceImpl(
             ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
 
         val (team, membership) = teamRepository.createTeam(request.displayName, userEmail)
+        
+        // Cache the newly created team
+        teamCache.put(team.id, team, Duration.ofMinutes(30))
         
         return CreateTeamResponse.newBuilder()
             .setTeam(team)
@@ -38,7 +45,14 @@ class TeamServiceImpl(
 
         val memberships = teamRepository.getUserMemberships(userEmail)
         val teamIds = memberships.map { it.teamId }
-        val teams = teamRepository.getTeams(teamIds)
+        
+        val cachedTeams = teamIds.mapNotNull { teamCache.get(it) }
+        val missingTeamIds = teamIds.filter { id -> cachedTeams.none { it.id == id } }
+        
+        val dbTeams = teamRepository.getTeams(missingTeamIds)
+        dbTeams.forEach { teamCache.put(it.id, it, Duration.ofMinutes(30)) }
+
+        val teams = cachedTeams + dbTeams
 
         return ListMyTeamsResponse.newBuilder()
             .addAllTeams(teams)
