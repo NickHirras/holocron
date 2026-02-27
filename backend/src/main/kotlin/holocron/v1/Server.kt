@@ -429,7 +429,7 @@ fun main() {
     val grpcService = GrpcService.builder()
         .addService(CeremonyServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(UserServiceImpl(userRepository))
-        .addService(TeamServiceImpl(teamRepository))
+        .addService(TeamServiceImpl(teamRepository, userRepository))
         .addService(AnalyticsServiceImpl(templateRepository, responseRepository, teamRepository))
         .addService(ProtoReflectionService.newInstance())
         // Armeria enables gRPC-Web and REST fallback natively!

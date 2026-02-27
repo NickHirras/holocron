@@ -271,6 +271,7 @@ service TeamService {
   rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse);
   rpc JoinTeam(JoinTeamRequest) returns (JoinTeamResponse);
   rpc ListMyTeams(ListMyTeamsRequest) returns (ListMyTeamsResponse);
+  rpc GetTeamRoster(GetTeamRosterRequest) returns (GetTeamRosterResponse);
 }
 
 message CreateTeamRequest {
@@ -298,6 +299,19 @@ message ListMyTeamsResponse {
   repeated Team teams = 1;
   // include memberships so the frontend knows the role for each team
   repeated TeamMembership memberships = 2;
+}
+
+message GetTeamRosterRequest {
+  string team_id = 1;
+}
+
+message GetTeamRosterResponse {
+  repeated TeamMember members = 1;
+}
+
+message TeamMember {
+  User user = 1;
+  TeamMembership.Role role = 2;
 }
 
 // -- Ceremony Service --

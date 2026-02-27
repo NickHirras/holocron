@@ -5,6 +5,7 @@ import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import holocron.v1.User
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import io.viascom.nanoid.NanoId
 
 import org.bson.Document
@@ -37,5 +38,15 @@ class UserRepository(private val mongoClient: MongoClient) {
 
         collection.insertOne(doc)
         return newUser
+    }
+
+    suspend fun getUsers(userEmails: List<String>): List<User> {
+        if (userEmails.isEmpty()) return emptyList()
+        return collection.find(com.mongodb.client.model.Filters.`in`("email", userEmails))
+            .toList()
+            .mapNotNull { doc ->
+                val blob = doc.get("blob", org.bson.types.Binary::class.java)?.data ?: return@mapNotNull null
+                User.parseFrom(blob)
+            }
     }
 }

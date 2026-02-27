@@ -1,10 +1,14 @@
 package holocron.v1
 
 import holocron.v1.repository.TeamRepository
+import holocron.v1.repository.UserRepository
 import io.grpc.Status
 import io.grpc.StatusException
 
-class TeamServiceImpl(private val teamRepository: TeamRepository) : TeamServiceGrpcKt.TeamServiceCoroutineImplBase() {
+class TeamServiceImpl(
+    private val teamRepository: TeamRepository,
+    private val userRepository: UserRepository
+) : TeamServiceGrpcKt.TeamServiceCoroutineImplBase() {
     override suspend fun createTeam(request: CreateTeamRequest): CreateTeamResponse {
         val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
         val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
@@ -39,6 +43,32 @@ class TeamServiceImpl(private val teamRepository: TeamRepository) : TeamServiceG
         return ListMyTeamsResponse.newBuilder()
             .addAllTeams(teams)
             .addAllMemberships(memberships)
+            .build()
+    }
+
+    override suspend fun getTeamRoster(request: GetTeamRosterRequest): GetTeamRosterResponse {
+        val ctx = com.linecorp.armeria.server.ServiceRequestContext.current()
+        val userEmail = ctx.attr(MockAuthDecorator.USER_EMAIL_ATTR)
+            ?: throw StatusException(Status.UNAUTHENTICATED.withDescription("Missing user authentication"))
+
+        val myMembership = teamRepository.getMembership(request.teamId, userEmail)
+            ?: throw StatusException(Status.PERMISSION_DENIED.withDescription("You are not a member of this team"))
+
+        val memberships = teamRepository.getTeamMemberships(request.teamId)
+        val emails = memberships.map { it.userId } // assuming userId stores email
+        val users = userRepository.getUsers(emails)
+        val usersByEmail = users.associateBy { it.email }
+
+        val teamMembers = memberships.map { membership ->
+            val user = usersByEmail[membership.userId] ?: User.newBuilder().setEmail(membership.userId).build()
+            TeamMember.newBuilder()
+                .setUser(user)
+                .setRole(membership.role)
+                .build()
+        }
+
+        return GetTeamRosterResponse.newBuilder()
+            .addAllMembers(teamMembers)
             .build()
     }
 }

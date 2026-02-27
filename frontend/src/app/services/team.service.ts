@@ -79,4 +79,13 @@ export class TeamService {
     setActiveTeam(teamId: string) {
         this._activeTeamId.set(teamId);
     }
+
+    async getTeamRoster(teamId: string) {
+        try {
+            return await this.teamClient.getTeamRoster({ teamId });
+        } catch (e) {
+            console.error('❌ Failed to get team roster:', e);
+            throw e;
+        }
+    }
 }

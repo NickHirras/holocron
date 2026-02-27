@@ -8,11 +8,12 @@ import { ActiveCeremony, ResponseStatus, TeamMembership_Role } from '../../proto
 import { FormsModule } from '@angular/forms';
 import { TeamAnalyticsComponent } from './team-analytics/team-analytics.component';
 import { TeamSelectorComponent } from '../components/team-selector/team-selector.component';
+import { TeamRosterComponent } from '../components/team-roster/team-roster.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamAnalyticsComponent, TeamSelectorComponent],
+  imports: [CommonModule, FormsModule, TeamAnalyticsComponent, TeamSelectorComponent, TeamRosterComponent],
   template: `
     <div class="h-full w-full bg-holocron-base text-holocron-text-primary p-6 md:p-10">
       <div class="max-w-6xl mx-auto">
@@ -139,6 +140,9 @@ import { TeamSelectorComponent } from '../components/team-selector/team-selector
             <app-team-analytics *ngIf="teamService.activeTeamId()" [teamId]="teamService.activeTeamId()!"></app-team-analytics>
 
           </ng-container>
+
+          <!-- Team Roster for all members -->
+          <app-team-roster [teamId]="teamId() || teamService.activeTeamId()!"></app-team-roster>
 
           <!-- Your Daily Rituals List (PENDING) -->
           <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 mt-12">
