@@ -1,0 +1,30 @@
+<div class="date-filter-container">
+    <select class="preset-select" [ngModel]="selectedPreset()" (ngModelChange)="onPresetChange($event)">
+        <option value="today">Today</option>
+        <option value="this_week">This Week</option>
+        <option value="this_month">This Month</option>
+        <option value="past_30_days">Past 30 Days</option>
+        <option value="ytd">Year to Date (YTD)</option>
+        <option value="past_year">Past Year</option>
+        <option value="custom">Custom</option>
+    </select>
+
+    @if (selectedPreset() === 'custom') {
+    <div class="custom-dates">
+        <input type="date" class="date-input" [ngModel]="customStart()"
+            (ngModelChange)="customStart.set($event); onCustomDateChange()">
+        <span style="color: #aaa; font-size: 0.9rem;">to</span>
+        <input type="date" class="date-input" [ngModel]="customEnd()"
+            (ngModelChange)="customEnd.set($event); onCustomDateChange()">
+    </div>
+    }
+
+    <div class="paging-controls">
+        <button class="page-btn" (click)="shiftRange(-1)" title="Previous period">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button class="page-btn" (click)="shiftRange(1)" title="Next period">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+    </div>
+</div>

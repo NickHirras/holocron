@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CeremonyClientService } from '../services/ceremony-client';
+import { DateRangeFilter, DateRange } from '../components/date-range-filter/date-range-filter';
 import { CeremonyResponse, CeremonyTemplate, TeamMembership, FacilitationSettings, TeamMembership_Role, FacilitationSettingsSchema, CeremonyTemplateSchema } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { create } from '@bufbuild/protobuf';
 import { TeamService } from '../services/team.service';
@@ -27,7 +28,7 @@ interface CrossTabData {
 @Component({
     selector: 'app-ceremony-results',
     standalone: true,
-    imports: [CommonModule, RouterModule, FormsModule],
+    imports: [CommonModule, RouterModule, FormsModule, DateRangeFilter],
     templateUrl: './ceremony-results.component.html',
     styleUrl: './ceremony-results.component.scss'
 })
@@ -45,6 +46,12 @@ export class CeremonyResultsComponent implements OnInit {
 
     startDate = signal<string>('');
     endDate = signal<string>('');
+
+    onDateRangeChange(range: DateRange) {
+        this.startDate.set(range.start);
+        this.endDate.set(range.end);
+        this.applyDateFilter();
+    }
 
     // Cross-Tabulation State
     crossTabGroupQuestionId = signal<string>('');
