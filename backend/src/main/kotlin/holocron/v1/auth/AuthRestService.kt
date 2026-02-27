@@ -55,14 +55,16 @@ class AuthRestService {
 
     @Get("/api/auth/callback/:provider")
     suspend fun callback(@Param("provider") provider: String, ctx: ServiceRequestContext): HttpResponse {
+        val frontendUrl = ctx.attr(holocron.v1.MockAuthDecorator.FRONTEND_URL_ATTR) ?: ""
+        
         val code = ctx.queryParam("code")
         if (code == null) {
-            return HttpResponse.ofRedirect("http://localhost:4200/login?error=missing_code")
+            return HttpResponse.ofRedirect("$frontendUrl/login?error=missing_code")
         }
 
         val authProvider = providers[provider]
         if (authProvider == null) {
-            return HttpResponse.ofRedirect("http://localhost:4200/login?error=provider_not_found")
+            return HttpResponse.ofRedirect("$frontendUrl/login?error=provider_not_found")
         }
 
         return try {
@@ -75,10 +77,10 @@ class AuthRestService {
                 .withExpiresAt(Date(System.currentTimeMillis() + 86400000L)) // 24 hours
                 .sign(jwtAlgorithm)
 
-            HttpResponse.ofRedirect("http://localhost:4200/login?token=$jwtToken")
+            HttpResponse.ofRedirect("$frontendUrl/login?token=$jwtToken")
         } catch (e: Exception) {
             e.printStackTrace()
-            HttpResponse.ofRedirect("http://localhost:4200/login?error=exchange_failed")
+            HttpResponse.ofRedirect("$frontendUrl/login?error=exchange_failed")
         }
     }
 }

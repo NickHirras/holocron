@@ -41,8 +41,11 @@ class MockAuthDecorator : DecoratingHttpServiceFunction {
             }
         }
         
-        // Derive Frontend URL from request, fallback to Env, fallback to localhost
-        var frontendUrl = req.headers().get("origin")
+        // Derive Frontend URL from Env, fallback to Origin, fallback to Host
+        var frontendUrl = System.getenv("FRONTEND_URL")
+        if (frontendUrl == null) {
+            frontendUrl = req.headers().get("origin")
+        }
         if (frontendUrl == null) {
             val host = req.headers().get("host")
             if (host != null) {
@@ -51,7 +54,7 @@ class MockAuthDecorator : DecoratingHttpServiceFunction {
             }
         }
         if (frontendUrl == null) {
-            frontendUrl = System.getenv("FRONTEND_URL") ?: "http://localhost:4200"
+            frontendUrl = "http://localhost:4200"
         }
         ctx.setAttr(FRONTEND_URL_ATTR, frontendUrl)
 
