@@ -25,6 +25,8 @@ import com.linecorp.armeria.common.HttpRequest
 import com.linecorp.armeria.common.HttpStatus
 import com.linecorp.armeria.common.MediaType
 import kotlinx.coroutines.future.await
+import holocron.v1.util.DatabaseSeeder
+import kotlinx.coroutines.runBlocking
 
 class CeremonyServiceImpl(
     private val templateRepository: CeremonyTemplateRepository,
@@ -416,6 +418,12 @@ fun main() {
     
     // Initialize standard storage adapter (Memory by default)
     val storageProvider = StorageFactory.createActiveProvider()
+
+    // 0. Database Seeder
+    val seeder = DatabaseSeeder(userRepository, teamRepository, templateRepository, responseRepository)
+    runBlocking {
+        seeder.seedIfEmpty()
+    }
 
     // 1. Configure the gRPC Service
     val grpcService = GrpcService.builder()

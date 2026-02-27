@@ -110,4 +110,29 @@ class TeamRepository(mongoClient: MongoClient) {
         val blob = doc.get("blob", org.bson.types.Binary::class.java)?.data ?: return null
         return TeamMembership.parseFrom(blob)
     }
+
+    suspend fun updateRole(teamId: String, userId: String, role: TeamMembership.Role): TeamMembership? {
+        val existingDoc = membershipCollection.find(
+            and(eq("teamId", teamId), eq("userId", userId))
+        ).firstOrNull() ?: return null
+
+        val blob = existingDoc.get("blob", org.bson.types.Binary::class.java)?.data ?: return null
+        val existingMembership = TeamMembership.parseFrom(blob)
+
+        val updatedMembership = existingMembership.toBuilder()
+            .setRole(role)
+            .build()
+
+        val updatedDoc = Document()
+            .append("teamId", updatedMembership.teamId)
+            .append("userId", updatedMembership.userId)
+            .append("blob", updatedMembership.toByteArray())
+
+        membershipCollection.replaceOne(
+            and(eq("teamId", teamId), eq("userId", userId)),
+            updatedDoc
+        )
+
+        return updatedMembership
+    }
 }

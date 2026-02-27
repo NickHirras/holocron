@@ -41,5 +41,6 @@
 (Please refer to `docs/features` for upcoming feature definitions).
 
 ## Developer Notes
+- **Onboarding Experience**: The application now includes a deterministic `DatabaseSeeder` utility that runs on server startup. If the database is empty (or specifically, if the `nick@nebula.io` user has no teams), the seeder will auto-populate the "Nebula Infrastructure" team, 8 users, Ceremony Templates, and 4-weeks of historical response data to immediately activate the Facilitation and Analytics dashboards.
 - Ensure you run `./gradlew run` and `npm run start` in separate terminal windows.
 - The `Team Switcher` automatically creates a "Shadow Profile" via the Auth Interceptor if one doesn't exist. Users start with an empty dashboard and are forced to create/join a team.
