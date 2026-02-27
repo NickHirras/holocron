@@ -1,4 +1,4 @@
-.PHONY: help gen clean lint run-backend run-frontend run
+.PHONY: help gen clean lint run-backend run-frontend run stop restart
 
 .DEFAULT_GOAL := help
 
@@ -11,6 +11,8 @@ help:
 	@echo "  make run-backend  - Run the Kotlin backend"
 	@echo "  make run-frontend - Run the Angular frontend"
 	@echo "  make run          - Run both backend and frontend concurrently"
+	@echo "  make stop         - Stop running backend and frontend services"
+	@echo "  make restart      - Stop services and run them again"
 
 gen: lint
 	buf generate
@@ -30,3 +32,11 @@ run-frontend:
 
 run:
 	$(MAKE) -j2 run-backend run-frontend
+
+stop:
+	@echo "Stopping backend (port 8080) and frontend (port 4200)..."
+	-lsof -t -i:8080 | xargs kill -9 2>/dev/null || true
+	-lsof -t -i:4200 | xargs kill -9 2>/dev/null || true
+	@echo "Services stopped."
+
+restart: stop run
