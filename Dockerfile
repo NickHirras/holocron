@@ -1,11 +1,19 @@
+# Stage 0: Generate Protos
+FROM bufbuild/buf:1.30.0 AS proto-builder
+WORKDIR /workspace
+COPY proto/ ./proto/
+COPY buf.gen.yaml buf.work.yaml ./
+RUN buf generate
+
 # Stage 1: Build Frontend (Angular)
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
-# We should probably copy the shared proto definitions instead of leaving it out
 COPY proto/ /proto/
+# Copy the generated proto files
+COPY --from=proto-builder /workspace/frontend/src/proto-gen ./src/proto-gen
 RUN npm run build -- --configuration production
 
 # Stage 2: Build Backend (Kotlin/Gradle)
@@ -14,6 +22,8 @@ WORKDIR /app
 # We need the proto folder available during backend build as well
 COPY proto/ /proto/
 COPY backend/ ./
+# Copy generated protos for backend
+COPY --from=proto-builder /workspace/backend/src/main/gen ./src/main/gen
 # Run the gradle build
 RUN gradle shadowJar --no-daemon
 
