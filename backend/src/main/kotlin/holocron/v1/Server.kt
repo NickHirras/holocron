@@ -431,7 +431,8 @@ class ImageUploadService(private val storageProvider: FileStorageProvider) {
 }
 
 fun main() {
-    val mongoClient = MongoClient.create("mongodb://localhost:27017")
+    val mongoUri = System.getenv("MONGODB_URI") ?: "mongodb://localhost:27017"
+    val mongoClient = MongoClient.create(mongoUri)
     val templateRepository = CeremonyTemplateRepository(mongoClient)
     val responseRepository = CeremonyResponseRepository(mongoClient)
     val userRepository = UserRepository(mongoClient)
@@ -488,6 +489,14 @@ fun main() {
         .annotatedService(ImageUploadService(storageProvider))
         // Mount the magical Web GUI
         .serviceUnder("/docs", DocService())
+        // Mount Angular Frontend
+        .serviceUnder("/", com.linecorp.armeria.server.file.FileService.builder(
+            java.nio.file.Paths.get("frontend-build")
+        ).serveCompressedFiles(true)
+         .build()
+         .orElse(com.linecorp.armeria.server.file.HttpFile.of(
+            java.nio.file.Paths.get("frontend-build/index.html")
+        ).asService()))
         .build()
 
     server.start().join()
