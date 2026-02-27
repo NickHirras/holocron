@@ -66,11 +66,13 @@
 
                         <!-- Radio -->
                         <div class="options-list" *ngIf="getChoiceQuestion(item)?.type === 1">
-                            <label class="option-row" *ngFor="let opt of getChoiceQuestion(item)?.options">
-                                <input type="radio" [formControlName]="item.kind.value.question!.questionId"
-                                    [value]="opt.value" />
-                                <span>{{ opt.value }}</span>
-                            </label>
+                            <ng-container *ngFor="let opt of getChoiceQuestion(item)?.options">
+                                <label class="option-row" *ngIf="!opt.isOther">
+                                    <input type="radio" [formControlName]="item.kind.value.question!.questionId"
+                                        [value]="opt.value" />
+                                    <span>{{ opt.value }}</span>
+                                </label>
+                            </ng-container>
 
                             <!-- Check if 'Other' should be rendered -->
                             <ng-container *ngFor="let opt of getChoiceQuestion(item)?.options">
@@ -88,13 +90,14 @@
 
                         <!-- Checkboxes -->
                         <div class="options-list" *ngIf="getChoiceQuestion(item)?.type === 2">
-                            <label class="option-row"
-                                *ngFor="let opt of getChoiceQuestion(item)?.options; let i = index">
-                                <input type="checkbox" [value]="opt.value"
-                                    [checked]="isCheckboxChecked(item.kind.value.question!.questionId, opt.value)"
-                                    (change)="onCheckboxChange($event, item.kind.value.question!.questionId)" />
-                                <span>{{ opt.value }}</span>
-                            </label>
+                            <ng-container *ngFor="let opt of getChoiceQuestion(item)?.options; let i = index">
+                                <label class="option-row" *ngIf="!opt.isOther">
+                                    <input type="checkbox" [value]="opt.value"
+                                        [checked]="isCheckboxChecked(item.kind.value.question!.questionId, opt.value)"
+                                        (change)="onCheckboxChange($event, item.kind.value.question!.questionId)" />
+                                    <span>{{ opt.value }}</span>
+                                </label>
+                            </ng-container>
 
                             <ng-container *ngFor="let opt of getChoiceQuestion(item)?.options">
                                 <label class="option-row other-row" *ngIf="opt.isOther">
@@ -123,13 +126,21 @@
 
                     <!-- Scale Question -->
                     <ng-container *ngSwitchCase="'scaleQuestion'">
-                        <div class="scale-container" *ngIf="getScaleQuestion(item); let sq">
-                            <div class="scale-label" *ngIf="sq.lowLabel">{{ sq.lowLabel }}</div>
-                            <div class="scale-options">
-                                <input type="number" [formControlName]="item.kind.value.question!.questionId"
-                                    class="form-control" [min]="sq.low" [max]="sq.high" />
+                        <div class="scale-container flex items-center gap-4 w-full"
+                            *ngIf="getScaleQuestion(item); let sq">
+                            <div class="scale-label text-sm text-slate-300 font-medium whitespace-nowrap"
+                                *ngIf="sq.lowLabel">{{ sq.lowLabel }} ({{ sq.low }})</div>
+                            <div class="scale-options flex-grow mx-4">
+                                <input type="range" [formControlName]="item.kind.value.question!.questionId"
+                                    class="w-full accent-holocron-neon-blue cursor-pointer h-2 bg-slate-700 rounded-lg appearance-none"
+                                    [min]="sq.low" [max]="sq.high" step="1" />
                             </div>
-                            <div class="scale-label" *ngIf="sq.highLabel">{{ sq.highLabel }}</div>
+                            <div class="scale-label text-sm text-slate-300 font-medium whitespace-nowrap"
+                                *ngIf="sq.highLabel">{{ sq.highLabel }} ({{ sq.high }})</div>
+                            <div
+                                class="ml-2 text-indigo-400 font-bold text-lg min-w-[3rem] text-center bg-slate-800/50 rounded-lg p-1 border border-indigo-500/30 shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+                                {{ formGroup.get(item.kind.value.question!.questionId)?.value || sq.low }}
+                            </div>
                         </div>
                     </ng-container>
 
@@ -144,8 +155,33 @@
 
                     <!-- Time Question -->
                     <ng-container *ngSwitchCase="'timeQuestion'">
-                        <input type="time" [formControlName]="item.kind.value.question!.questionId"
-                            class="form-control" />
+                        <ng-container *ngIf="!getTimeQuestion(item)?.duration">
+                            <input type="time" [formControlName]="item.kind.value.question!.questionId"
+                                class="form-control" />
+                        </ng-container>
+                        <div *ngIf="getTimeQuestion(item)?.duration"
+                            [formGroupName]="item.kind.value.question!.questionId" class="duration-group flex gap-4">
+                            <div class="flex flex-col">
+                                <label class="text-xs text-slate-400 mb-1">Hours</label>
+                                <input type="number" formControlName="hours" class="form-control w-24" min="0" />
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="text-xs text-slate-400 mb-1">Minutes</label>
+                                <input type="number" formControlName="minutes" class="form-control w-24" min="0"
+                                    max="59" />
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="text-xs text-slate-400 mb-1">Seconds</label>
+                                <input type="number" formControlName="seconds" class="form-control w-24" min="0"
+                                    max="59" />
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- File Upload Question -->
+                    <ng-container *ngSwitchCase="'fileUploadQuestion'">
+                        <input type="file" multiple class="form-control"
+                            (change)="onFileChange($event, item.kind.value.question!.questionId)" />
                     </ng-container>
 
                 </ng-container>
@@ -192,5 +228,5 @@
     <div class="success-icon">✅</div>
     <h2>{{ template()!.title }}</h2>
     <p>{{ template()!.confirmationMessage || 'Your response has been recorded.' }}</p>
-    <a [routerLink]="['/', teamId, 'dashboard']" class="btn btn-secondary">Return to Dashboard</a>
+    <a [routerLink]="['/team', teamId, 'dashboard']" class="btn btn-secondary">Return to Dashboard</a>
 </div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CeremonyClientService } from '../services/ceremony-client';
-import { CeremonyTemplate, Item, CeremonyResponseSchema, AnswerSchema, TextAnswerSchema, ChoiceAnswerSchema, ScaleAnswerSchema, DateAnswerSchema, TimeAnswerSchema } from '../../proto-gen/holocron/v1/ceremony_pb';
+import { CeremonyTemplate, Item, CeremonyResponseSchema, AnswerSchema, TextAnswerSchema, ChoiceAnswerSchema, ScaleAnswerSchema, DateAnswerSchema, TimeAnswerSchema, FileUploadAnswerSchema } from '../../proto-gen/holocron/v1/ceremony_pb';
 import { create } from '@bufbuild/protobuf';
 
 @Component({
@@ -101,7 +101,17 @@ export class CeremonyResponderComponent implements OnInit {
                         time: ['']
                     });
                 } else if (q.type.case === 'timeQuestion') {
-                    group[q.questionId] = ['', validators];
+                    if (q.type.value.duration) {
+                        group[q.questionId] = this.fb.group({
+                            hours: [0, validators],
+                            minutes: [0],
+                            seconds: [0]
+                        });
+                    } else {
+                        group[q.questionId] = ['', validators];
+                    }
+                } else if (q.type.case === 'fileUploadQuestion') {
+                    group[q.questionId] = [[], validators];
                 } else {
                     // Default single control
                     group[q.questionId] = ['', validators];
@@ -142,6 +152,16 @@ export class CeremonyResponderComponent implements OnInit {
     isCheckboxChecked(questionId: string, value: string): boolean {
         const checkArray: FormArray = this.formGroup.get(questionId) as FormArray;
         return checkArray?.value.includes(value);
+    }
+
+    onFileChange(e: any, questionId: string) {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const urls = Array.from(files).map((f: any) => `holocron://assets/${f.name}`);
+            this.formGroup.get(questionId)?.setValue(urls);
+        } else {
+            this.formGroup.get(questionId)?.setValue([]);
+        }
     }
 
     nextPage() {
@@ -247,7 +267,15 @@ export class CeremonyResponderComponent implements OnInit {
                             }
                             break;
                         case 'timeQuestion':
-                            if (val) {
+                            if (q.type.value.duration) {
+                                answerKind = {
+                                    case: 'timeAnswer', value: create(TimeAnswerSchema, {
+                                        hours: parseInt(val.hours, 10) || 0,
+                                        minutes: parseInt(val.minutes, 10) || 0,
+                                        seconds: parseInt(val.seconds, 10) || 0
+                                    })
+                                };
+                            } else if (val) {
                                 const [h, m] = val.split(':');
                                 answerKind = {
                                     case: 'timeAnswer', value: create(TimeAnswerSchema, {
@@ -256,6 +284,9 @@ export class CeremonyResponderComponent implements OnInit {
                                     })
                                 };
                             }
+                            break;
+                        case 'fileUploadQuestion':
+                            answerKind = { case: 'fileUploadAnswer', value: create(FileUploadAnswerSchema, { fileUris: Array.isArray(val) ? val : [val] }) };
                             break;
                     }
 
@@ -299,6 +330,20 @@ export class CeremonyResponderComponent implements OnInit {
 
     getDateQuestion(item: Item) {
         if (item.kind.case === 'questionItem' && item.kind.value.question?.type.case === 'dateQuestion') {
+            return item.kind.value.question.type.value;
+        }
+        return null;
+    }
+
+    getTimeQuestion(item: Item) {
+        if (item.kind.case === 'questionItem' && item.kind.value.question?.type.case === 'timeQuestion') {
+            return item.kind.value.question.type.value;
+        }
+        return null;
+    }
+
+    getFileUploadQuestion(item: Item) {
+        if (item.kind.case === 'questionItem' && item.kind.value.question?.type.case === 'fileUploadQuestion') {
             return item.kind.value.question.type.value;
         }
         return null;
